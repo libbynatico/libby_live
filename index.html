@@ -727,16 +727,16 @@
     <div class="auth-card">
       <h2>Create account</h2>
       <div class="form-group">
-        <label>Email address</label>
-        <input type="email" placeholder="your@email.com">
+        <label for="signup-email">Email address</label>
+        <input type="email" id="signup-email" placeholder="your@email.com">
       </div>
       <div class="form-group">
-        <label>Password</label>
-        <input type="password" placeholder="Choose a password">
+        <label for="signup-pass">Password</label>
+        <input type="password" id="signup-pass" placeholder="Choose a password (min 6 characters)">
       </div>
       <div class="form-group">
-        <label>Confirm password</label>
-        <input type="password" placeholder="Confirm password">
+        <label for="signup-pass2">Confirm password</label>
+        <input type="password" id="signup-pass2" placeholder="Confirm password">
       </div>
       <div class="form-group">
         <div class="form-check">
@@ -1431,7 +1431,26 @@ function sendChat() {
 // ── Signup (mock) ──
 function doSignup() {
   const err = document.getElementById('signup-error');
+  const email = document.getElementById('signup-email').value.trim();
+  const pass  = document.getElementById('signup-pass').value;
+  const pass2 = document.getElementById('signup-pass2').value;
   const checked = document.getElementById('terms').checked;
+
+  if (!email) {
+    err.style.display = 'block';
+    err.innerHTML = '<strong>Required</strong>Please enter an email address.';
+    return;
+  }
+  if (!pass || pass.length < 6) {
+    err.style.display = 'block';
+    err.innerHTML = '<strong>Required</strong>Password must be at least 6 characters.';
+    return;
+  }
+  if (pass !== pass2) {
+    err.style.display = 'block';
+    err.innerHTML = '<strong>Error</strong>Passwords do not match.';
+    return;
+  }
   if (!checked) {
     err.style.display = 'block';
     err.innerHTML = '<strong>Required</strong>Please check the terms checkbox to continue.';
