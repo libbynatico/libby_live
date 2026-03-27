@@ -3,1474 +3,692 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LIBBY_LIVE - NATICO Advocacy Portal</title>
+<title>LIBBY_LIVE — NATICO Advocacy Portal</title>
 <style>
-  /* ── Design system ── Canada.ca-informed, institutional, serious ── */
-  :root {
-    --c-bg:        #f5f5f5;
-    --c-surface:   #ffffff;
-    --c-border:    #cccccc;
-    --c-border-dk: #767676;
-    --c-text:      #1a1a1a;
-    --c-text-sub:  #5a5a5a;
-    --c-accent:    #1f4e96;
-    --c-accent-lt: #e8eef7;
-    --c-warn:      #d3080c;
-    --c-warn-lt:   #f9e8e8;
-    --c-ok:        #278400;
-    --c-ok-lt:     #e8f5e0;
-    --c-amber:     #9b4f00;
-    --c-amber-lt:  #fdf3e3;
-    --c-nav-bg:    #26374a;
-    --c-nav-text:  #ffffff;
-    --c-nav-hover: #1c578a;
-    --sidebar-w:   260px;
-    --topbar-h:    56px;
-    --font-body:   'Georgia', serif;
-    --font-ui:     'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    --radius:      2px;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: var(--font-ui);
-    background: var(--c-bg);
-    color: var(--c-text);
-    font-size: 16px;
-    line-height: 1.6;
-  }
-
-  a { color: var(--c-accent); text-decoration: underline; }
-  a:hover { text-decoration: none; }
-
-  /* ── Top bar ── */
-  #topbar {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: var(--topbar-h);
-    background: var(--c-nav-bg);
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    gap: 16px;
-    z-index: 100;
-    border-bottom: 4px solid #cd2026;
-  }
-
-  #topbar .site-name {
-    color: #fff;
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-decoration: none;
-    flex-shrink: 0;
-  }
-
-  #topbar .site-name span {
-    color: #aec6e8;
-    font-weight: 400;
-    font-size: 0.85rem;
-    margin-left: 8px;
-  }
-
-  #topbar .spacer { flex: 1; }
-
-  #topbar .user-info {
-    color: #ccc;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  #topbar .user-info strong { color: #fff; }
-
-  #topbar button {
-    background: none;
-    border: 1px solid #555;
-    color: #ccc;
-    padding: 4px 10px;
-    border-radius: var(--radius);
-    cursor: pointer;
-    font-size: 0.8rem;
-    font-family: var(--font-ui);
-  }
-  #topbar button:hover { border-color: #aaa; color: #fff; }
-
-  .hamburger {
-    display: none;
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 1.4rem;
-    cursor: pointer;
-    padding: 4px 8px;
-  }
-
-  /* ── Layout ── */
-  #layout {
-    display: flex;
-    padding-top: var(--topbar-h);
-    min-height: 100vh;
-  }
-
-  /* ── Sidebar ── */
-  #sidebar {
-    position: fixed;
-    top: var(--topbar-h);
-    left: 0;
-    width: var(--sidebar-w);
-    height: calc(100vh - var(--topbar-h));
-    background: var(--c-surface);
-    border-right: 1px solid var(--c-border);
-    overflow-y: auto;
-    z-index: 90;
-    transition: transform 0.2s;
-  }
-
-  #sidebar.hidden { transform: translateX(-100%); }
-
-  .nav-section { padding: 12px 0 4px; }
-
-  .nav-section-label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--c-text-sub);
-    padding: 6px 16px 4px;
-    font-weight: 700;
-  }
-
-  .nav-item {
-    display: block;
-    padding: 7px 16px 7px 20px;
-    color: var(--c-text);
-    text-decoration: none;
-    font-size: 0.9rem;
-    border-left: 3px solid transparent;
-    cursor: pointer;
-  }
-
-  .nav-item:hover {
-    background: var(--c-accent-lt);
-    border-left-color: var(--c-accent);
-    color: var(--c-accent);
-    text-decoration: none;
-  }
-
-  .nav-item.active {
-    background: var(--c-accent-lt);
-    border-left-color: var(--c-accent);
-    color: var(--c-accent);
-    font-weight: 600;
-  }
-
-  .nav-sub {
-    padding-left: 12px;
-    font-size: 0.85rem;
-  }
-
-  /* ── Main content ── */
-  #main {
-    margin-left: var(--sidebar-w);
-    flex: 1;
-    min-width: 0;
-    padding: 32px 40px;
-    max-width: 900px;
-  }
-
-  /* ── Pages ── */
-  .page { display: none; }
-  .page.active { display: block; }
-
-  /* ── Page header ── */
-  .page-header {
-    border-bottom: 2px solid var(--c-border);
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-  }
-
-  .page-header h1 {
-    font-size: 1.75rem;
-    font-family: var(--font-body);
-    font-weight: normal;
-    color: var(--c-text);
-    margin-bottom: 4px;
-  }
-
-  .page-header .subtitle {
-    color: var(--c-text-sub);
-    font-size: 0.95rem;
-  }
-
-  .breadcrumb {
-    font-size: 0.8rem;
-    color: var(--c-text-sub);
-    margin-bottom: 8px;
-  }
-
-  .breadcrumb a { color: var(--c-accent); }
-
-  /* ── Section ── */
-  .section {
-    background: var(--c-surface);
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius);
-    padding: 20px 24px;
-    margin-bottom: 20px;
-  }
-
-  .section h2 {
-    font-size: 1.15rem;
-    font-family: var(--font-body);
-    margin-bottom: 14px;
-    color: var(--c-text);
-    border-bottom: 1px solid var(--c-border);
-    padding-bottom: 8px;
-  }
-
-  .section h3 {
-    font-size: 1rem;
-    margin: 14px 0 8px;
-    color: var(--c-text);
-  }
-
-  /* ── Status labels ── */
-  .label {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: var(--radius);
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .label-confirmed  { background: var(--c-ok-lt);    color: var(--c-ok);    border: 1px solid #6ab04c; }
-  .label-draft      { background: var(--c-amber-lt); color: var(--c-amber); border: 1px solid #d8a96a; }
-  .label-inferred   { background: var(--c-accent-lt);color: var(--c-accent);border: 1px solid #8aaee0; }
-  .label-missing    { background: var(--c-warn-lt);  color: var(--c-warn);  border: 1px solid #e08080; }
-  .label-review     { background: #fff8e0;           color: #7a5c00;        border: 1px solid #d4b800; }
-  .label-final      { background: #e0f0e0;           color: #1a5c1a;        border: 1px solid #4caf50; }
-
-  /* ── Dashboard stats ── */
-  .stat-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-
-  .stat-card {
-    background: var(--c-surface);
-    border: 1px solid var(--c-border);
-    border-top: 3px solid var(--c-accent);
-    padding: 14px 16px;
-    border-radius: var(--radius);
-  }
-
-  .stat-card .stat-num {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--c-accent);
-    line-height: 1;
-  }
-
-  .stat-card .stat-label {
-    font-size: 0.8rem;
-    color: var(--c-text-sub);
-    margin-top: 4px;
-  }
-
-  /* ── Alert/callout ── */
-  .callout {
-    padding: 12px 16px;
-    border-left: 4px solid;
-    margin-bottom: 14px;
-    border-radius: 0 var(--radius) var(--radius) 0;
-  }
-
-  .callout-info    { background: var(--c-accent-lt); border-color: var(--c-accent); }
-  .callout-warn    { background: var(--c-warn-lt);   border-color: var(--c-warn); }
-  .callout-ok      { background: var(--c-ok-lt);     border-color: var(--c-ok); }
-  .callout-amber   { background: var(--c-amber-lt);  border-color: var(--c-amber); }
-
-  .callout strong { display: block; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
-
-  /* ── Tables ── */
-  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-  th { background: var(--c-bg); text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--c-border); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--c-text-sub); }
-  td { padding: 8px 10px; border-bottom: 1px solid var(--c-border); vertical-align: top; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--c-bg); }
-
-  /* ── Evidence cards ── */
-  .evidence-card {
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-    margin-bottom: 12px;
-    background: var(--c-surface);
-  }
-
-  .evidence-card:hover { border-color: var(--c-accent); }
-
-  .evidence-card .ev-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 6px;
-  }
-
-  .evidence-card .ev-title {
-    font-weight: 600;
-    font-size: 0.95rem;
-    flex: 1;
-  }
-
-  .evidence-card .ev-meta {
-    font-size: 0.8rem;
-    color: var(--c-text-sub);
-    margin-bottom: 6px;
-  }
-
-  .evidence-card .ev-summary {
-    font-size: 0.88rem;
-    color: var(--c-text);
-    border-top: 1px solid var(--c-border);
-    padding-top: 8px;
-    margin-top: 6px;
-  }
-
-  /* ── Quick actions ── */
-  .action-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-  }
-
-  .btn {
-    padding: 9px 18px;
-    border-radius: var(--radius);
-    font-size: 0.875rem;
-    font-family: var(--font-ui);
-    cursor: pointer;
-    border: none;
-    text-decoration: none;
-    display: inline-block;
-    font-weight: 600;
-  }
-
-  .btn-primary { background: var(--c-accent); color: #fff; }
-  .btn-primary:hover { background: #163d7a; color: #fff; }
-  .btn-secondary { background: var(--c-surface); color: var(--c-accent); border: 1px solid var(--c-accent); }
-  .btn-secondary:hover { background: var(--c-accent-lt); }
-  .btn-danger { background: var(--c-warn); color: #fff; }
-
-  /* ── Chat ── */
-  #chat-messages {
-    height: 380px;
-    overflow-y: auto;
-    border: 1px solid var(--c-border);
-    padding: 16px;
-    margin-bottom: 12px;
-    background: var(--c-bg);
-    border-radius: var(--radius);
-  }
-
-  .msg { margin-bottom: 16px; }
-
-  .msg-user .bubble {
-    background: var(--c-accent);
-    color: #fff;
-    padding: 10px 14px;
-    border-radius: 2px 12px 12px 2px;
-    display: inline-block;
-    max-width: 80%;
-    font-size: 0.9rem;
-  }
-
-  .msg-libby { }
-
-  .msg-libby .bubble {
-    background: var(--c-surface);
-    border: 1px solid var(--c-border);
-    padding: 12px 16px;
-    border-radius: 12px 2px 2px 2px;
-    max-width: 90%;
-    font-size: 0.9rem;
-  }
-
-  .msg-libby .bubble .citation {
-    margin-top: 10px;
-    padding-top: 8px;
-    border-top: 1px solid var(--c-border);
-    font-size: 0.78rem;
-    color: var(--c-text-sub);
-  }
-
-  .chat-input-row {
-    display: flex;
-    gap: 8px;
-  }
-
-  .chat-input-row input {
-    flex: 1;
-    padding: 10px 14px;
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius);
-    font-size: 0.9rem;
-    font-family: var(--font-ui);
-  }
-
-  .chat-input-row input:focus {
-    outline: 2px solid var(--c-accent);
-    border-color: var(--c-accent);
-  }
-
-  .demo-prompts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 10px;
-  }
-
-  .demo-prompt {
-    background: var(--c-accent-lt);
-    border: 1px solid #8aaee0;
-    color: var(--c-accent);
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    cursor: pointer;
-  }
-
-  .demo-prompt:hover { background: var(--c-accent); color: #fff; }
-
-  /* ── OT items ── */
-  .ot-item {
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius);
-    margin-bottom: 14px;
-    overflow: hidden;
-  }
-
-  .ot-item-header {
-    padding: 12px 16px;
-    background: var(--c-bg);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--c-border);
-  }
-
-  .ot-item-header:hover { background: var(--c-accent-lt); }
-  .ot-item-title { flex: 1; font-weight: 600; font-size: 0.95rem; }
-  .ot-item-body { padding: 14px 16px; display: none; }
-  .ot-item-body.open { display: block; }
-
-  /* ── Reading mode ── */
-  .reading-toggle {
-    display: flex;
-    gap: 0;
-    margin-bottom: 20px;
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    width: fit-content;
-  }
-
-  .reading-toggle button {
-    padding: 6px 16px;
-    background: var(--c-surface);
-    border: none;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-family: var(--font-ui);
-    color: var(--c-text-sub);
-    border-right: 1px solid var(--c-border);
-  }
-
-  .reading-toggle button:last-child { border-right: none; }
-  .reading-toggle button.active { background: var(--c-accent); color: #fff; font-weight: 600; }
-
-  .full-view { display: block; }
-  .quick-view { display: none; }
-  .mode-full .quick-view { display: none; }
-  .mode-full .full-view { display: block; }
-  .mode-quick .full-view { display: none; }
-  .mode-quick .quick-view { display: block; }
-
-  /* ── Login/signup pages ── */
-  .auth-wrap {
-    max-width: 460px;
-    margin: 60px auto;
-    padding: 0 20px;
-  }
-
-  .auth-logo {
-    text-align: center;
-    margin-bottom: 32px;
-  }
-
-  .auth-logo h1 {
-    font-family: var(--font-body);
-    font-size: 1.5rem;
-    color: var(--c-nav-bg);
-  }
-
-  .auth-logo p {
-    font-size: 0.85rem;
-    color: var(--c-text-sub);
-    margin-top: 4px;
-  }
-
-  .auth-card {
-    background: var(--c-surface);
-    border: 1px solid var(--c-border);
-    border-top: 4px solid var(--c-accent);
-    padding: 28px;
-    border-radius: var(--radius);
-  }
-
-  .auth-card h2 {
-    font-size: 1.1rem;
-    margin-bottom: 20px;
-    font-family: var(--font-body);
-  }
-
-  .form-group { margin-bottom: 16px; }
-
-  .form-group label {
-    display: block;
-    font-size: 0.875rem;
-    font-weight: 600;
-    margin-bottom: 5px;
-  }
-
-  .form-group input[type=email],
-  .form-group input[type=password],
-  .form-group input[type=text],
-  .form-group select,
-  .form-group textarea {
-    width: 100%;
-    padding: 9px 12px;
-    border: 1px solid var(--c-border-dk);
-    border-radius: var(--radius);
-    font-size: 0.9rem;
-    font-family: var(--font-ui);
-  }
-
-  .form-group input:focus,
-  .form-group select:focus,
-  .form-group textarea:focus {
-    outline: 2px solid var(--c-accent);
-    border-color: var(--c-accent);
-  }
-
-  .form-group textarea { min-height: 100px; resize: vertical; }
-
-  .form-hint { font-size: 0.78rem; color: var(--c-text-sub); margin-top: 4px; }
-
-  .form-check { display: flex; align-items: flex-start; gap: 8px; font-size: 0.875rem; }
-
-  .auth-footer { text-align: center; margin-top: 16px; font-size: 0.85rem; color: var(--c-text-sub); }
-
-  /* ── Timeline ── */
-  .timeline { position: relative; padding-left: 28px; }
-  .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--c-border); }
-
-  .tl-item { position: relative; margin-bottom: 20px; }
-
-  .tl-dot {
-    position: absolute;
-    left: -24px;
-    top: 4px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--c-accent);
-    border: 2px solid var(--c-surface);
-  }
-
-  .tl-date { font-size: 0.78rem; color: var(--c-text-sub); margin-bottom: 3px; }
-  .tl-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
-  .tl-desc { font-size: 0.88rem; color: var(--c-text-sub); }
-
-  /* ── Contact cards ── */
-  .contact-card {
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    background: var(--c-surface);
-  }
-
-  .contact-card .cc-name { font-weight: 700; font-size: 0.95rem; }
-  .contact-card .cc-role { font-size: 0.85rem; color: var(--c-text-sub); margin-bottom: 6px; }
-  .contact-card .cc-detail { font-size: 0.85rem; margin: 2px 0; }
-
-  /* ── Draft cards ── */
-  .draft-card {
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius);
-    padding: 16px;
-    margin-bottom: 12px;
-    background: var(--c-surface);
-  }
-
-  .draft-card .dc-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
-  .draft-card .dc-title { flex: 1; font-weight: 600; font-size: 0.95rem; }
-  .draft-card .dc-meta { font-size: 0.8rem; color: var(--c-text-sub); margin-bottom: 8px; }
-  .draft-card .dc-preview { font-size: 0.875rem; border-top: 1px solid var(--c-border); padding-top: 8px; color: var(--c-text-sub); }
-
-  /* ── Responsive ── */
-  @media (max-width: 768px) {
-    .hamburger { display: block; }
-    #sidebar { transform: translateX(-100%); }
-    #sidebar.open { transform: translateX(0); }
-    #main { margin-left: 0; padding: 20px 16px; }
-    .stat-row { grid-template-columns: repeat(2, 1fr); }
-  }
-
-  /* ── Misc ── */
-  .text-sub { color: var(--c-text-sub); font-size: 0.9rem; }
-  .mt-16 { margin-top: 16px; }
-  .mt-8 { margin-top: 8px; }
-  .mb-8 { margin-bottom: 8px; }
-  hr { border: none; border-top: 1px solid var(--c-border); margin: 20px 0; }
-  .pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-  .pill { background: var(--c-bg); border: 1px solid var(--c-border); padding: 2px 10px; border-radius: 12px; font-size: 0.78rem; color: var(--c-text-sub); }
-  .mock-notice { background: #fff8e0; border: 1px solid #d4b800; padding: 8px 12px; border-radius: var(--radius); font-size: 0.8rem; color: #7a5c00; margin-bottom: 20px; }
-
-  /* ── Public homepage ── */
-  .public-hero {
-    background: var(--c-nav-bg);
-    color: #fff;
-    padding: 60px 40px;
-    margin: -32px -40px 32px;
-    border-bottom: 4px solid #cd2026;
-  }
-
-  .public-hero h1 { font-family: var(--font-body); font-size: 2rem; font-weight: normal; margin-bottom: 10px; }
-  .public-hero p { font-size: 1rem; color: #b0c4de; max-width: 600px; margin-bottom: 24px; }
-
-  .feature-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin: 24px 0;
-  }
-
-  .feature-card {
-    background: var(--c-surface);
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius);
-    padding: 18px;
-  }
-
-  .feature-card h3 { font-size: 1rem; margin-bottom: 6px; color: var(--c-accent); }
-  .feature-card p { font-size: 0.875rem; color: var(--c-text-sub); }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#f2f4f7;color:#1a1a1a;line-height:1.6;min-height:100vh}
+:root{
+  --bg:#f2f4f7;--surface:#fff;--border:#d8dce4;--border-dk:#767676;
+  --text:#1a1a1a;--sub:#5a6478;--accent:#1f4e96;--accent-lt:#e8eef7;
+  --warn:#c0392b;--warn-lt:#fdf0ef;--ok:#1e7e34;--ok-lt:#eaf6ec;
+  --amber:#8a4500;--amber-lt:#fdf4e7;--gold:#7a5c00;--gold-lt:#fffbea;
+  --nav:#1c2d3f;--nav-red:#bf2026;--sidebar:240px;--topbar:52px;--chat-w:380px;--r:3px;
+}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#f0f0f0}::-webkit-scrollbar-thumb{background:#bbb;border-radius:2px}
+#topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar);background:var(--nav);border-bottom:3px solid var(--nav-red);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:300;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.tb-hamburger{display:none;background:none;border:none;color:#fff;font-size:1.3rem;cursor:pointer;padding:4px 6px;line-height:1}
+.tb-logo{color:#fff;font-weight:700;font-size:1rem;letter-spacing:.05em;white-space:nowrap}
+.tb-logo-sub{color:#7a9cc0;font-size:.75rem;font-weight:400;margin-left:6px}
+.tb-spacer{flex:1}
+.tb-user{color:#aec6e8;font-size:.8rem;display:flex;align-items:center;gap:10px}
+.tb-user strong{color:#fff}
+.tb-btn{background:none;border:1px solid #3a5068;color:#aec6e8;padding:3px 10px;border-radius:var(--r);cursor:pointer;font-size:.76rem;font-family:inherit}
+.tb-btn:hover{border-color:#7a9cc0;color:#fff}
+#shell{display:flex;padding-top:var(--topbar);min-height:100vh}
+#sidebar{position:fixed;top:var(--topbar);left:0;width:var(--sidebar);height:calc(100vh - var(--topbar));background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;z-index:200;transition:transform .22s ease;display:flex;flex-direction:column}
+#sidebar.closed{transform:translateX(-100%)}
+.sb-user-badge{padding:14px 16px 12px;background:#f8f9fb;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex-shrink:0}
+.sb-name{font-size:.85rem;font-weight:600;line-height:1.2}
+.sb-role{font-size:.72rem;color:var(--sub)}
+.sb-group{padding:10px 0 4px}
+.sb-group-label{font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;color:var(--sub);padding:5px 16px 3px;font-weight:700}
+.sb-item{display:flex;align-items:center;gap:8px;padding:7px 16px 7px 18px;color:var(--text);font-size:.855rem;border-left:3px solid transparent;cursor:pointer;text-decoration:none;transition:all .12s;user-select:none}
+.sb-item:hover{background:var(--accent-lt);border-left-color:var(--accent);color:var(--accent)}
+.sb-item.active{background:var(--accent-lt);border-left-color:var(--accent);color:var(--accent);font-weight:600}
+.sb-item.sub{padding-left:32px;font-size:.82rem}
+.sb-icon{width:16px;text-align:center;opacity:.7;font-size:.9rem}
+.sb-badge{margin-left:auto;background:var(--warn);color:#fff;font-size:.65rem;padding:1px 6px;border-radius:10px;font-weight:700}
+.sb-badge-ok{background:var(--ok)}
+.sb-coll-hd{display:flex;align-items:center;gap:8px;padding:7px 16px 7px 18px;font-size:.855rem;font-weight:600;color:var(--sub);cursor:pointer;user-select:none;border-left:3px solid transparent;transition:background .12s}
+.sb-coll-hd:hover{background:#f5f7fa}
+.sb-chev{margin-left:auto;font-size:.75rem;transition:transform .2s;opacity:.6}
+.sb-coll-hd.open .sb-chev{transform:rotate(90deg)}
+.sb-children{display:none}.sb-children.open{display:block}
+.sb-footer{margin-top:auto;padding:10px 16px 14px;border-top:1px solid var(--border);font-size:.72rem;color:var(--sub)}
+#main{margin-left:var(--sidebar);flex:1;min-width:0;padding:28px 36px}
+.pg{display:none}.pg.active{display:block}
+body>.pg-pub{display:none;min-height:100vh;background:var(--bg)}
+body>.pg-pub.active{display:block}
+.ph{border-bottom:2px solid var(--border);margin-bottom:22px;padding-bottom:12px}
+.ph h1{font-family:Georgia,serif;font-size:1.6rem;font-weight:normal;margin-bottom:2px}
+.ph .sub{color:var(--sub);font-size:.88rem}
+.crumb{font-size:.75rem;color:var(--sub);margin-bottom:6px}
+.crumb span{cursor:pointer;color:var(--accent)}.crumb span:hover{text-decoration:underline}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 22px;margin-bottom:18px}
+.card h2{font-family:Georgia,serif;font-size:1.05rem;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.lbl{display:inline-block;padding:2px 8px;border-radius:var(--r);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.lbl-ok{background:var(--ok-lt);color:var(--ok);border:1px solid #6ab04c}
+.lbl-warn{background:var(--warn-lt);color:var(--warn);border:1px solid #e08080}
+.lbl-amber{background:var(--amber-lt);color:var(--amber);border:1px solid #d8a96a}
+.lbl-blue{background:var(--accent-lt);color:var(--accent);border:1px solid #8aaee0}
+.lbl-grey{background:#f0f0f0;color:#555;border:1px solid #ccc}
+.lbl-gold{background:var(--gold-lt);color:var(--gold);border:1px solid #d4b800}
+.callout{padding:11px 15px;border-left:4px solid;margin-bottom:14px;font-size:.87rem;border-radius:0 var(--r) var(--r) 0}
+.callout strong{display:block;font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.ci{background:var(--accent-lt);border-color:var(--accent)}.cw{background:var(--warn-lt);border-color:var(--warn)}.co{background:var(--ok-lt);border-color:var(--ok)}.ca{background:var(--amber-lt);border-color:var(--amber)}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px}
+.stat{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--accent);padding:14px 16px;border-radius:var(--r);cursor:pointer;transition:all .14s;display:block;text-decoration:none}
+.stat:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.12);transform:translateY(-1px)}
+.stat.warn{border-top-color:var(--warn)}.stat.ok{border-top-color:var(--ok)}.stat.amber{border-top-color:#e8a949}
+.stat .n{font-size:1.8rem;font-weight:700;color:var(--accent);line-height:1}
+.stat.warn .n{color:var(--warn)}.stat.ok .n{color:var(--ok)}.stat.amber .n{color:#c17800}
+.stat .l{font-size:.76rem;color:var(--sub);margin-top:3px}
+.stat .arr{font-size:.7rem;color:var(--accent);margin-top:4px;opacity:.6}
+.stat:hover .arr{opacity:1}
+.dash-alert{padding:12px 16px;border-left:4px solid var(--warn);background:var(--warn-lt);border-radius:0 var(--r) var(--r) 0;margin-bottom:16px;cursor:pointer;transition:box-shadow .14s;display:flex;align-items:center;gap:12px}
+.dash-alert:hover{box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.al-badge{background:var(--warn);color:#fff;font-size:.7rem;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.al-text{font-size:.87rem;flex:1}.al-arr{color:var(--warn);font-size:1rem;opacity:.7}
+table{width:100%;border-collapse:collapse;font-size:.875rem}
+th{background:var(--bg);text-align:left;padding:8px 10px;border-bottom:2px solid var(--border);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--sub)}
+td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.tr-click{cursor:pointer}.tr-click:hover td{background:var(--accent-lt)}
+.btn{padding:8px 16px;border-radius:var(--r);font-size:.84rem;font-family:inherit;cursor:pointer;border:none;font-weight:600;transition:all .12s;display:inline-block;text-decoration:none}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:#163d7a;color:#fff;text-decoration:none}
+.btn-s{background:var(--surface);color:var(--accent);border:1px solid var(--accent)}.btn-s:hover{background:var(--accent-lt)}
+.btn-d{background:var(--warn);color:#fff}.btn-sm{padding:5px 11px;font-size:.76rem}
+.ev{border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;margin-bottom:10px;background:var(--surface);transition:border-color .12s}
+.ev:hover{border-color:var(--accent)}
+.ev-hd{display:flex;align-items:flex-start;gap:10px;margin-bottom:4px}
+.ev-title{font-weight:600;font-size:.875rem;flex:1}
+.ev-meta{font-size:.75rem;color:var(--sub);margin-bottom:5px}
+.ev-body{font-size:.84rem;border-top:1px solid var(--border);padding-top:8px;margin-top:6px}
+.cc{border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;margin-bottom:8px;background:var(--surface)}
+.cc-name{font-weight:700;font-size:.9rem}.cc-role{font-size:.8rem;color:var(--sub);margin-bottom:4px}.cc-detail{font-size:.8rem;color:var(--sub)}
+.dc{border:1px solid var(--border);border-radius:var(--r);padding:15px 18px;margin-bottom:12px;background:var(--surface)}
+.dc-hd{display:flex;align-items:flex-start;gap:10px;margin-bottom:5px}
+.dc-title{flex:1;font-weight:600;font-size:.875rem}.dc-meta{font-size:.75rem;color:var(--sub);margin-bottom:8px}
+.dc-preview{font-size:.84rem;color:var(--sub);border-top:1px solid var(--border);padding-top:8px}
+.dc-full{display:none;margin-top:12px;padding:14px;background:#f9f9f9;border:1px solid var(--border);border-radius:var(--r);font-size:.84rem;white-space:pre-wrap;line-height:1.75}
+.dc-full.open{display:block}
+.dc-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.copy-ok{font-size:.75rem;color:var(--ok);display:none;margin-left:4px}
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.fc{padding:5px 12px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--sub);font-size:.78rem;cursor:pointer;transition:all .12s}
+.fc:hover,.fc.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.ot{border:1px solid var(--border);border-radius:var(--r);margin-bottom:11px;overflow:hidden}
+.ot-hd{padding:11px 16px;background:var(--bg);display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid transparent;transition:background .12s}
+.ot-hd:hover,.ot-hd.open{background:var(--accent-lt)}.ot-hd.open{border-bottom-color:var(--border)}
+.ot-title{flex:1;font-weight:600;font-size:.875rem}
+.ot-chev{color:var(--sub);font-size:.8rem;transition:transform .2s}.ot-hd.open .ot-chev{transform:rotate(180deg)}
+.ot-body{padding:14px 16px;display:none}.ot-body.open{display:block}
+.tl{position:relative;padding-left:28px}
+.tl::before{content:'';position:absolute;left:9px;top:0;bottom:0;width:2px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:20px}
+.tl-dot{position:absolute;left:-23px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid var(--surface)}
+.tl-date{font-size:.73rem;color:var(--sub);margin-bottom:2px}.tl-title{font-weight:600;font-size:.88rem;margin-bottom:3px}.tl-desc{font-size:.84rem;color:var(--sub)}
+.mode-toggle{display:flex;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;width:fit-content;margin-bottom:18px}
+.mode-toggle button{padding:6px 16px;background:var(--surface);border:none;border-right:1px solid var(--border);cursor:pointer;font-size:.8rem;font-family:inherit;color:var(--sub)}
+.mode-toggle button:last-child{border-right:none}.mode-toggle button.active{background:var(--accent);color:#fff;font-weight:600}
+.quick-v{display:none}
+.mode-full .full-v{display:block}.mode-full .quick-v{display:none}
+.mode-quick .full-v{display:none}.mode-quick .quick-v{display:block}
+.mock-bar{background:#fff8e0;border:1px solid #d4b800;padding:7px 13px;border-radius:var(--r);font-size:.75rem;color:#7a5c00;margin-bottom:16px}
+/* ── FLOATING LIBBY ── */
+#libby-panel{position:fixed;bottom:0;right:20px;width:var(--chat-w);z-index:500;display:flex;flex-direction:column;filter:drop-shadow(0 -2px 16px rgba(0,0,0,.18));transition:height .25s cubic-bezier(.4,0,.2,1);height:52px}
+#libby-panel.open{height:520px}
+#libby-tab{background:var(--accent);color:#fff;padding:0 18px;height:52px;display:flex;align-items:center;gap:10px;cursor:pointer;border-radius:10px 10px 0 0;user-select:none;flex-shrink:0;transition:background .14s}
+#libby-tab:hover{background:#163d7a}
+.lt-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 2px rgba(74,222,128,.3);animation:lpulse 2s infinite}
+@keyframes lpulse{0%,100%{box-shadow:0 0 0 2px rgba(74,222,128,.25)}50%{box-shadow:0 0 0 4px rgba(74,222,128,.1)}}
+.lt-title{font-weight:700;font-size:.9rem;letter-spacing:.03em}.lt-sub{font-size:.72rem;opacity:.75}
+.lt-spacer{flex:1}.lt-chev{font-size:.85rem;opacity:.8;transition:transform .25s}
+#libby-panel.open .lt-chev{transform:rotate(180deg)}
+.lt-badge{background:var(--warn);color:#fff;font-size:.65rem;padding:2px 7px;border-radius:10px;font-weight:700}
+#libby-body{background:var(--surface);border:1px solid var(--border);border-bottom:none;flex:1;display:flex;flex-direction:column;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .2s}
+#libby-panel.open #libby-body{opacity:1;pointer-events:all}
+.lb-notice{padding:8px 14px;background:#f8f9fb;border-bottom:1px solid var(--border);font-size:.74rem;color:var(--sub);line-height:1.4}
+.lb-notice strong{color:var(--accent);margin-right:4px}
+#libby-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;background:var(--bg)}
+.lm{display:flex;flex-direction:column}
+.lm-user{align-items:flex-end}.lm-libby{align-items:flex-start}
+.lm-bubble{padding:9px 13px;border-radius:var(--r);max-width:92%;font-size:.84rem;line-height:1.55}
+.lm-user .lm-bubble{background:var(--accent);color:#fff;border-radius:2px 10px 10px 2px}
+.lm-libby .lm-bubble{background:var(--surface);border:1px solid var(--border);border-radius:10px 2px 2px 2px}
+.lm-hd{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.lm-name{font-weight:700;font-size:.76rem}
+.lm-detail{margin-top:7px;font-size:.82rem;white-space:pre-line;color:var(--text)}
+.lm-cite{margin-top:8px;padding-top:7px;border-top:1px solid var(--border);font-size:.72rem;color:var(--sub)}
+.typing-dots{display:flex;gap:4px;align-items:center;padding:4px 0}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:#bbb;animation:td 1.2s infinite}
+.typing-dots span:nth-child(2){animation-delay:.2s}.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes td{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+.lb-chips-wrap{padding:8px 14px;border-top:1px solid var(--border);background:#f8f9fb}
+.lb-chips-label{font-size:.7rem;color:var(--sub);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+.lb-chips{display:flex;flex-wrap:wrap;gap:5px}
+.lb-chip{background:var(--accent-lt);border:1px solid #8aaee0;color:var(--accent);padding:3px 9px;border-radius:10px;font-size:.74rem;cursor:pointer;transition:all .12s}
+.lb-chip:hover{background:var(--accent);color:#fff}
+.lb-input-row{display:flex;gap:7px;padding:10px 12px;border-top:1px solid var(--border);background:var(--surface)}
+.lb-input-row textarea{flex:1;padding:8px 11px;border:1px solid var(--border);border-radius:var(--r);font-size:.84rem;font-family:inherit;resize:none;height:38px;line-height:1.3}
+.lb-input-row textarea:focus{outline:2px solid var(--accent);border-color:var(--accent)}
+.lb-send{background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:0 14px;cursor:pointer;font-size:1rem;display:flex;align-items:center;transition:background .12s;flex-shrink:0}
+.lb-send:hover{background:#163d7a}
+.lb-footer{display:flex;align-items:center;padding:4px 12px 6px;background:var(--surface);border-top:1px solid var(--border)}
+.lb-status{font-size:.7rem;padding:2px 7px;border-radius:10px;background:#f0f0f0;color:#555;border:1px solid #ccc}
+.lb-status.live{background:var(--ok-lt);color:var(--ok);border-color:#6ab04c}
+.lb-reset{margin-left:auto;font-size:.7rem;color:var(--sub);cursor:pointer;text-decoration:underline}
+.lb-reset:hover{color:var(--warn)}
+/* ── AUTH ── */
+.auth-nav{background:var(--nav);padding:11px 20px;border-bottom:3px solid var(--nav-red);display:flex;align-items:center;gap:12px}
+.auth-nav-logo{color:#fff;font-weight:700;font-size:.95rem;letter-spacing:.04em}
+.auth-nav-back{color:#aec6e8;font-size:.82rem;cursor:pointer;text-decoration:none}
+.auth-wrap{max-width:420px;margin:44px auto;padding:0 20px}
+.auth-logo{text-align:center;margin-bottom:22px}
+.auth-logo h1{font-family:Georgia,serif;font-size:1.4rem;color:var(--nav);font-weight:normal}
+.auth-logo p{font-size:.83rem;color:var(--sub);margin-top:4px}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--accent);padding:26px;border-radius:var(--r)}
+.auth-card h2{font-size:1.05rem;margin-bottom:18px;font-family:Georgia,serif;font-weight:normal}
+.fg{margin-bottom:14px}.fl{display:block;font-size:.83rem;font-weight:600;margin-bottom:4px}
+.fi{width:100%;padding:8px 11px;border:1px solid var(--border-dk);border-radius:var(--r);font-size:.88rem;font-family:inherit}
+.fi:focus{outline:2px solid var(--accent);border-color:var(--accent)}
+.fh{font-size:.73rem;color:var(--sub);margin-top:3px}
+.fcheck{display:flex;align-items:flex-start;gap:7px;font-size:.83rem}
+.auth-links{text-align:center;margin-top:13px;font-size:.8rem;color:var(--sub)}.auth-links a{color:var(--accent);cursor:pointer}
+.auth-fn{text-align:center;margin-top:20px;font-size:.71rem;color:var(--sub)}
+/* ── HOME ── */
+.home-nav{background:var(--nav);padding:11px 22px;border-bottom:3px solid var(--nav-red);display:flex;align-items:center;gap:12px}
+.home-nav-logo{color:#fff;font-weight:700;font-size:.95rem;letter-spacing:.04em}
+.home-hero{background:var(--nav);padding:48px 36px;border-bottom:2px solid #2d4a6a}
+.home-hero h1{font-family:Georgia,serif;font-size:1.8rem;font-weight:normal;color:#fff;margin-bottom:7px}
+.home-hero p{color:#b0c4de;font-size:.92rem;max-width:560px;margin-bottom:22px}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:13px;margin:22px 0}
+.feat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px}
+.feat h3{font-size:.9rem;margin-bottom:5px;color:var(--accent)}.feat p{font-size:.83rem;color:var(--sub)}
+@media(max-width:768px){.tb-hamburger{display:block}#sidebar{transform:translateX(-100%)}#sidebar.open{transform:translateX(0)}#main{margin-left:0;padding:18px 14px}.stat-grid{grid-template-columns:repeat(2,1fr)}#libby-panel{right:0;width:100%}#libby-panel.open{height:480px}}
 </style>
 </head>
 <body>
 
-<!-- PUBLIC: Login page -->
-<div id="p-login" class="page active" style="background:var(--c-bg);min-height:100vh;">
-  <div style="background:var(--c-nav-bg);padding:12px 24px;border-bottom:4px solid #cd2026;">
-    <span style="color:#fff;font-size:1rem;font-weight:700;">LIBBY_LIVE</span>
-    <span style="color:#aec6e8;font-size:0.8rem;margin-left:8px;">/ NATICO Advocacy Portal</span>
-  </div>
+<!-- LOGIN -->
+<div id="pg-login" class="pg-pub active">
+  <div class="auth-nav"><span class="auth-nav-logo">LIBBY_LIVE</span><span style="color:#7a9cc0;font-size:.78rem;margin-left:4px">/ NATICO Advocacy Portal</span></div>
   <div class="auth-wrap">
-    <div class="auth-logo">
-      <h1>LIBBY_LIVE</h1>
-      <p>Secure advocacy and external memory portal<br>by <strong>NATICO</strong> - Not-for-Profit Digital Advocacy Agency</p>
-    </div>
+    <div class="auth-logo"><h1>LIBBY_LIVE</h1><p>Secure advocacy and external memory portal<br>by <strong>NATICO</strong> — Not-for-Profit Digital Advocacy Agency</p></div>
     <div class="auth-card">
       <h2>Sign in to your account</h2>
-      <div id="login-error" class="callout callout-warn" style="display:none;margin-bottom:12px;font-size:0.875rem;"></div>
-      <div class="form-group">
-        <label for="login-email">Email address</label>
-        <input type="email" id="login-email" placeholder="your@email.com" value="libby@example.com">
-      </div>
-      <div class="form-group">
-        <label for="login-pass">Password</label>
-        <input type="password" id="login-pass" placeholder="Password" value="demo1234">
-        <div class="form-hint">Demo credentials: libby@example.com / demo1234</div>
-      </div>
-      <button class="btn btn-primary" style="width:100%;margin-top:4px;" onclick="doLogin()">Sign in</button>
-      <div class="auth-footer">
-        <a href="#" onclick="showPage('p-forgot');return false;">Forgot your password?</a> &nbsp;|&nbsp;
-        <a href="#" onclick="showPage('p-signup');return false;">Create an account</a>
-      </div>
+      <div id="login-err" class="callout cw" style="display:none;font-size:.84rem"></div>
+      <div class="fg"><label class="fl">Email address</label><input class="fi" id="li-email" type="email" value="libby@example.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="fg"><label class="fl">Password</label><input class="fi" id="li-pass" type="password" value="demo1234" onkeydown="if(event.key==='Enter')doLogin()"><div class="fh">Demo: libby@example.com / demo1234</div></div>
+      <button class="btn btn-p" style="width:100%;padding:11px" onclick="doLogin()">Sign in</button>
+      <div class="auth-links"><a onclick="showPub('pg-forgot')">Forgot your password?</a> &nbsp;|&nbsp; <a onclick="showPub('pg-signup')">Create an account</a></div>
     </div>
-    <div style="text-align:center;margin-top:20px;font-size:0.78rem;color:var(--c-text-sub);">
-      LIBBY_LIVE prototype v1.02 &mdash; Mock authentication only. Not production-secure.<br>
-      &copy; 2026 NATICO. Built for accessibility and institutional use.
-    </div>
+    <div class="auth-fn">LIBBY_LIVE prototype v1.02 — Mock authentication only. Not production-secure.<br>© 2026 NATICO. Built for accessibility and institutional use.</div>
   </div>
 </div>
 
-<!-- PUBLIC: Signup -->
-<div id="p-signup" class="page" style="background:var(--c-bg);min-height:100vh;">
-  <div style="background:var(--c-nav-bg);padding:12px 24px;border-bottom:4px solid #cd2026;">
-    <a href="#" onclick="showPage('p-login');return false;" style="color:#aec6e8;font-size:0.85rem;">&larr; Back to sign in</a>
-  </div>
+<!-- SIGNUP -->
+<div id="pg-signup" class="pg-pub">
+  <div class="auth-nav"><a class="auth-nav-back" onclick="showPub('pg-login')">← Back to sign in</a></div>
   <div class="auth-wrap">
-    <div class="auth-logo">
-      <h1>LIBBY_LIVE</h1>
-      <p>Create your account</p>
-    </div>
+    <div class="auth-logo"><h1>LIBBY_LIVE</h1><p>Create your account</p></div>
     <div class="auth-card">
       <h2>Create account</h2>
-      <div class="form-group">
-        <label for="signup-email">Email address</label>
-        <input type="email" id="signup-email" placeholder="your@email.com">
-      </div>
-      <div class="form-group">
-        <label for="signup-pass">Password</label>
-        <input type="password" id="signup-pass" placeholder="Choose a password (min 6 characters)">
-      </div>
-      <div class="form-group">
-        <label for="signup-pass2">Confirm password</label>
-        <input type="password" id="signup-pass2" placeholder="Confirm password">
-      </div>
-      <div class="form-group">
-        <div class="form-check">
-          <input type="checkbox" id="terms" style="margin-top:3px;">
-          <label for="terms">I agree to the terms of service. This is a NATICO prototype - demo use only.</label>
-        </div>
-      </div>
-      <div id="signup-error" class="callout callout-warn" style="display:none;margin-bottom:8px;font-size:0.875rem;"></div>
-      <button class="btn btn-primary" style="width:100%;margin-top:4px;" onclick="doSignup()">Create account</button>
-      <div class="auth-footer"><a href="#" onclick="showPage('p-login');return false;">Already have an account? Sign in</a></div>
+      <div id="su-err" class="callout cw" style="display:none;font-size:.84rem"></div>
+      <div class="fg"><label class="fl">Email address</label><input class="fi" id="su-email" type="email" placeholder="your@email.com"></div>
+      <div class="fg"><label class="fl">Password</label><input class="fi" id="su-pass" type="password" placeholder="Choose a password"></div>
+      <div class="fg"><label class="fl">Confirm password</label><input class="fi" id="su-pass2" type="password" placeholder="Confirm password"></div>
+      <div class="fg"><div class="fcheck"><input type="checkbox" id="su-terms" style="margin-top:3px"><label for="su-terms">I agree to the terms of service. This is a NATICO prototype — demo use only.</label></div></div>
+      <button class="btn btn-p" style="width:100%;padding:11px" onclick="doSignup()">Create account</button>
+      <div class="auth-links"><a onclick="showPub('pg-login')">Already have an account? Sign in</a></div>
     </div>
   </div>
 </div>
 
-<!-- PUBLIC: Forgot password -->
-<div id="p-forgot" class="page" style="background:var(--c-bg);min-height:100vh;">
-  <div style="background:var(--c-nav-bg);padding:12px 24px;border-bottom:4px solid #cd2026;">
-    <a href="#" onclick="showPage('p-login');return false;" style="color:#aec6e8;font-size:0.85rem;">&larr; Back to sign in</a>
-  </div>
+<!-- FORGOT -->
+<div id="pg-forgot" class="pg-pub">
+  <div class="auth-nav"><a class="auth-nav-back" onclick="showPub('pg-login')">← Back to sign in</a></div>
   <div class="auth-wrap">
     <div class="auth-logo"><h1>LIBBY_LIVE</h1></div>
     <div class="auth-card">
       <h2>Reset your password</h2>
-      <div class="form-group">
-        <label>Email address</label>
-        <input type="email" placeholder="your@email.com">
-        <div class="form-hint">A reset link will be sent to your email address.</div>
-      </div>
-      <button class="btn btn-primary" style="width:100%;">Send reset link</button>
-      <div class="auth-footer"><a href="#" onclick="showPage('p-login');return false;">Back to sign in</a></div>
+      <div class="fg"><label class="fl">Email address</label><input class="fi" type="email" placeholder="your@email.com"><div class="fh">A reset link will be sent to your email address.</div></div>
+      <button class="btn btn-p" style="width:100%">Send reset link</button>
+      <div class="auth-links"><a onclick="showPub('pg-login')">Back to sign in</a></div>
     </div>
   </div>
 </div>
 
-<!-- PUBLIC: Homepage -->
-<div id="p-home" class="page" style="background:var(--c-bg);min-height:100vh;">
-  <div style="background:var(--c-nav-bg);padding:12px 24px;border-bottom:4px solid #cd2026;display:flex;align-items:center;gap:16px;">
-    <span style="color:#fff;font-size:1rem;font-weight:700;">LIBBY_LIVE</span>
-    <div style="flex:1;"></div>
-    <a href="#" onclick="showPage('p-login');return false;" style="color:#aec6e8;font-size:0.85rem;text-decoration:none;">Sign in</a>
-    <a href="#" onclick="showPage('p-signup');return false;" class="btn btn-secondary" style="font-size:0.8rem;padding:5px 12px;">Create account</a>
-  </div>
-  <div style="max-width:900px;margin:0 auto;padding:0 24px;">
-    <div class="public-hero" style="margin:-0px -24px 32px;padding:48px 40px;">
-      <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:#8aaee0;margin-bottom:8px;">NATICO &mdash; Not-for-Profit Digital Advocacy Agency</div>
-      <h1>LIBBY_LIVE</h1>
-      <p>A secure, disability-informed advocacy and external memory portal. Designed to help individuals navigate complex administrative and healthcare systems with structure, evidence, and calm.</p>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="showPage('p-login')">Sign in to your portal</button>
-        <button class="btn" style="background:transparent;border:1px solid #4a7fb5;color:#aec6e8;padding:9px 18px;border-radius:2px;cursor:pointer;font-size:0.875rem;" onclick="showPage('p-about')">Learn more about Libby</button>
-      </div>
-    </div>
-    <div class="feature-grid">
-      <div class="feature-card"><h3>External Memory</h3><p>Organize life events, records, and system encounters into structured, retrievable case files.</p></div>
-      <div class="feature-card"><h3>Evidence Library</h3><p>Every document tagged with source, date, confidence level, and matter. Nothing gets lost.</p></div>
-      <div class="feature-card"><h3>Document Drafter</h3><p>Generate referral letters, accommodation requests, and professional summaries for care team review.</p></div>
-      <div class="feature-card"><h3>Libby Assistant</h3><p>A conservative, evidence-aware AI that never presents inferred information as confirmed fact.</p></div>
-    </div>
-    <div class="section">
-      <h2>What Libby is and is not</h2>
-      <p class="text-sub" style="margin-bottom:12px;">Libby is not a chatbot, a virtual assistant, or a health information service. Libby is a structured documentation and advocacy support tool designed for people navigating complex administrative, legal, and healthcare systems.</p>
-      <div class="callout callout-info"><strong>Conservative by design</strong>Every response Libby produces is labelled with a confidence level. Confirmed facts are distinguished from inferences. Missing evidence is surfaced, not papered over.</div>
-    </div>
-    <div style="text-align:center;padding:24px 0;font-size:0.8rem;color:var(--c-text-sub);">
-      LIBBY_LIVE prototype v1.02 &mdash; &copy; 2026 NATICO &mdash; <a href="#" onclick="showPage('p-login');return false;">Sign in</a>
-    </div>
+<!-- HOME -->
+<div id="pg-home" class="pg-pub">
+  <div class="home-nav"><span class="home-nav-logo">LIBBY_LIVE</span><div style="flex:1"></div><a onclick="showPub('pg-login')" style="color:#aec6e8;font-size:.83rem;text-decoration:none;cursor:pointer;margin-right:10px">Sign in</a><button class="btn btn-s btn-sm" onclick="showPub('pg-signup')">Create account</button></div>
+  <div class="home-hero"><div style="font-size:.69rem;text-transform:uppercase;letter-spacing:.1em;color:#6a8cb0;margin-bottom:7px">NATICO — Not-for-Profit Digital Advocacy Agency</div><h1>LIBBY_LIVE</h1><p>A secure, disability-informed advocacy and external memory portal. Designed to help individuals navigate complex administrative and healthcare systems with structure, evidence, and calm.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-p" onclick="showPub('pg-login')">Sign in to your portal</button><button class="btn" style="background:transparent;border:1px solid #4a7fb5;color:#aec6e8;padding:8px 16px;cursor:pointer;font-size:.84rem;font-weight:600;border-radius:3px" onclick="showPub('pg-about')">Learn more</button></div></div>
+  <div style="max-width:880px;margin:0 auto;padding:0 22px"><div class="feat-grid"><div class="feat"><h3>External Memory</h3><p>Organize life events, records, and system encounters into structured, retrievable case files.</p></div><div class="feat"><h3>Evidence Library</h3><p>Every document tagged with source, date, confidence level, and matter. Nothing gets lost.</p></div><div class="feat"><h3>Document Drafter</h3><p>Generate referral letters, accommodation requests, and professional summaries for care team review.</p></div><div class="feat"><h3>Libby Assistant</h3><p>A conservative, evidence-aware AI that never presents inferred information as confirmed fact.</p></div></div><div class="card"><h2>What Libby is and is not</h2><p style="margin-bottom:11px;font-size:.88rem">Libby is not a chatbot, a virtual assistant, or a health information service. Libby is a structured documentation and advocacy support tool designed for people navigating complex administrative, legal, and healthcare systems.</p><div class="callout ci"><strong>Conservative by design</strong>Every response Libby produces is labelled with a confidence level. Confirmed facts are distinguished from inferences. Missing evidence is surfaced, not papered over.</div></div><div style="text-align:center;padding:18px 0 28px;font-size:.76rem;color:var(--sub)">LIBBY_LIVE prototype v1.02 — © 2026 NATICO — <a onclick="showPub('pg-login')" style="cursor:pointer">Sign in</a></div></div>
+</div>
+
+<!-- ABOUT -->
+<div id="pg-about" class="pg-pub">
+  <div class="home-nav"><a onclick="showPub('pg-home')" style="color:#aec6e8;font-size:.83rem;text-decoration:none;cursor:pointer">← Home</a><span style="color:#fff;font-weight:700;margin-left:10px">About LIBBY_LIVE</span></div>
+  <div style="max-width:780px;margin:0 auto;padding:28px 22px">
+    <div class="ph"><h1>About LIBBY_LIVE</h1><p class="sub">Disability-informed external memory and advocacy support</p></div>
+    <div class="card"><h2>Why this exists</h2><p style="margin-bottom:11px;font-size:.88rem">People navigating complex disability, healthcare, and government systems face a problem that is rarely acknowledged: the administrative burden of managing one's own case is itself a disabling barrier.</p><p style="margin-bottom:11px;font-size:.88rem">Phone calls with no paper trail. Letters that require a response within 10 days. Appointments with providers who have not read the last five years of records. Forms that assume you can remember what you said to a caseworker fourteen months ago.</p><p style="font-size:.88rem">LIBBY_LIVE is a tool built to address that problem directly — not by making the system simpler, but by giving individuals the same organizational infrastructure the system already has.</p></div>
+    <div class="card"><h2>NATICO</h2><p style="font-size:.88rem">NATICO is a Canadian not-for-profit digital advocacy agency. LIBBY_LIVE is its founding product and serves as its primary demonstration of principle. Matthew Herbert, Founder &amp; CEO, serves as the founding training matter under the PATIENT_ZERO operating model.</p></div>
+    <div style="text-align:center;margin-top:20px"><button class="btn btn-p" onclick="showPub('pg-login')">Sign in to your portal</button></div>
   </div>
 </div>
 
-<!-- PUBLIC: About -->
-<div id="p-about" class="page" style="background:var(--c-bg);min-height:100vh;">
-  <div style="background:var(--c-nav-bg);padding:12px 24px;border-bottom:4px solid #cd2026;display:flex;align-items:center;gap:16px;">
-    <a href="#" onclick="showPage('p-home');return false;" style="color:#aec6e8;font-size:0.85rem;text-decoration:none;">&larr; Home</a>
-    <span style="color:#fff;font-size:1rem;font-weight:700;margin-left:8px;">About LIBBY_LIVE</span>
-  </div>
-  <div style="max-width:800px;margin:0 auto;padding:32px 24px;">
-    <div class="page-header"><h1>About LIBBY_LIVE</h1><p class="subtitle">Disability-informed external memory and advocacy support</p></div>
-    <div class="section">
-      <h2>Why this exists</h2>
-      <p style="margin-bottom:12px;">People navigating complex disability, healthcare, and government systems face a problem that is rarely acknowledged: the administrative burden of managing one's own case is itself a disabling barrier.</p>
-      <p style="margin-bottom:12px;">Phone calls with no paper trail. Letters that require a response within 10 days. Appointments with providers who have not read the last five years of records. Forms that assume you can remember what you said to a caseworker fourteen months ago.</p>
-      <p>LIBBY_LIVE is a tool built to address that problem directly - not by making the system simpler, but by giving individuals the same organizational infrastructure the system already has.</p>
-    </div>
-    <div class="section">
-      <h2>NATICO</h2>
-      <p>NATICO is a Canadian not-for-profit digital advocacy agency. LIBBY_LIVE is its founding product and serves as its primary demonstration of principle. Matthew Herbert, Founder &amp; CEO, serves as the founding training matter under the PATIENT_ZERO operating model.</p>
-    </div>
-    <div style="text-align:center;margin-top:24px;">
-      <button class="btn btn-primary" onclick="showPage('p-login')">Sign in to your portal</button>
-    </div>
-  </div>
-</div>
-
-<!-- AUTHENTICATED APP SHELL -->
-<div id="app-shell" class="page" style="display:none;">
-  <!-- Top bar -->
+<!-- APP SHELL -->
+<div id="app" style="display:none">
   <div id="topbar">
-    <button class="hamburger" onclick="toggleSidebar()">&#9776;</button>
-    <a href="#" class="site-name" onclick="nav('dashboard');return false;">LIBBY_LIVE <span>/ NATICO</span></a>
-    <div class="spacer"></div>
-    <div class="user-info">
-      <span>Signed in as <strong>Demo User</strong></span>
-      <button onclick="doLogout()">Sign out</button>
-    </div>
+    <button class="tb-hamburger" onclick="toggleSidebar()">☰</button>
+    <span class="tb-logo">LIBBY_LIVE <span class="tb-logo-sub">/ NATICO</span></span>
+    <div class="tb-spacer"></div>
+    <div class="tb-user"><span>Signed in as <strong>Demo User</strong></span><button class="tb-btn" onclick="doLogout()">Sign out</button></div>
   </div>
-
-  <div id="layout">
-    <!-- Sidebar -->
+  <div id="shell">
     <nav id="sidebar">
-      <div class="nav-section">
-        <div class="nav-section-label">Overview</div>
-        <a class="nav-item" onclick="nav('dashboard')">Dashboard</a>
+      <div class="sb-user-badge"><div class="sb-avatar">D</div><div><div class="sb-name">Demo User</div><div class="sb-role">Member 001 · PATIENT_ZERO</div></div></div>
+      <div class="sb-group">
+        <div class="sb-group-label">Overview</div>
+        <div class="sb-item active" onclick="nav('dashboard')" id="nav-dashboard"><span class="sb-icon">⊞</span>Dashboard<span class="sb-badge">1</span></div>
       </div>
-      <div class="nav-section">
-        <div class="nav-section-label">My Situation</div>
-        <a class="nav-item nav-sub" onclick="nav('case-overview')">Overview</a>
-        <a class="nav-item nav-sub" onclick="nav('case-timeline')">Timeline</a>
-        <a class="nav-item nav-sub" onclick="nav('life-events')">Life Events</a>
-        <a class="nav-item nav-sub" onclick="nav('patient-realities')">Patient Realities</a>
-        <a class="nav-item nav-sub" onclick="nav('experiences')">Experiences</a>
-        <a class="nav-item nav-sub" onclick="nav('patient-truths')">Patient Truths</a>
+      <div class="sb-group">
+        <div class="sb-coll-hd open" onclick="toggleNav(this)"><span style="font-size:.75rem;opacity:.5">📁</span>&nbsp;My Situation<span class="sb-chev">▶</span></div>
+        <div class="sb-children open">
+          <div class="sb-item sub" onclick="nav('case-overview')" id="nav-case-overview">Case Overview</div>
+          <div class="sb-item sub" onclick="nav('timeline')" id="nav-timeline">Timeline</div>
+          <div class="sb-item sub" onclick="nav('life-events')" id="nav-life-events">Life Events</div>
+          <div class="sb-item sub" onclick="nav('patient-realities')" id="nav-patient-realities">Patient Realities</div>
+          <div class="sb-item sub" onclick="nav('experiences')" id="nav-experiences">Experiences</div>
+          <div class="sb-item sub" onclick="nav('patient-truths')" id="nav-patient-truths">Patient Truths</div>
+        </div>
       </div>
-      <div class="nav-section">
-        <div class="nav-section-label">Active Needs</div>
-        <a class="nav-item" onclick="nav('evidence')">Evidence Library</a>
-        <a class="nav-item" onclick="nav('ot-support')">OT Support</a>
-        <a class="nav-item" onclick="nav('drafts')">Draft Letters</a>
+      <div class="sb-group">
+        <div class="sb-coll-hd open" onclick="toggleNav(this)"><span style="font-size:.75rem;opacity:.5">📋</span>&nbsp;Active Needs<span class="sb-chev">▶</span></div>
+        <div class="sb-children open">
+          <div class="sb-item sub" onclick="nav('evidence')" id="nav-evidence">Evidence Library<span class="sb-badge" style="background:#c17800">4</span></div>
+          <div class="sb-item sub" onclick="nav('ot-support')" id="nav-ot-support">OT Support</div>
+          <div class="sb-item sub" onclick="nav('drafts')" id="nav-drafts">Draft Letters<span class="sb-badge" style="background:var(--ok)">3</span></div>
+        </div>
       </div>
-      <div class="nav-section">
-        <div class="nav-section-label">Tools</div>
-        <a class="nav-item" onclick="nav('chat')">Libby Chat</a>
-        <a class="nav-item" onclick="nav('contacts')">Contacts</a>
+      <div class="sb-group">
+        <div class="sb-group-label">Account</div>
+        <div class="sb-item" onclick="nav('contacts')" id="nav-contacts"><span class="sb-icon">👥</span>Contacts</div>
+        <div class="sb-item" onclick="nav('account')" id="nav-account"><span class="sb-icon">⚙</span>Settings</div>
       </div>
-      <div class="nav-section">
-        <div class="nav-section-label">Account</div>
-        <a class="nav-item" onclick="nav('account')">Settings</a>
-      </div>
+      <div class="sb-footer">Prototype v1.02 · Mock data<br>Not production-secure</div>
     </nav>
-
-    <!-- Main -->
     <main id="main">
 
       <!-- DASHBOARD -->
-      <div id="pg-dashboard" class="page active">
-        <div class="mock-notice">Prototype v1.02 &mdash; Mock data. Not production-secure. Demo: libby@example.com / demo1234</div>
-        <div class="page-header">
-          <h1>Dashboard</h1>
-          <p class="subtitle">Situation room &mdash; active matters, urgent items, recent activity</p>
+      <div id="pg-dashboard" class="pg active">
+        <div class="mock-bar">Prototype v1.02 — Mock data. Not production-secure. Demo: libby@example.com / demo1234</div>
+        <div class="ph"><h1>Dashboard</h1><p class="sub">Situation room — active matters, urgent items, recent activity</p></div>
+        <div class="dash-alert" onclick="nav('drafts')"><span class="al-badge">Urgent</span><span class="al-text">ODSP review response due within 10 days. Draft letter ready for review.</span><span class="al-arr">→</span></div>
+        <div class="stat-grid">
+          <div class="stat" onclick="nav('evidence')"><div class="n">12</div><div class="l">Evidence items</div><div class="arr">View all →</div></div>
+          <div class="stat amber" onclick="nav('ot-support')"><div class="n">6</div><div class="l">Active needs</div><div class="arr">View all →</div></div>
+          <div class="stat ok" onclick="nav('drafts')"><div class="n">3</div><div class="l">Draft letters</div><div class="arr">View all →</div></div>
+          <div class="stat warn" onclick="nav('evidence','missing')"><div class="n">4</div><div class="l">Missing evidence</div><div class="arr">View gaps →</div></div>
         </div>
-        <div class="callout callout-warn">
-          <strong>Urgent</strong>ODSP review response due within 10 days. Draft letter ready for review.
-        </div>
-        <div class="stat-row">
-          <div class="stat-card"><div class="stat-num">12</div><div class="stat-label">Evidence items</div></div>
-          <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Active needs</div></div>
-          <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Draft letters</div></div>
-          <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">Missing evidence</div></div>
-        </div>
-        <div class="action-row">
-          <button class="btn btn-primary" onclick="nav('chat')">Ask Libby</button>
-          <button class="btn btn-secondary" onclick="nav('drafts')">Draft Letter</button>
-          <button class="btn btn-secondary" onclick="nav('case-timeline')">View Timeline</button>
-          <button class="btn btn-secondary" onclick="nav('evidence')">Show Evidence</button>
-        </div>
-        <div class="section">
-          <h2>Current active matter</h2>
-          <table>
-            <tr><th>Matter</th><th>Status</th><th>Next action</th></tr>
-            <tr><td>ODSP Stabilization</td><td><span class="label label-review">Needs Action</span></td><td>Response letter due in 10 days</td></tr>
-            <tr><td>OT Equipment Referral</td><td><span class="label label-draft">In Progress</span></td><td>Adjustable bed referral pending OT sign-off</td></tr>
-            <tr><td>London University Intake</td><td><span class="label label-inferred">Pending</span></td><td>Awaiting appointment confirmation</td></tr>
-            <tr><td>DSO Accessibility File</td><td><span class="label label-inferred">Pending</span></td><td>Follow up with facilitator</td></tr>
-          </table>
-        </div>
-        <div class="section">
-          <h2>Confirmed facts / Missing evidence</h2>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-            <div>
-              <div style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--c-ok);font-weight:700;margin-bottom:8px;">Confirmed</div>
-              <ul style="font-size:0.875rem;padding-left:18px;line-height:1.8;">
-                <li>Crohn's disease with high-output ileostomy</li>
-                <li>TBI with executive dysfunction</li>
-                <li>Chronic malnutrition - documented</li>
-                <li>ODSP recipient - active file</li>
-                <li>OT assessment completed March 2026</li>
-              </ul>
-            </div>
-            <div>
-              <div style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--c-warn);font-weight:700;margin-bottom:8px;">Missing Evidence</div>
-              <ul style="font-size:0.875rem;padding-left:18px;line-height:1.8;">
-                <li>Vendor quote - adjustable bed frame</li>
-                <li>Letter of Medical Necessity (LMN)</li>
-                <li>Funding eligibility confirmation</li>
-                <li>London University appointment date</li>
-              </ul>
-            </div>
-          </div>
-        </div>
+        <div class="card"><h2>Current active matters</h2><table>
+          <tr><th>Matter</th><th>Status</th><th>Next action</th></tr>
+          <tr class="tr-click" onclick="nav('drafts')"><td>ODSP Stabilization</td><td><span class="lbl lbl-gold">Needs Action</span></td><td>Response letter due in 10 days →</td></tr>
+          <tr class="tr-click" onclick="nav('ot-support')"><td>OT Equipment Referral</td><td><span class="lbl lbl-amber">In Progress</span></td><td>Adjustable bed pending OT sign-off →</td></tr>
+          <tr class="tr-click" onclick="nav('case-overview')"><td>London University Intake</td><td><span class="lbl lbl-blue">Pending</span></td><td>Awaiting appointment confirmation →</td></tr>
+          <tr class="tr-click" onclick="nav('case-overview')"><td>DSO Accessibility File</td><td><span class="lbl lbl-blue">Pending</span></td><td>Follow up with facilitator →</td></tr>
+        </table></div>
+        <div class="card"><h2>Confirmed facts / Missing evidence</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div><div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ok);font-weight:700;margin-bottom:7px">✓ Confirmed</div><ul style="font-size:.85rem;padding-left:16px;line-height:1.9"><li>Crohn's disease with high-output ileostomy</li><li>TBI with executive dysfunction</li><li>Chronic malnutrition — documented</li><li>ODSP recipient — active file</li><li>OT assessment completed March 2026</li></ul></div>
+          <div><div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--warn);font-weight:700;margin-bottom:7px;cursor:pointer" onclick="nav('evidence','missing')">⚠ Missing Evidence — view gaps →</div><ul style="font-size:.85rem;padding-left:16px;line-height:1.9"><li>Vendor quote — adjustable bed frame</li><li>Letter of Medical Necessity (LMN)</li><li>Funding eligibility confirmation</li><li>London University appointment date</li></ul></div>
+        </div></div>
       </div>
 
       <!-- CASE OVERVIEW -->
-      <div id="pg-case-overview" class="page">
-        <div class="breadcrumb"><a onclick="nav('dashboard')">Dashboard</a> / My Situation / Overview</div>
-        <div class="page-header"><h1>Case Overview</h1><p class="subtitle">Summary of confirmed facts, current status, and active gaps</p></div>
+      <div id="pg-case-overview" class="pg">
+        <div class="crumb"><span onclick="nav('dashboard')">Dashboard</span> / My Situation / Overview</div>
+        <div class="ph"><h1>Case Overview</h1><p class="sub">Summary of confirmed facts, current status, and active gaps</p></div>
         <div id="case-mode" class="mode-full">
-          <div class="reading-toggle">
-            <button class="active" onclick="setMode('case-mode','full',this)">Full View</button>
-            <button onclick="setMode('case-mode','quick',this)">Quick View</button>
-          </div>
-          <div class="quick-view">
-            <div class="callout callout-info"><strong>Quick Summary</strong>Complex chronic illness case with active ODSP file, OT equipment needs, and pending specialist intake. Primary gaps: LMN and vendor quote for equipment referral.</div>
-          </div>
-          <div class="full-view">
-            <div class="section">
-              <h2>Active matter</h2>
-              <p><strong>Principal:</strong> Demo User (Member 001 / PATIENT_ZERO)<br>
-              <strong>Matter opened:</strong> January 2026<br>
-              <strong>Primary support:</strong> Kellsie Hnatejko (Partner / Director of Client Experience, NATICO)<br>
-              <strong>Status:</strong> <span class="label label-review">Active - Needs Review</span></p>
-            </div>
-            <div class="section">
-              <h2>Confirmed diagnoses and conditions</h2>
-              <ul style="padding-left:18px;line-height:2;font-size:0.9rem;">
-                <li>Crohn's disease &mdash; high-output ileostomy <span class="label label-confirmed">Confirmed</span></li>
-                <li>Traumatic Brain Injury (TBI) &mdash; abnormal pain sensing, executive dysfunction <span class="label label-confirmed">Confirmed</span></li>
-                <li>Chronic malnutrition <span class="label label-confirmed">Confirmed</span></li>
-                <li>Chronic spinal instability <span class="label label-confirmed">Confirmed</span></li>
-              </ul>
-            </div>
-            <div class="section">
-              <h2>Active administrative matters</h2>
-              <table>
-                <tr><th>Matter</th><th>File / Reference</th><th>Status</th></tr>
-                <tr><td>ODSP</td><td>Mock file 309250326</td><td><span class="label label-review">Needs Action</span></td></tr>
-                <tr><td>OT Equipment Referral</td><td>OT-EQ-2026-001</td><td><span class="label label-draft">Draft</span></td></tr>
-                <tr><td>London University Intake</td><td>Pending</td><td><span class="label label-inferred">Inferred</span></td></tr>
-                <tr><td>DSO / Accessibility</td><td>Pending</td><td><span class="label label-inferred">Pending</span></td></tr>
-                <tr><td>Dental Reconstruction</td><td>CDCP / ODSP</td><td><span class="label label-inferred">Pending</span></td></tr>
-              </table>
-            </div>
+          <div class="mode-toggle"><button class="active" onclick="setMode('case-mode','full',this)">Full View</button><button onclick="setMode('case-mode','quick',this)">Quick View</button></div>
+          <div class="quick-v"><div class="callout ci"><strong>Quick Summary</strong>Complex chronic illness case with active ODSP file, OT equipment needs, and pending specialist intake. Primary gaps: LMN and vendor quote for equipment referral.</div></div>
+          <div class="full-v">
+            <div class="card"><h2>Active matter</h2><p style="font-size:.88rem"><strong>Principal:</strong> Demo User (Member 001 / PATIENT_ZERO)<br><strong>Matter opened:</strong> January 2026<br><strong>Primary support:</strong> Kellsie Hnatejko (Partner / Director of Client Experience, NATICO)<br><strong>Status:</strong> <span class="lbl lbl-gold">Active - Needs Review</span></p></div>
+            <div class="card"><h2>Confirmed diagnoses</h2><ul style="padding-left:16px;line-height:2.1;font-size:.875rem"><li>Crohn's disease — high-output ileostomy <span class="lbl lbl-ok">Confirmed</span></li><li>Traumatic Brain Injury (TBI) — executive dysfunction, abnormal pain sensing <span class="lbl lbl-ok">Confirmed</span></li><li>Chronic malnutrition <span class="lbl lbl-ok">Confirmed</span></li><li>Chronic spinal instability <span class="lbl lbl-ok">Confirmed</span></li></ul></div>
+            <div class="card"><h2>Active administrative matters</h2><table>
+              <tr><th>Matter</th><th>File / Reference</th><th>Status</th></tr>
+              <tr class="tr-click" onclick="nav('drafts')"><td>ODSP</td><td>309250326</td><td><span class="lbl lbl-gold">Needs Action</span></td></tr>
+              <tr class="tr-click" onclick="nav('ot-support')"><td>OT Equipment Referral</td><td>OT-EQ-2026-001</td><td><span class="lbl lbl-amber">In Progress</span></td></tr>
+              <tr><td>London University Intake</td><td>Pending</td><td><span class="lbl lbl-blue">Inferred</span></td></tr>
+              <tr><td>DSO / Accessibility</td><td>Pending</td><td><span class="lbl lbl-blue">Pending</span></td></tr>
+              <tr><td>Dental Reconstruction</td><td>CDCP / ODSP</td><td><span class="lbl lbl-blue">Pending</span></td></tr>
+            </table></div>
           </div>
         </div>
       </div>
 
       <!-- TIMELINE -->
-      <div id="pg-case-timeline" class="page">
-        <div class="breadcrumb"><a onclick="nav('dashboard')">Dashboard</a> / My Situation / Timeline</div>
-        <div class="page-header"><h1>Timeline</h1><p class="subtitle">Chronological life and medical events</p></div>
-        <div class="section">
-          <h2>Key events</h2>
-          <div class="timeline">
-            <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">March 2026</div><div class="tl-title">OT Assessment completed</div><div class="tl-desc">Functional limitations documented. Equipment needs identified. <span class="label label-confirmed">Confirmed</span></div></div>
-            <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">February 2026</div><div class="tl-title">Clinical note - spinal instability</div><div class="tl-desc">Deterioration documented as progressive over 6 months. <span class="label label-confirmed">Confirmed</span></div></div>
-            <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">January 2026</div><div class="tl-title">ODSP review initiated</div><div class="tl-desc">Review letter received. Response deadline pending. <span class="label label-review">Needs Action</span></div></div>
-            <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">June 2025</div><div class="tl-title">Housing instability began</div><div class="tl-desc">No fixed address since June 2025. Currently residing in Fergus, ON. <span class="label label-confirmed">Confirmed</span></div></div>
-            <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">2024</div><div class="tl-title">Ileostomy surgery</div><div class="tl-desc">High-output ileostomy. Surgical care at Juravinski Hospital. <span class="label label-confirmed">Confirmed</span></div></div>
-          </div>
-        </div>
+      <div id="pg-timeline" class="pg">
+        <div class="crumb"><span onclick="nav('dashboard')">Dashboard</span> / My Situation / Timeline</div>
+        <div class="ph"><h1>Timeline</h1><p class="sub">Chronological life and medical events</p></div>
+        <div class="card"><h2>Key events</h2><div class="tl">
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">March 2026</div><div class="tl-title">OT Assessment completed</div><div class="tl-desc">Functional limitations documented. Equipment needs identified. <span class="lbl lbl-ok">Confirmed</span></div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">February 2026</div><div class="tl-title">Clinical note — spinal instability</div><div class="tl-desc">Deterioration documented as progressive over 6 months. <span class="lbl lbl-ok">Confirmed</span></div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">January 2026</div><div class="tl-title">ODSP review initiated</div><div class="tl-desc">Review letter received. Response deadline pending. <span class="lbl lbl-gold">Needs Action</span></div></div>
+          <div class="tl-item"><div class="tl-dot" style="background:#c17800"></div><div class="tl-date">June 2025</div><div class="tl-title">Housing instability began</div><div class="tl-desc">No fixed address since June 2025. Temporary placement Fergus ON. <span class="lbl lbl-ok">Confirmed</span></div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-date">2024</div><div class="tl-title">Ileostomy surgery</div><div class="tl-desc">High-output ileostomy. Surgical care at Juravinski Hospital. <span class="lbl lbl-ok">Confirmed</span></div></div>
+        </div></div>
       </div>
 
       <!-- LIFE EVENTS -->
-      <div id="pg-life-events" class="page">
-        <div class="breadcrumb"><a onclick="nav('dashboard')">Dashboard</a> / My Situation / Life Events</div>
-        <div class="page-header"><h1>Life Events</h1><p class="subtitle">Surgeries, moves, losses, administrative deadlines, benefit disruptions</p></div>
-        <div class="section">
-          <h2>Event log</h2>
-          <table>
-            <tr><th>Date</th><th>Type</th><th>Event</th><th>Status</th></tr>
-            <tr><td>Mar 2026</td><td>Medical</td><td>OT assessment completed - equipment referral initiated</td><td><span class="label label-confirmed">Confirmed</span></td></tr>
-            <tr><td>Jan 2026</td><td>Administrative</td><td>ODSP review letter received - response required</td><td><span class="label label-review">Needs Action</span></td></tr>
-            <tr><td>Jun 2025</td><td>Housing</td><td>No fixed address - temporary placement Fergus ON</td><td><span class="label label-confirmed">Confirmed</span></td></tr>
-            <tr><td>2024</td><td>Surgical</td><td>Ileostomy procedure - Juravinski Hospital, Hamilton</td><td><span class="label label-confirmed">Confirmed</span></td></tr>
-            <tr><td>Ongoing</td><td>Access barrier</td><td>Transport barrier - appointment attendance impacted</td><td><span class="label label-confirmed">Confirmed</span></td></tr>
-            <tr><td>Ongoing</td><td>Nutritional</td><td>Chronic malnutrition - monitored by McMaster 2F Clinic</td><td><span class="label label-confirmed">Confirmed</span></td></tr>
-          </table>
-        </div>
+      <div id="pg-life-events" class="pg">
+        <div class="crumb"><span onclick="nav('dashboard')">Dashboard</span> / My Situation / Life Events</div>
+        <div class="ph"><h1>Life Events</h1><p class="sub">Surgeries, moves, losses, administrative deadlines, benefit disruptions</p></div>
+        <div class="card"><h2>Event log</h2><table>
+          <tr><th>Date</th><th>Type</th><th>Event</th><th>Status</th></tr>
+          <tr><td>Mar 2026</td><td>Medical</td><td>OT assessment completed — equipment referral initiated</td><td><span class="lbl lbl-ok">Confirmed</span></td></tr>
+          <tr><td>Jan 2026</td><td>Administrative</td><td>ODSP review letter received — response required</td><td><span class="lbl lbl-gold">Needs Action</span></td></tr>
+          <tr><td>Jun 2025</td><td>Housing</td><td>No fixed address — temporary placement Fergus ON</td><td><span class="lbl lbl-ok">Confirmed</span></td></tr>
+          <tr><td>2024</td><td>Surgical</td><td>Ileostomy procedure — Juravinski Hospital, Hamilton</td><td><span class="lbl lbl-ok">Confirmed</span></td></tr>
+          <tr><td>Ongoing</td><td>Access barrier</td><td>Transport barrier — appointment attendance impacted</td><td><span class="lbl lbl-ok">Confirmed</span></td></tr>
+          <tr><td>Ongoing</td><td>Nutritional</td><td>Chronic malnutrition — monitored by McMaster 2F Clinic</td><td><span class="lbl lbl-ok">Confirmed</span></td></tr>
+        </table></div>
       </div>
 
       <!-- PATIENT REALITIES -->
-      <div id="pg-patient-realities" class="page">
-        <div class="breadcrumb"><a onclick="nav('dashboard')">Dashboard</a> / My Situation / Patient Realities</div>
-        <div class="page-header"><h1>Patient Realities</h1><p class="subtitle">Plain language notes describing day-to-day functioning</p></div>
-        <div class="section">
-          <h2>Current realities</h2>
-          <div class="callout callout-info"><strong>Purpose</strong>These entries describe how conditions affect daily function in plain language. They are designed to be pulled into referral letters and professional summaries.</div>
-          <div class="mt-16">
-            <div class="evidence-card"><div class="ev-header"><div class="ev-title">Cognitive overload and task paralysis</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-summary">Phone calls, multi-step administrative tasks, and time-pressured requests frequently cause task paralysis. Written communication strongly preferred. Asynchronous interaction required for reliable responses.</div></div>
-            <div class="evidence-card"><div class="ev-header"><div class="ev-title">Memory fragmentation</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-summary">TBI causes inconsistent short-term recall. Cannot reliably reproduce information shared in previous conversations without written record. External memory systems are not a preference - they are a medical necessity.</div></div>
-            <div class="evidence-card"><div class="ev-header"><div class="ev-title">Physical repositioning barrier</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-summary">Chronic spinal instability prevents safe independent repositioning during sleep. Standard bed frame does not support head/foot elevation. Waking pain level documented at 8/10.</div></div>
-            <div class="evidence-card"><div class="ev-header"><div class="ev-title">Appointment burden</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-summary">High volume of specialist, home care, and administrative appointments. Transport barriers compound attendance difficulty. Preparation time for each appointment significantly exceeds typical patient load.</div></div>
-          </div>
-        </div>
+      <div id="pg-patient-realities" class="pg">
+        <div class="crumb"><span onclick="nav('dashboard')">Dashboard</span> / My Situation / Patient Realities</div>
+        <div class="ph"><h1>Patient Realities</h1><p class="sub">Plain language notes describing day-to-day functioning</p></div>
+        <div class="callout ci"><strong>Purpose</strong>These entries describe how conditions affect daily function in plain language. They are designed to be pulled into referral letters and professional summaries.</div>
+        <div class="ev"><div class="ev-hd"><div class="ev-title">Cognitive overload and task paralysis</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-body">Phone calls, multi-step administrative tasks, and time-pressured requests frequently cause task paralysis. Written communication strongly preferred. Asynchronous interaction required for reliable responses.</div></div>
+        <div class="ev"><div class="ev-hd"><div class="ev-title">Memory fragmentation</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-body">TBI causes inconsistent short-term recall. Cannot reliably reproduce information shared in previous conversations without written record. External memory systems are not a preference — they are a medical necessity.</div></div>
+        <div class="ev"><div class="ev-hd"><div class="ev-title">Physical repositioning barrier</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-body">Chronic spinal instability prevents safe independent repositioning during sleep. Standard bed frame does not support head/foot elevation. Waking pain level documented at 8/10.</div></div>
+        <div class="ev"><div class="ev-hd"><div class="ev-title">Appointment burden</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-body">High volume of specialist, home care, and administrative appointments. Transport barriers compound attendance difficulty. Preparation time significantly exceeds typical patient load.</div></div>
       </div>
 
       <!-- EXPERIENCES -->
-      <div id="pg-experiences" class="page">
-        <div class="breadcrumb"><a onclick="nav('dashboard')">Dashboard</a> / My Situation / Experiences</div>
-        <div class="page-header"><h1>Experiences</h1><p class="subtitle">Narrative accounts of significant system encounters</p></div>
-        <div class="section">
-          <h2>System encounter log</h2>
-          <div class="evidence-card"><div class="ev-header"><div class="ev-title">Hospital discharge without coordination</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-meta">Type: Hospital encounter | Matter: Surgical care continuity</div><div class="ev-summary">Discharge occurred without confirmed home care setup. Gaps in ostomy supply and wound care coordination in first 72 hours post-discharge.</div></div>
-          <div class="evidence-card"><div class="ev-header"><div class="ev-title">Administrative looping - ODSP</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-meta">Type: Government services | Matter: ODSP file</div><div class="ev-summary">Multiple requests for same documentation across review cycles. No single point of contact maintaining continuity. Each interaction requires full re-explanation of medical situation.</div></div>
-          <div class="evidence-card"><div class="ev-header"><div class="ev-title">Inaccessible communication - clinic</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-meta">Type: Healthcare access | Matter: General care</div><div class="ev-summary">Clinic contact by phone only. No email or written option provided. Phone communication creates documented barrier given TBI and cognitive fatigue profile.</div></div>
-        </div>
+      <div id="pg-experiences" class="pg">
+        <div class="crumb"><span onclick="nav('dashboard')">Dashboard</span> / My Situation / Experiences</div>
+        <div class="ph"><h1>Experiences</h1><p class="sub">Narrative accounts of significant system encounters</p></div>
+        <div class="ev"><div class="ev-hd"><div class="ev-title">Hospital discharge without coordination</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-meta">Type: Hospital encounter | Matter: Surgical care continuity</div><div class="ev-body">Discharge occurred without confirmed home care setup. Gaps in ostomy supply and wound care coordination in first 72 hours post-discharge.</div></div>
+        <div class="ev"><div class="ev-hd"><div class="ev-title">Administrative looping — ODSP</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-meta">Type: Government services | Matter: ODSP file</div><div class="ev-body">Multiple requests for same documentation across review cycles. No single point of contact maintaining continuity. Each interaction requires full re-explanation of medical situation.</div></div>
+        <div class="ev"><div class="ev-hd"><div class="ev-title">Inaccessible communication — clinic</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-meta">Type: Healthcare access | Matter: General care</div><div class="ev-body">Clinic contact by phone only. No email or written option provided. Phone communication creates documented barrier given TBI and cognitive fatigue profile.</div></div>
       </div>
 
       <!-- PATIENT TRUTHS -->
-      <div id="pg-patient-truths" class="page">
-        <div class="breadcrumb"><a onclick="nav('dashboard')">Dashboard</a> / My Situation / Patient Truths</div>
-        <div class="page-header"><h1>Patient Truths</h1><p class="subtitle">Stable, high-confidence reusable statements about functioning and recurring needs</p></div>
-        <div class="callout callout-info" style="margin-bottom:20px;"><strong>How these are used</strong>Patient Truths are designed to be pulled directly into letters, summaries, and referral documents. They are stable, pre-approved statements that do not need to be re-written each time.</div>
-        <div class="section">
-          <h2>Active patient truths</h2>
-          <div class="evidence-card"><div class="ev-header"><div class="ev-title">Written communication is a medical accommodation requirement</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-summary">Due to TBI-related executive dysfunction and memory fragmentation, written communication is required for reliable participation in care planning, administrative processes, and legal/benefit matters.</div></div>
-          <div class="evidence-card"><div class="ev-header"><div class="ev-title">High-output ileostomy requires daily clinical management</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-summary">Ongoing ostomy care requires specialized supplies, nursing support, and nutritional monitoring. This is not a stable managed condition - it is an active daily clinical need.</div></div>
-          <div class="evidence-card"><div class="ev-header"><div class="ev-title">Administrative tasks are a documented disability barrier</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-summary">The burden of managing complex multi-agency administrative demands constitutes a disability-related barrier under the AODA and Ontario Human Rights Code. Accommodation is required, not discretionary.</div></div>
-          <div class="evidence-card"><div class="ev-header"><div class="ev-title">External memory systems are clinical infrastructure, not preference</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-summary">Structured documentation systems compensate for TBI-related memory deficits. Their use is a medical necessity equivalent to a mobility aid or hearing device.</div></div>
-        </div>
+      <div id="pg-patient-truths" class="pg">
+        <div class="crumb"><span onclick="nav('dashboard')">Dashboard</span> / My Situation / Patient Truths</div>
+        <div class="ph"><h1>Patient Truths</h1><p class="sub">Stable, high-confidence reusable statements for letters and summaries</p></div>
+        <div class="callout ci"><strong>How these are used</strong>Patient Truths are pre-approved stable statements pulled directly into letters, summaries, and referral documents. They do not need to be re-written each time.</div>
+        <div class="ev"><div class="ev-hd"><div class="ev-title">Written communication is a medical accommodation requirement</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-body">Due to TBI-related executive dysfunction and memory fragmentation, written communication is required for reliable participation in care planning, administrative processes, and legal/benefit matters.</div></div>
+        <div class="ev"><div class="ev-hd"><div class="ev-title">High-output ileostomy requires daily clinical management</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-body">Ongoing ostomy care requires specialized supplies, nursing support, and nutritional monitoring. This is not a stable managed condition — it is an active daily clinical need.</div></div>
+        <div class="ev"><div class="ev-hd"><div class="ev-title">Administrative tasks are a documented disability barrier</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-body">The burden of managing complex multi-agency administrative demands constitutes a disability-related barrier under the AODA and Ontario Human Rights Code. Accommodation is required, not discretionary.</div></div>
+        <div class="ev"><div class="ev-hd"><div class="ev-title">External memory systems are clinical infrastructure, not preference</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-body">Structured documentation systems compensate for TBI-related memory deficits. Their use is a medical necessity equivalent to a mobility aid or hearing device.</div></div>
       </div>
 
       <!-- EVIDENCE -->
-      <div id="pg-evidence" class="page">
-        <div class="breadcrumb"><a onclick="nav('dashboard')">Dashboard</a> / Evidence Library</div>
-        <div class="page-header"><h1>Evidence Library</h1><p class="subtitle">Source cards - emails, records, notes, documents, transcripts</p></div>
-        <div class="section">
-          <h2>Filter</h2>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-secondary" style="font-size:0.8rem;padding:5px 12px;" onclick="filterEv('all',this)">All (12)</button>
-            <button class="btn btn-secondary" style="font-size:0.8rem;padding:5px 12px;" onclick="filterEv('confirmed',this)">Confirmed</button>
-            <button class="btn btn-secondary" style="font-size:0.8rem;padding:5px 12px;" onclick="filterEv('missing',this)">Missing Evidence</button>
-            <button class="btn btn-secondary" style="font-size:0.8rem;padding:5px 12px;" onclick="filterEv('draft',this)">Draft</button>
-          </div>
+      <div id="pg-evidence" class="pg">
+        <div class="crumb"><span onclick="nav('dashboard')">Dashboard</span> / Evidence Library</div>
+        <div class="ph"><h1>Evidence Library</h1><p class="sub">Source cards — emails, records, notes, documents, transcripts</p></div>
+        <div class="filter-bar">
+          <div class="fc active" onclick="filterEv('all',this)">All (12)</div>
+          <div class="fc" onclick="filterEv('confirmed',this)">✓ Confirmed</div>
+          <div class="fc" onclick="filterEv('missing',this)">⚠ Missing Evidence</div>
+          <div class="fc" onclick="filterEv('draft',this)">Draft</div>
         </div>
-        <div id="evidence-list">
-          <div class="evidence-card" data-conf="confirmed"><div class="ev-header"><div class="ev-title">Clinical note - spinal instability</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-meta">Feb 2026 | Type: Clinical record | Matter: OT-EQ-2026-001</div><div class="ev-summary">Documents progressive spinal deterioration over 6 months. Confirms inability to safely reposition independently. Source: Juravinski Clinical Note Feb2026.</div></div>
-          <div class="evidence-card" data-conf="confirmed"><div class="ev-header"><div class="ev-title">Home assessment - March 2026</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-meta">Mar 2026 | Type: Assessment record | Matter: OT-EQ-2026-001</div><div class="ev-summary">Standard bed frame confirmed as inadequate for head/foot elevation needs. Assessment conducted by OT.</div></div>
-          <div class="evidence-card" data-conf="confirmed"><div class="ev-header"><div class="ev-title">ODSP review letter</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-meta">Jan 2026 | Type: Government correspondence | Matter: ODSP</div><div class="ev-summary">Review initiated by ODSP. Response deadline established. Letter received and filed.</div></div>
-          <div class="evidence-card" data-conf="confirmed"><div class="ev-header"><div class="ev-title">Patient truth log v2</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-meta">Ongoing | Type: Self-documented log | Matter: General</div><div class="ev-summary">Pain level 8/10 upon waking documented. Repositioning barrier confirmed across multiple entries.</div></div>
-          <div class="evidence-card" data-conf="confirmed"><div class="ev-header"><div class="ev-title">Surgical record - ileostomy</div><span class="label label-confirmed">Confirmed</span></div><div class="ev-meta">2024 | Type: Surgical record | Matter: Medical history</div><div class="ev-summary">High-output ileostomy procedure at Juravinski Hospital. Dr. Shawn Forbes (Colorectal/Stoma).</div></div>
-          <div class="evidence-card" data-conf="missing"><div class="ev-header"><div class="ev-title">Vendor quote - adjustable bed frame (S-Series)</div><span class="label label-missing">Missing Evidence</span></div><div class="ev-meta">Required | Type: Vendor document | Matter: OT-EQ-2026-001</div><div class="ev-summary">Formal quote not yet obtained. Required for funding application. Next step: contact supplier.</div></div>
-          <div class="evidence-card" data-conf="missing"><div class="ev-header"><div class="ev-title">Letter of Medical Necessity (LMN)</div><span class="label label-missing">Missing Evidence</span></div><div class="ev-meta">Required | Type: Physician letter | Matter: OT-EQ-2026-001</div><div class="ev-summary">Signed LMN from primary physician not yet obtained. Draft request letter ready for review.</div></div>
-          <div class="evidence-card" data-conf="missing"><div class="ev-header"><div class="ev-title">Funding eligibility confirmation</div><span class="label label-missing">Missing Evidence</span></div><div class="ev-meta">Required | Type: Government confirmation | Matter: OT-EQ-2026-001</div><div class="ev-summary">Provincial benefit program eligibility not yet confirmed for equipment funding.</div></div>
-          <div class="evidence-card" data-conf="draft"><div class="ev-header"><div class="ev-title">ODSP response letter draft</div><span class="label label-draft">Draft</span></div><div class="ev-meta">Mar 2026 | Type: Draft correspondence | Matter: ODSP</div><div class="ev-summary">Draft response to ODSP review letter. Needs professional review before submission.</div></div>
+        <div id="ev-list">
+          <div class="ev" data-ev="confirmed"><div class="ev-hd"><div class="ev-title">Clinical note — spinal instability</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-meta">Feb 2026 | Clinical record | Matter: OT-EQ-2026-001</div><div class="ev-body">Documents progressive spinal deterioration over 6 months. Confirms inability to safely reposition independently.</div></div>
+          <div class="ev" data-ev="confirmed"><div class="ev-hd"><div class="ev-title">Home assessment — March 2026</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-meta">Mar 2026 | Assessment record | Matter: OT-EQ-2026-001</div><div class="ev-body">Standard bed frame confirmed as inadequate for head/foot elevation needs. Assessment conducted by OT Jo-Anne.</div></div>
+          <div class="ev" data-ev="confirmed"><div class="ev-hd"><div class="ev-title">ODSP review letter</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-meta">Jan 2026 | Government correspondence | Matter: ODSP</div><div class="ev-body">Review initiated by ODSP. Response deadline established. Letter received and filed.</div></div>
+          <div class="ev" data-ev="confirmed"><div class="ev-hd"><div class="ev-title">Patient truth log v2</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-meta">Ongoing | Self-documented log | Matter: General</div><div class="ev-body">Pain level 8/10 upon waking documented across multiple entries. Repositioning barrier confirmed.</div></div>
+          <div class="ev" data-ev="confirmed"><div class="ev-hd"><div class="ev-title">Surgical record — ileostomy</div><span class="lbl lbl-ok">Confirmed</span></div><div class="ev-meta">2024 | Surgical record | Matter: Medical history</div><div class="ev-body">High-output ileostomy procedure at Juravinski Hospital. Dr. Shawn Forbes (Colorectal/Stoma).</div></div>
+          <div class="ev" data-ev="missing"><div class="ev-hd"><div class="ev-title">Vendor quote — adjustable bed frame (S-Series)</div><span class="lbl lbl-warn">Missing Evidence</span></div><div class="ev-meta">Required | Vendor document | Matter: OT-EQ-2026-001</div><div class="ev-body">Formal quote not yet obtained. Required for funding application. Next step: contact supplier.</div></div>
+          <div class="ev" data-ev="missing"><div class="ev-hd"><div class="ev-title">Letter of Medical Necessity (LMN)</div><span class="lbl lbl-warn">Missing Evidence</span></div><div class="ev-meta">Required | Physician letter | Matter: OT-EQ-2026-001</div><div class="ev-body">Signed LMN from primary physician not yet obtained. Draft request letter ready for review.</div></div>
+          <div class="ev" data-ev="missing"><div class="ev-hd"><div class="ev-title">Funding eligibility confirmation</div><span class="lbl lbl-warn">Missing Evidence</span></div><div class="ev-meta">Required | Government confirmation | Matter: OT-EQ-2026-001</div><div class="ev-body">Provincial benefit program eligibility not yet confirmed for equipment funding.</div></div>
+          <div class="ev" data-ev="missing"><div class="ev-hd"><div class="ev-title">London University appointment date</div><span class="lbl lbl-warn">Missing Evidence</span></div><div class="ev-meta">Required | Appointment record | Matter: LHSC-GI-2026</div><div class="ev-body">Formal appointment confirmation not yet received from LHSC Gastroenterology (Dr. Jairath).</div></div>
+          <div class="ev" data-ev="draft"><div class="ev-hd"><div class="ev-title">ODSP response letter draft</div><span class="lbl lbl-amber">Draft</span></div><div class="ev-meta">Mar 2026 | Draft correspondence | Matter: ODSP</div><div class="ev-body">Draft response to ODSP review letter. Needs professional review before submission.</div></div>
         </div>
       </div>
 
       <!-- OT SUPPORT -->
-      <div id="pg-ot-support" class="page">
-        <div class="breadcrumb"><a onclick="nav('dashboard')">Dashboard</a> / OT Support</div>
-        <div class="page-header"><h1>OT Support</h1><p class="subtitle">Occupational therapy workflow - equipment needs, referral status, documentation</p></div>
-        <div class="section">
-          <h2>Equipment needs and referral status</h2>
-
-          <div class="ot-item">
-            <div class="ot-item-header" onclick="toggleOT(this)">
-              <div class="ot-item-title">Adjustable bed frame (S-Series)</div>
-              <span class="label label-review">Needs Review</span>
-              <span style="margin-left:auto;color:var(--c-text-sub);font-size:0.85rem;">&#9660;</span>
-            </div>
-            <div class="ot-item-body">
-              <p style="margin-bottom:8px;font-size:0.875rem;"><strong>Functional limitation:</strong> Cannot safely reposition during sleep. 8/10 pain upon waking. Chronic spinal instability prevents independent adjustment.</p>
-              <p style="margin-bottom:8px;font-size:0.875rem;"><strong>Documentation available:</strong> Clinical note Feb 2026, home assessment Mar 2026, pain log.</p>
-              <p style="margin-bottom:8px;font-size:0.875rem;"><strong>Still needed:</strong> Vendor quote, signed LMN from physician, funding eligibility confirmation.</p>
-              <div class="callout callout-amber" style="margin-top:10px;font-size:0.85rem;"><strong>Draft letter available</strong>OT referral letter draft ready for review and signature.</div>
-            </div>
-          </div>
-
-          <div class="ot-item">
-            <div class="ot-item-header" onclick="toggleOT(this)">
-              <div class="ot-item-title">TENS machine</div>
-              <span class="label label-draft">In Progress</span>
-              <span style="margin-left:auto;color:var(--c-text-sub);font-size:0.85rem;">&#9660;</span>
-            </div>
-            <div class="ot-item-body">
-              <p style="margin-bottom:8px;font-size:0.875rem;"><strong>Functional limitation:</strong> Chronic pain management. Current pharmaceutical management inadequate for daily function.</p>
-              <p style="margin-bottom:8px;font-size:0.875rem;"><strong>Documentation available:</strong> Pain log, clinical notes.</p>
-              <p style="margin-bottom:8px;font-size:0.875rem;"><strong>Still needed:</strong> OT recommendation letter, physician support.</p>
-            </div>
-          </div>
-
-          <div class="ot-item">
-            <div class="ot-item-header" onclick="toggleOT(this)">
-              <div class="ot-item-title">Blood pressure monitor</div>
-              <span class="label label-confirmed">Confirmed Need</span>
-              <span style="margin-left:auto;color:var(--c-text-sub);font-size:0.85rem;">&#9660;</span>
-            </div>
-            <div class="ot-item-body">
-              <p style="margin-bottom:8px;font-size:0.875rem;"><strong>Functional limitation:</strong> Home monitoring required given instability profile and high appointment burden.</p>
-              <p style="margin-bottom:8px;font-size:0.875rem;"><strong>Documentation available:</strong> Clinical record confirms monitoring requirement.</p>
-            </div>
-          </div>
-
-          <div class="ot-item">
-            <div class="ot-item-header" onclick="toggleOT(this)">
-              <div class="ot-item-title">Functional limitation summary for OT</div>
-              <span class="label label-draft">Draft</span>
-              <span style="margin-left:auto;color:var(--c-text-sub);font-size:0.85rem;">&#9660;</span>
-            </div>
-            <div class="ot-item-body">
-              <div class="callout callout-info" style="font-size:0.85rem;"><strong>Draft summary</strong>Patient presents with complex chronic illness profile (Crohn's / high-output ileostomy, TBI, chronic malnutrition, spinal instability) requiring daily clinical management and multiple equipment supports. Full documentation available in Evidence Library. Patient Truths available for incorporation into OT report.</div>
-            </div>
-          </div>
+      <div id="pg-ot-support" class="pg">
+        <div class="crumb"><span onclick="nav('dashboard')">Dashboard</span> / OT Support</div>
+        <div class="ph"><h1>OT Support</h1><p class="sub">Occupational therapy workflow — equipment needs, referral status, documentation</p></div>
+        <div class="card"><h2>Equipment needs and referral status</h2>
+          <div class="ot"><div class="ot-hd open" onclick="toggleOT(this)"><div class="ot-title">Adjustable bed frame (S-Series)</div><span class="lbl lbl-gold">Needs Review</span><span class="ot-chev">▼</span></div><div class="ot-body open"><p style="font-size:.86rem;margin-bottom:7px"><strong>Functional limitation:</strong> Cannot safely reposition during sleep. 8/10 pain upon waking. Chronic spinal instability prevents independent adjustment.</p><p style="font-size:.86rem;margin-bottom:7px"><strong>Documentation available:</strong> Clinical note Feb 2026, home assessment Mar 2026, pain log.</p><p style="font-size:.86rem;margin-bottom:7px"><strong>Still needed:</strong> Vendor quote (S-Series), signed LMN, funding eligibility confirmation.</p><div class="callout ca"><strong>Draft letter available</strong>OT referral letter draft ready for review. <span style="cursor:pointer;text-decoration:underline;color:var(--accent)" onclick="nav('drafts')">View drafts →</span></div></div></div>
+          <div class="ot"><div class="ot-hd" onclick="toggleOT(this)"><div class="ot-title">TENS machine</div><span class="lbl lbl-amber">In Progress</span><span class="ot-chev">▼</span></div><div class="ot-body"><p style="font-size:.86rem;margin-bottom:7px"><strong>Functional limitation:</strong> Chronic pain management. Current pharmaceutical management inadequate for daily function.</p><p style="font-size:.86rem"><strong>Still needed:</strong> OT recommendation letter, physician support.</p></div></div>
+          <div class="ot"><div class="ot-hd" onclick="toggleOT(this)"><div class="ot-title">Blood pressure monitor</div><span class="lbl lbl-ok">Confirmed Need</span><span class="ot-chev">▼</span></div><div class="ot-body"><p style="font-size:.86rem"><strong>Functional limitation:</strong> Home monitoring required given instability profile and high appointment burden.</p></div></div>
+          <div class="ot"><div class="ot-hd" onclick="toggleOT(this)"><div class="ot-title">Functional limitation summary for OT</div><span class="lbl lbl-amber">Draft</span><span class="ot-chev">▼</span></div><div class="ot-body"><div class="callout ci"><strong>Draft summary</strong>Patient presents with complex chronic illness profile (Crohn's / high-output ileostomy, TBI, chronic malnutrition, spinal instability) requiring daily clinical management and multiple equipment supports. Full documentation available in Evidence Library.</div></div></div>
         </div>
       </div>
 
       <!-- DRAFTS -->
-      <div id="pg-drafts" class="page">
-        <div class="breadcrumb"><a onclick="nav('dashboard')">Dashboard</a> / Draft Letters</div>
-        <div class="page-header"><h1>Draft Letters</h1><p class="subtitle">Referral requests, accommodation letters, appointment prep summaries</p></div>
-        <div class="callout callout-warn" style="margin-bottom:20px;"><strong>Review required</strong>All draft documents must be reviewed by a qualified professional before submission. Status labels indicate readiness.</div>
-        <div class="draft-card">
-          <div class="dc-header"><div class="dc-title">ODSP review response letter</div><span class="label label-review">Needs Review</span></div>
-          <div class="dc-meta">Matter: ODSP | Audience: Government / Caseworker | Format: Formal letter | Created: Mar 2026</div>
-          <div class="dc-preview">Re: ODSP File Review - Response to Request for Information. I am writing in response to the review notice received January 2026. The following documentation confirms my ongoing eligibility and current medical status...</div>
-          <div class="action-row" style="margin-top:12px;margin-bottom:0;">
-            <button class="btn btn-secondary" style="font-size:0.8rem;padding:5px 12px;">View full draft</button>
-            <button class="btn btn-secondary" style="font-size:0.8rem;padding:5px 12px;">Request review</button>
-          </div>
-        </div>
-        <div class="draft-card">
-          <div class="dc-header"><div class="dc-title">Adjustable bed referral - physician LMN request</div><span class="label label-draft">Draft</span></div>
-          <div class="dc-meta">Matter: OT-EQ-2026-001 | Audience: Primary Care Physician | Format: Referral letter | Created: Mar 2026</div>
-          <div class="dc-preview">Dear Dr. [Primary Physician], I am writing to request a Letter of Medical Necessity (LMN) for an adjustable bed frame for my patient [Name]. Based on the clinical note from February 2026 and the home assessment completed March 2026...</div>
-          <div class="action-row" style="margin-top:12px;margin-bottom:0;">
-            <button class="btn btn-secondary" style="font-size:0.8rem;padding:5px 12px;">View full draft</button>
-            <button class="btn btn-secondary" style="font-size:0.8rem;padding:5px 12px;">Request review</button>
-          </div>
-        </div>
-        <div class="draft-card">
-          <div class="dc-header"><div class="dc-title">Accommodation request - written communication</div><span class="label label-draft">Draft</span></div>
-          <div class="dc-meta">Matter: General | Audience: Healthcare providers / Administrators | Format: Accommodation letter | Created: Mar 2026</div>
-          <div class="dc-preview">This letter requests a formal accommodation for written communication in all interactions. Due to a documented Traumatic Brain Injury (TBI) resulting in executive dysfunction and memory fragmentation, telephone-only communication constitutes a barrier...</div>
-          <div class="action-row" style="margin-top:12px;margin-bottom:0;">
-            <button class="btn btn-secondary" style="font-size:0.8rem;padding:5px 12px;">View full draft</button>
-            <button class="btn btn-secondary" style="font-size:0.8rem;padding:5px 12px;">Request review</button>
-          </div>
-        </div>
-      </div>
+      <div id="pg-drafts" class="pg">
+        <div class="crumb"><span onclick="nav('dashboard')">Dashboard</span> / Draft Letters</div>
+        <div class="ph"><h1>Draft Letters</h1><p class="sub">Referral requests, accommodation letters, appointment prep summaries</p></div>
+        <div class="callout cw"><strong>Review required</strong>All draft documents must be reviewed by a qualified professional before submission.</div>
+        <div class="dc">
+          <div class="dc-hd"><div class="dc-title">ODSP review response letter</div><span class="lbl lbl-gold">Needs Review</span></div>
+          <div class="dc-meta">Matter: ODSP | Audience: Government / Caseworker | Created: Mar 2026</div>
+          <div class="dc-preview">Re: ODSP File Review — File 309250326. I am writing in response to the review notice received January 2026...</div>
+          <div id="dc1" class="dc-full">Re: ODSP File Review - File 309250326 - Response to Request for Information
 
-      <!-- CHAT -->
-      <div id="pg-chat" class="page">
-        <div class="breadcrumb"><a onclick="nav('dashboard')">Dashboard</a> / Libby Chat</div>
-        <div class="page-header"><h1>Libby</h1><p class="subtitle">Evidence-aware advocacy assistant - conservative, structured, citation-labelled</p></div>
-        <div class="callout callout-info" style="margin-bottom:16px;font-size:0.85rem;"><strong>How Libby works</strong>Libby never presents inferred information as confirmed. Every response includes a confidence label and source citation where applicable. Libby is not a clinical advisor.</div>
-        <div class="section" style="padding:16px;">
-          <div style="margin-bottom:8px;font-size:0.85rem;color:var(--c-text-sub);">Try a demo prompt:</div>
-          <div class="demo-prompts">
-            <div class="demo-prompt" onclick="sendDemo(0)">Prepare me for my OT visit</div>
-            <div class="demo-prompt" onclick="sendDemo(1)">Draft an adjustable bed referral letter</div>
-            <div class="demo-prompt" onclick="sendDemo(2)">Summarize my current barriers in plain language</div>
-            <div class="demo-prompt" onclick="sendDemo(3)">What records do I have related to my surgery?</div>
-            <div class="demo-prompt" onclick="sendDemo(4)">Show confirmed facts versus what is still missing</div>
+I am writing in response to the review notice received January 2026. The following documentation confirms my ongoing eligibility and current medical status.
+
+I live with Crohn's disease with a high-output ileostomy, persistent post-concussive symptoms following traumatic brain injury consistent with Post-Concussion Syndrome, chronic malnutrition, and chronic spinal instability. I am currently post-laparotomy (January 2026), recovering from a small bowel resection and stoma resiting. My ileostomy produces 2-3 litres of output daily. I cannot support my own body weight for more than 60 seconds and require a walker for all public mobility.
+
+Due to traumatic brain injury causing executive dysfunction and memory fragmentation, I require all correspondence in written form. This is a medical accommodation requirement under the Ontario Human Rights Code.
+
+Documentation available on request:
+- Clinical note confirming spinal instability, February 2026 (Juravinski Hospital)
+- OT home assessment, March 2026
+- Surgical record, January 2026 laparotomy (Dr. S. Forbes, McMaster/Juravinski)
+
+Matthew Gordon Herbert
+DOB: 1988-11-29 | Health Card: 6827-485-050 GC | ODSP File: 309250326
+No Fixed Address, Cambridge ON
+
+STATUS: DRAFT - Requires professional review before submission.</div>
+          <div class="dc-acts">
+            <button class="btn btn-s btn-sm" onclick="toggleDraft('dc1',this)">View full draft</button>
+            <button class="btn btn-s btn-sm" onclick="copyDraft('dc1','cok1')">Copy to clipboard</button>
+            <span class="copy-ok" id="cok1">✓ Copied</span>
           </div>
-          <div id="chat-messages"></div>
-          <div class="chat-input-row">
-            <input type="text" id="chat-input" placeholder="Ask Libby..." onkeydown="if(event.key==='Enter')sendChat()">
-            <button class="btn btn-primary" onclick="sendChat()">Send</button>
+        </div>
+        <div class="dc">
+          <div class="dc-hd"><div class="dc-title">Adjustable bed referral — physician LMN request</div><span class="lbl lbl-amber">Draft</span></div>
+          <div class="dc-meta">Matter: OT-EQ-2026-001 | Audience: Primary Care Physician | Created: Mar 2026</div>
+          <div class="dc-preview">Dear Dr. [Name], I am writing to request a Letter of Medical Necessity (LMN) for an adjustable bed frame...</div>
+          <div id="dc2" class="dc-full">Dear Dr. [Name],
+
+I am writing to request a Letter of Medical Necessity (LMN) supporting the procurement of an adjustable bed frame. This is required for ODSP discretionary benefit funding and may also support Ontario Renovates (Wellington County) and ADP pathway applications.
+
+My occupational therapist (Jo-Anne, Ontario Health atHome via Care Partners) completed a home assessment in March 2026 and identified an adjustable bed as a required equipment need. A clinical note from February 2026 (Juravinski Hospital) confirms progressive spinal instability over 6 months. I am unable to reposition independently during sleep and wake with pain documented at 8/10.
+
+Relevant diagnoses:
+- Crohn's disease with high-output ileostomy (requires repositioning for ostomy management during the night)
+- Chronic spinal instability, progressive (documented February 2026)
+- Persistent post-concussive symptoms following traumatic brain injury
+- Post-laparotomy recovery, January 2026
+
+The LMN should confirm that an adjustable dual-motor bed frame is medically necessary to allow safe head and foot elevation, support ileostomy management during sleep, and reduce pain and injury risk.
+
+Please address to: ODSP Caseworker Valerie Banville, Ministry of Children Community and Social Services.
+
+Matthew Gordon Herbert | DOB: 1988-11-29 | Health Card: 6827-485-050 GC
+matthew@natico.ca | 519-835-2771 (written contact preferred)
+
+STATUS: DRAFT - Requires physician name and review before sending.</div>
+          <div class="dc-acts">
+            <button class="btn btn-s btn-sm" onclick="toggleDraft('dc2',this)">View full draft</button>
+            <button class="btn btn-s btn-sm" onclick="copyDraft('dc2','cok2')">Copy to clipboard</button>
+            <span class="copy-ok" id="cok2">✓ Copied</span>
+          </div>
+        </div>
+        <div class="dc">
+          <div class="dc-hd"><div class="dc-title">Written communication accommodation request</div><span class="lbl lbl-amber">Draft</span></div>
+          <div class="dc-meta">Matter: General | Audience: Healthcare providers / Administrators | Created: Mar 2026</div>
+          <div class="dc-preview">This letter requests a formal accommodation for written communication in all interactions. Due to documented TBI...</div>
+          <div id="dc3" class="dc-full">To Whom It May Concern,
+
+I am writing to formally request a written communication accommodation for all interactions with [Organization Name].
+
+I live with a traumatic brain injury resulting in persistent post-concussive symptoms including executive dysfunction, memory fragmentation, and auditory processing difficulties. These are documented conditions that directly impair my ability to reliably participate in telephone-only communication. This is a disability-related barrier under the Accessibility for Ontarians with Disabilities Act (AODA) and the Ontario Human Rights Code.
+
+I am requesting that all communications regarding my file be conducted via email or written correspondence. I am not requesting an exception to timelines — I am requesting equal access through a channel I can reliably use.
+
+Preferred contact: matthew@natico.ca
+
+This accommodation is consistent with your organization's obligations under Section 5 of the AODA and Section 1 of the Ontario Human Rights Code.
+
+Matthew Gordon Herbert | DOB: 1988-11-29 | Health Card: 6827-485-050 GC
+No Fixed Address, Cambridge ON
+
+STATUS: DRAFT - Requires recipient name and organization.</div>
+          <div class="dc-acts">
+            <button class="btn btn-s btn-sm" onclick="toggleDraft('dc3',this)">View full draft</button>
+            <button class="btn btn-s btn-sm" onclick="copyDraft('dc3','cok3')">Copy to clipboard</button>
+            <span class="copy-ok" id="cok3">✓ Copied</span>
           </div>
         </div>
       </div>
 
       <!-- CONTACTS -->
-      <div id="pg-contacts" class="page">
-        <div class="breadcrumb"><a onclick="nav('dashboard')">Dashboard</a> / Contacts</div>
-        <div class="page-header"><h1>Contacts</h1><p class="subtitle">Key people, roles, last contact, notes</p></div>
-        <div class="section">
-          <h2>Care and support team</h2>
-          <div class="contact-card"><div class="cc-name">Kellsie Hnatejko</div><div class="cc-role">Primary Support Person / Director of Client Experience, NATICO</div><div class="cc-detail">Role: Personal support, business partner, system navigator</div></div>
-          <div class="contact-card"><div class="cc-name">Michelle Klis, RN, BScN</div><div class="cc-role">Care Coordinator, Ontario Health atHome</div><div class="cc-detail">Contact: Ontario Health atHome | Phone: 1-888-883-3313 ext. 2237</div></div>
-          <div class="contact-card"><div class="cc-name">Vanessa Skwira</div><div class="cc-role">Operations Manager / OT Coordinator, Care Partners</div><div class="cc-detail">Email: Vanessa.Skwira@carepartners.ca | Phone: (519) 504-1373</div></div>
-          <div class="contact-card"><div class="cc-name">Valerie Banville</div><div class="cc-role">ODSP Caseworker</div><div class="cc-detail">Ministry contact for ODSP file. Phone: (519) 623-1230</div></div>
-          <div class="contact-card"><div class="cc-name">Nancy Plater</div><div class="cc-role">DSO Regional Director, Sunbeam / DSO Central West</div><div class="cc-detail">Housing and accessibility file. Contact via DSO.</div></div>
+      <div id="pg-contacts" class="pg">
+        <div class="crumb"><span onclick="nav('dashboard')">Dashboard</span> / Contacts</div>
+        <div class="ph"><h1>Contacts</h1><p class="sub">Key people, roles, last contact, notes</p></div>
+        <div class="card"><h2>Care and support team</h2>
+          <div class="cc"><div class="cc-name">Kellsie Hnatejko</div><div class="cc-role">Primary Support Person / Director of Client Experience, NATICO</div><div class="cc-detail">Role: Personal support, business partner, system navigator</div></div>
+          <div class="cc"><div class="cc-name">Michelle Klis, RN</div><div class="cc-role">Care Coordinator, Ontario Health atHome</div><div class="cc-detail">Phone: 1-888-883-3313 ext. 2237</div></div>
+          <div class="cc"><div class="cc-name">Vanessa Skwira</div><div class="cc-role">OT Coordinator, Care Partners</div><div class="cc-detail">Phone: (519) 504-1373</div></div>
+          <div class="cc"><div class="cc-name">Valerie Banville</div><div class="cc-role">ODSP Caseworker</div><div class="cc-detail">Phone: (519) 623-1230</div></div>
+          <div class="cc"><div class="cc-name">Nancy Plater</div><div class="cc-role">DSO Regional Director, Sunbeam / DSO Central West</div><div class="cc-detail">Contact via DSO.</div></div>
         </div>
       </div>
 
       <!-- ACCOUNT -->
-      <div id="pg-account" class="page">
-        <div class="breadcrumb"><a onclick="nav('dashboard')">Dashboard</a> / Account Settings</div>
-        <div class="page-header"><h1>Account Settings</h1></div>
-        <div class="mock-notice">Authentication is mocked via localStorage. This is not a production-secure session.</div>
-        <div class="section">
-          <h2>Session information</h2>
-          <table>
-            <tr><td style="width:180px;"><strong>Email</strong></td><td>libby@example.com</td></tr>
-            <tr><td><strong>Account type</strong></td><td>Demo</td></tr>
-            <tr><td><strong>Session</strong></td><td>Active (mock localStorage)</td></tr>
-            <tr><td><strong>Email verified</strong></td><td><span class="label label-confirmed">Confirmed (mock)</span></td></tr>
-            <tr><td><strong>2FA</strong></td><td><span class="label label-missing">Not enabled</span></td></tr>
-          </table>
-        </div>
-        <div class="section">
-          <h2>Production authentication path</h2>
-          <p style="font-size:0.875rem;color:var(--c-text-sub);">Recommended production target: Supabase Auth (email/password, verification, session handling, TOTP 2FA). The auth module exposes the same API surface a real auth provider would need. Replace mock functions in auth.js with Supabase client calls.</p>
-        </div>
-        <div class="section">
-          <h2>Actions</h2>
-          <button class="btn btn-danger" onclick="doLogout()">Sign out</button>
-        </div>
+      <div id="pg-account" class="pg">
+        <div class="crumb"><span onclick="nav('dashboard')">Dashboard</span> / Account Settings</div>
+        <div class="ph"><h1>Account Settings</h1></div>
+        <div class="mock-bar">Authentication is mocked via localStorage. This is not a production-secure session.</div>
+        <div class="card"><h2>Session information</h2><table><tr><td style="width:170px"><strong>Email</strong></td><td>libby@example.com</td></tr><tr><td><strong>Account type</strong></td><td>Demo</td></tr><tr><td><strong>Session</strong></td><td>Active (mock)</td></tr><tr><td><strong>2FA</strong></td><td><span class="lbl lbl-warn">Not enabled</span></td></tr></table></div>
+        <div class="card"><h2>Production path</h2><p style="font-size:.87rem;color:var(--sub)">Recommended: Supabase Auth (email/password, TOTP 2FA). Replace mock auth functions with Supabase client calls.</p></div>
+        <div class="card"><h2>Actions</h2><button class="btn btn-d" onclick="doLogout()">Sign out</button></div>
       </div>
 
     </main>
   </div>
+
+  <!-- FLOATING LIBBY -->
+  <div id="libby-panel">
+    <div id="libby-tab" onclick="toggleLibby()">
+      <div class="lt-dot"></div>
+      <div><div class="lt-title">Libby</div><div class="lt-sub">Advocacy assistant</div></div>
+      <div class="lt-spacer"></div>
+      <span class="lt-badge" id="lt-badge" style="display:none">1</span>
+      <span class="lt-chev">▲</span>
+    </div>
+    <div id="libby-body">
+      <div class="lb-notice"><strong>Libby</strong>Conservative, evidence-aware. Never presents inference as confirmed fact. Not a clinical advisor. All draft outputs require human review.</div>
+      <div id="libby-messages">
+        <div class="lm lm-libby"><div class="lm-bubble"><div class="lm-hd"><span class="lm-name">Libby</span><span class="lbl lbl-ok" style="font-size:.64rem">Ready</span></div>Hello. Your case context is loaded. Ask me about your file, request a draft letter, or ask me to prepare you for an appointment.</div></div>
+      </div>
+      <div class="lb-chips-wrap" id="lb-chips-wrap">
+        <div class="lb-chips-label">Quick prompts</div>
+        <div class="lb-chips">
+          <div class="lb-chip" onclick="sendDemo(0)">Prepare me for OT</div>
+          <div class="lb-chip" onclick="sendDemo(1)">Draft bed referral letter</div>
+          <div class="lb-chip" onclick="sendDemo(2)">Summarize my barriers</div>
+          <div class="lb-chip" onclick="sendDemo(3)">Surgery records</div>
+          <div class="lb-chip" onclick="sendDemo(4)">Confirmed vs missing</div>
+        </div>
+      </div>
+      <div class="lb-input-row">
+        <textarea id="libby-input" placeholder="Ask Libby..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+        <button class="lb-send" onclick="sendChat()">➤</button>
+      </div>
+      <div class="lb-footer">
+        <span class="lb-status" id="lb-status">Demo mode</span>
+        <span class="lb-reset" onclick="resetChat()">Clear chat</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-// ── Auth (mock) ──
-const DEMO_EMAIL = 'libby@example.com';
-const DEMO_PASS  = 'demo1234';
-
-function isLoggedIn() {
-  return localStorage.getItem('libby_session') === 'active';
+const DEMO_CREDS={email:'libby@example.com',pass:'demo1234'};
+function isLoggedIn(){return localStorage.getItem('ll_s')==='1'}
+function doLogin(){
+  const e=document.getElementById('li-email').value.trim(),p=document.getElementById('li-pass').value,err=document.getElementById('login-err');
+  if(e===DEMO_CREDS.email&&p===DEMO_CREDS.pass){localStorage.setItem('ll_s','1');showApp();nav('dashboard')}
+  else{err.style.display='block';err.innerHTML='<strong>Error</strong>Invalid credentials. Use libby@example.com / demo1234'}
 }
-
-function doLogin() {
-  const e = document.getElementById('login-email').value.trim();
-  const p = document.getElementById('login-pass').value;
-  if (e === DEMO_EMAIL && p === DEMO_PASS) {
-    localStorage.setItem('libby_session', 'active');
-    showApp();
-    nav('dashboard');
-  } else {
-    const err = document.getElementById('login-error');
-    err.style.display = 'block';
-    err.innerHTML = '<strong>Error</strong>Invalid credentials. Use libby@example.com / demo1234 for demo access.';
-  }
+function doSignup(){
+  const err=document.getElementById('su-err'),e=document.getElementById('su-email').value.trim(),p=document.getElementById('su-pass').value,p2=document.getElementById('su-pass2').value,t=document.getElementById('su-terms').checked;
+  if(!e){err.style.display='block';err.innerHTML='<strong>Required</strong>Please enter an email address.';return}
+  if(!p||p.length<6){err.style.display='block';err.innerHTML='<strong>Required</strong>Password must be at least 6 characters.';return}
+  if(p!==p2){err.style.display='block';err.innerHTML='<strong>Error</strong>Passwords do not match.';return}
+  if(!t){err.style.display='block';err.innerHTML='<strong>Required</strong>Please agree to the terms.';return}
+  localStorage.setItem('ll_s','1');showApp();nav('dashboard');
 }
-
-function doLogout() {
-  localStorage.removeItem('libby_session');
-  showPage('p-login');
-}
-
-// ── Page routing ──
-function showPage(id) {
-  document.querySelectorAll('body > .page').forEach(p => {
-    p.style.display = 'none';
-    p.classList.remove('active');
-  });
-  document.getElementById('app-shell').style.display = 'none';
-  const el = document.getElementById(id);
-  if (el) { el.style.display = 'block'; el.classList.add('active'); }
-}
-
-function showApp() {
-  document.querySelectorAll('body > .page').forEach(p => {
-    p.style.display = 'none';
-    p.classList.remove('active');
-  });
-  document.getElementById('app-shell').style.display = 'block';
-}
-
-function nav(pg) {
-  if (!isLoggedIn()) { showPage('p-login'); return; }
+function doLogout(){localStorage.removeItem('ll_s');document.getElementById('app').style.display='none';showPub('pg-login')}
+function showPub(id){document.querySelectorAll('.pg-pub').forEach(p=>p.classList.remove('active'));document.getElementById('app').style.display='none';const el=document.getElementById(id);if(el)el.classList.add('active')}
+function showApp(){document.querySelectorAll('.pg-pub').forEach(p=>p.classList.remove('active'));document.getElementById('app').style.display='block'}
+function nav(pg,filter){
+  if(!isLoggedIn()){showPub('pg-login');return}
   showApp();
-  document.querySelectorAll('#main .page').forEach(p => {
-    p.style.display = 'none';
-    p.classList.remove('active');
-  });
-  const el = document.getElementById('pg-' + pg);
-  if (el) { el.style.display = 'block'; el.classList.add('active'); }
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => {
-    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + pg + "'")) {
-      n.classList.add('active');
-    }
-  });
-  window.scrollTo(0, 0);
-  if (window.innerWidth <= 768) {
-    document.getElementById('sidebar').classList.remove('open');
-  }
+  document.querySelectorAll('#main .pg').forEach(p=>{p.style.display='none';p.classList.remove('active')});
+  const el=document.getElementById('pg-'+pg);if(el){el.style.display='block';el.classList.add('active')}
+  document.querySelectorAll('.sb-item').forEach(n=>n.classList.remove('active'));
+  const ni=document.getElementById('nav-'+pg);if(ni)ni.classList.add('active');
+  if(window.innerWidth<=768)document.getElementById('sidebar').classList.remove('open');
+  window.scrollTo(0,0);
+  if(filter&&pg==='evidence'){setTimeout(()=>{const c=document.querySelector(`.fc[onclick="filterEv('${filter}',this)"]`);if(c)c.click()},50)}
 }
+function toggleSidebar(){const s=document.getElementById('sidebar');s.classList.toggle('open');s.classList.toggle('closed')}
+function toggleNav(hd){hd.classList.toggle('open');hd.nextElementSibling.classList.toggle('open')}
+function toggleOT(hd){hd.classList.toggle('open');hd.nextElementSibling.classList.toggle('open')}
+function filterEv(type,btn){document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('#ev-list .ev').forEach(c=>{c.style.display=(type==='all'||c.dataset.ev===type)?'block':'none'})}
+function setMode(cid,mode,btn){const c=document.getElementById(cid);c.className=c.className.replace(/mode-\w+/,'').trim()+' mode-'+mode;btn.closest('.mode-toggle').querySelectorAll('button').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+function toggleDraft(id,btn){const el=document.getElementById(id);el.classList.toggle('open');btn.textContent=el.classList.contains('open')?'Hide draft':'View full draft'}
+function copyDraft(id,okId){const el=document.getElementById(id);navigator.clipboard.writeText(el.innerText).then(()=>{const ok=document.getElementById(okId);if(ok){ok.style.display='inline';setTimeout(()=>ok.style.display='none',2500)}})}
 
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-}
-
-// ── Reading mode ──
-function setMode(containerId, mode, btn) {
-  const c = document.getElementById(containerId);
-  c.className = c.className.replace(/mode-\w+/g, '').trim() + ' mode-' + mode;
-  btn.closest('.reading-toggle').querySelectorAll('button').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
-
-// ── OT toggle ──
-function toggleOT(header) {
-  const body = header.nextElementSibling;
-  body.classList.toggle('open');
-}
-
-// ── Evidence filter ──
-function filterEv(type, btn) {
-  document.querySelectorAll('#evidence-list .evidence-card').forEach(c => {
-    c.style.display = (type === 'all' || c.dataset.conf === type) ? 'block' : 'none';
-  });
-}
-
-// ── Chat ──
-const DEMOS = [
-  {
-    q: "Prepare me for my OT visit tomorrow.",
-    a: "Here is a pre-appointment summary based on your confirmed records.",
-    detail: "Confirmed items to bring: Clinical note Feb 2026 (spinal instability), home assessment Mar 2026, pain log (8/10 waking pain). Items the OT will need to address: formal vendor quote for S-Series adjustable bed, Letter of Medical Necessity from your physician. The OT may ask about daily repositioning frequency and pain patterns - your patient truth log has documented responses ready.",
-    conf: "Confirmed",
-    cite: "Sources: Clinical_Note_Feb2026, Home_Assessment_Mar2026, Patient_Truth_Log_v2"
-  },
-  {
-    q: "Draft an adjustable bed referral letter.",
-    a: "Draft letter prepared. Status: Needs Review before submission.",
-    detail: "Re: Letter of Medical Necessity - Adjustable Bed Frame (S-Series)\n\nBased on the clinical note from February 2026 documenting progressive spinal instability and the home assessment from March 2026 confirming inadequate current equipment, this patient requires a head/foot adjustable bed frame. Waking pain documented at 8/10. Safe independent repositioning is not currently possible with standard equipment.",
-    conf: "Draft",
-    cite: "Sources: Clinical_Note_Feb2026, Home_Assessment_Mar2026 | Status: DRAFT - requires professional review before submission"
-  },
-  {
-    q: "Summarize my current barriers in plain language.",
-    a: "Plain language summary of confirmed barriers.",
-    detail: "1. Physical: Cannot safely reposition during sleep due to spinal instability. Pain 8/10 on waking. 2. Cognitive: TBI causes memory gaps and task paralysis. Phone-only communication is a documented barrier. 3. Administrative: ODSP review requires response within 10 days. Equipment referral missing vendor quote and LMN. 4. Access: Transport barriers impact appointment attendance. High volume of appointments without coordination support.",
-    conf: "Confirmed",
-    cite: "Sources: Patient_Realities_Log, Clinical_Notes, Patient_Truth_Log_v2"
-  },
-  {
-    q: "What records do I have related to my surgery?",
-    a: "Surgical records found in Evidence Library.",
-    detail: "Confirmed: Ileostomy procedure record - Juravinski Hospital 2024, Dr. Shawn Forbes (Colorectal/Stoma). Ongoing: Home care coordination records from ParaMed, Care Partners. Nutritional monitoring records - McMaster 2F Clinic. Note: discharge coordination record flagged as incomplete - gap in record of first 72-hour home care setup.",
-    conf: "Confirmed",
-    cite: "Sources: Surgical_Record_2024, Evidence_Library items 4-5"
-  },
-  {
-    q: "Show confirmed facts versus what is still missing.",
-    a: "Evidence status summary.",
-    detail: "CONFIRMED (5 items): Spinal instability clinical note, home assessment, ODSP review letter, patient truth log, surgical record.\n\nMISSING EVIDENCE (3 items): Vendor quote for adjustable bed frame, Letter of Medical Necessity (LMN), funding eligibility confirmation.\n\nACTION REQUIRED: ODSP response letter due within 10 days.",
-    conf: "Confirmed",
-    cite: "Sources: Evidence Library - all items"
-  }
+// LIBBY CHAT
+let libbyOpen=false,chatHistory=[],isLoading=false;
+const DEMOS=[
+  {q:"Prepare me for my OT visit.",a:"Pre-appointment summary from your confirmed records.",detail:"Confirmed items to bring:\n- Clinical note Feb 2026 (spinal instability)\n- Home assessment Mar 2026\n- Pain log (8/10 waking pain)\n\nItems the OT will need to action:\n- Vendor quote for S-Series adjustable bed\n- Letter of Medical Necessity from your physician\n\nThe OT may ask about repositioning frequency and pain patterns — your patient truth log has documented responses ready.",conf:"Confirmed",cite:"Sources: Clinical_Note_Feb2026, Home_Assessment_Mar2026, Patient_Truth_Log_v2\nNext action: Confirm OT has received the March 2026 home assessment."},
+  {q:"Draft an adjustable bed referral letter.",a:"Draft LMN request prepared. Status: Needs Review before submission.",detail:"Re: Letter of Medical Necessity — Adjustable Bed Frame (S-Series)\n\nBased on the clinical note from February 2026 documenting progressive spinal instability and the home assessment from March 2026 confirming inadequate current equipment, this patient requires a head/foot adjustable dual-motor bed frame.\n\nWaking pain documented at 8/10. Safe independent repositioning is not currently possible. High-output ileostomy also requires repositioning during the night for management.\n\n[Requires physician name, signature, and date before submission]",conf:"Draft",cite:"Sources: Clinical_Note_Feb2026, Home_Assessment_Mar2026\nNext action: Obtain vendor quote (S-Series) and confirm physician name."},
+  {q:"Summarize my current barriers in plain language.",a:"Confirmed barrier summary across four categories.",detail:"1. Physical — Cannot safely reposition during sleep. Pain 8/10 on waking. Walker required for all public mobility. Post-laparotomy recovery ongoing.\n\n2. Cognitive — TBI causes memory gaps and task paralysis. Phone-only communication is a documented barrier.\n\n3. Administrative — ODSP review requires response within 10 days. Equipment referral missing vendor quote and LMN.\n\n4. Access — Transport barriers impact appointment attendance. Clinic contact by phone only despite written communication requirement.",conf:"Confirmed",cite:"Sources: Patient_Realities_Log, Clinical_Notes, Patient_Truth_Log_v2\nNext action: ODSP response letter — due within 10 days."},
+  {q:"What records do I have related to my surgery?",a:"Surgical records confirmed in Evidence Library.",detail:"Confirmed:\n- Ileostomy procedure — Juravinski Hospital 2024 (Dr. Shawn Forbes)\n- Laparotomy January 2026 — small bowel resection, stoma resiting (Dr. Forbes, McMaster/Juravinski)\n\nOngoing:\n- Nutritional monitoring — McMaster 2F Clinic\n- Home care coordination — ParaMed, Care Partners\n\nGap flagged: Discharge coordination record incomplete — first 72-hour home care setup not confirmed in file.",conf:"Confirmed",cite:"Sources: Surgical_Record_2024, Evidence_Library\nNext action: Document discharge gap for potential escalation."},
+  {q:"Show confirmed facts versus what is still missing.",a:"Evidence status summary — all active matters.",detail:"CONFIRMED (5 items):\n✓ Spinal instability clinical note (Feb 2026)\n✓ Home assessment (Mar 2026)\n✓ ODSP approved (Mar 23 2026)\n✓ Patient truth log v2\n✓ Surgical record (2024)\n\nMISSING EVIDENCE (4 items):\n⚠ Vendor quote — adjustable bed (S-Series)\n⚠ Letter of Medical Necessity (LMN)\n⚠ Funding eligibility confirmation\n⚠ London University appointment date\n\nACTION REQUIRED: ODSP response due within 10 days.",conf:"Confirmed",cite:"Sources: Evidence Library — all items\nNext action: Obtain vendor quote for S-Series adjustable bed frame."}
 ];
-
-function renderMsg(role, text, detail, conf, cite) {
-  const box = document.getElementById('chat-messages');
-  if (role === 'user') {
-    box.innerHTML += `<div class="msg msg-user"><div class="bubble">${text}</div></div>`;
-  } else {
-    const confClass = {
-      'Confirmed': 'label-confirmed',
-      'Draft':     'label-draft',
-      'Inferred':  'label-inferred'
-    }[conf] || 'label-inferred';
-    box.innerHTML += `
-      <div class="msg msg-libby">
-        <div class="bubble">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-            <strong style="font-size:0.85rem;">Libby</strong>
-            <span class="label ${confClass}">${conf}</span>
-          </div>
-          <div>${text}</div>
-          ${detail ? `<div style="margin-top:8px;font-size:0.875rem;white-space:pre-line;color:var(--c-text);">${detail}</div>` : ''}
-          ${cite ? `<div class="citation">${cite}</div>` : ''}
-        </div>
-      </div>`;
-  }
-  box.scrollTop = box.scrollHeight;
+function toggleLibby(){libbyOpen=!libbyOpen;document.getElementById('libby-panel').classList.toggle('open',libbyOpen);document.getElementById('lt-badge').style.display='none';if(libbyOpen)document.getElementById('libby-input').focus()}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
+function addMsg(role,text,detail,conf,cite){
+  const box=document.getElementById('libby-messages'),div=document.createElement('div');
+  div.className='lm lm-'+role;
+  if(role==='user'){div.innerHTML=`<div class="lm-bubble">${esc(text)}</div>`}
+  else{const cc={Confirmed:'lbl-ok',Draft:'lbl-amber',Inferred:'lbl-blue',Ready:'lbl-ok'}[conf]||'lbl-grey';div.innerHTML=`<div class="lm-bubble"><div class="lm-hd"><span class="lm-name">Libby</span><span class="lbl ${cc}" style="font-size:.64rem">${conf||'Inferred'}</span></div><div>${esc(text)}</div>${detail?`<div class="lm-detail">${esc(detail)}</div>`:''}${cite?`<div class="lm-cite">${esc(cite)}</div>`:''}</div>`}
+  box.appendChild(div);box.scrollTop=box.scrollHeight;
 }
-
-function sendDemo(i) {
-  const d = DEMOS[i];
-  document.getElementById('chat-input').value = d.q;
-  sendChat();
-}
-
-function sendChat() {
-  const input = document.getElementById('chat-input');
-  const val = input.value.trim();
-  if (!val) return;
-  renderMsg('user', val);
-  input.value = '';
-  // match demo
-  const match = DEMOS.find(d => d.q.toLowerCase() === val.toLowerCase() ||
-    val.toLowerCase().includes(d.q.toLowerCase().split(' ')[0]));
-  setTimeout(() => {
-    if (match) {
-      renderMsg('libby', match.a, match.detail, match.conf, match.cite);
-    } else {
-      renderMsg('libby',
-        'I do not have a pre-built response for that query in this prototype.',
-        'In production, Libby would search your Evidence Library and case files to construct a cited response. For now, try one of the demo prompts above.',
-        'Inferred',
-        'Status: PROTOTYPE - demo responses only'
-      );
+function addTyping(){const box=document.getElementById('libby-messages'),div=document.createElement('div');div.className='lm lm-libby';div.id='lm-typing';div.innerHTML='<div class="lm-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>';box.appendChild(div);box.scrollTop=box.scrollHeight}
+function removeTyping(){const t=document.getElementById('lm-typing');if(t)t.remove()}
+function sendDemo(i){if(!libbyOpen)toggleLibby();setTimeout(()=>{document.getElementById('libby-input').value=DEMOS[i].q;sendChat()},300)}
+function sendChat(){
+  if(isLoading)return;
+  const input=document.getElementById('libby-input'),text=input.value.trim();
+  if(!text)return;
+  input.value='';isLoading=true;
+  document.getElementById('lb-chips-wrap').style.display='none';
+  addMsg('user',text);addTyping();
+  const match=DEMOS.find(d=>text.toLowerCase().includes(d.q.split(' ').slice(0,3).join(' ').toLowerCase()));
+  setTimeout(()=>{
+    removeTyping();
+    if(match){addMsg('libby',match.a,match.detail,match.conf,match.cite)}
+    else{
+      fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[...chatHistory,{role:'user',content:text}]})})
+        .then(r=>r.json()).then(d=>{
+          if(d.reply){chatHistory.push({role:'user',content:text},{role:'assistant',content:d.reply});addMsg('libby',d.reply,'','Confirmed','');document.getElementById('lb-status').textContent='Live AI';document.getElementById('lb-status').classList.add('live')}
+          else{addMsg('libby','I do not have a pre-built response for that query in demo mode.','In production, Libby would search your Evidence Library to construct a cited response. Try one of the quick prompts, or configure the OpenAI API key in Netlify to enable live AI responses.','Inferred','Status: DEMO MODE')}
+        }).catch(()=>addMsg('libby','I do not have a pre-built response for that query in demo mode.','In production, Libby would search your Evidence Library to construct a cited response. Try one of the quick prompts, or configure the OpenAI API key in Netlify to enable live AI responses.','Inferred','Status: DEMO MODE'));
     }
-  }, 600);
+    isLoading=false;
+  },700);
 }
-
-// ── Signup (mock) ──
-function doSignup() {
-  const err = document.getElementById('signup-error');
-  const email = document.getElementById('signup-email').value.trim();
-  const pass  = document.getElementById('signup-pass').value;
-  const pass2 = document.getElementById('signup-pass2').value;
-  const checked = document.getElementById('terms').checked;
-
-  if (!email) {
-    err.style.display = 'block';
-    err.innerHTML = '<strong>Required</strong>Please enter an email address.';
-    return;
-  }
-  if (!pass || pass.length < 6) {
-    err.style.display = 'block';
-    err.innerHTML = '<strong>Required</strong>Password must be at least 6 characters.';
-    return;
-  }
-  if (pass !== pass2) {
-    err.style.display = 'block';
-    err.innerHTML = '<strong>Error</strong>Passwords do not match.';
-    return;
-  }
-  if (!checked) {
-    err.style.display = 'block';
-    err.innerHTML = '<strong>Required</strong>Please check the terms checkbox to continue.';
-    return;
-  }
-  err.style.display = 'none';
-  localStorage.setItem('libby_session', 'active');
-  showApp();
-  nav('dashboard');
-}
-
-// ── Init ──
-window.addEventListener('load', () => {
-  if (isLoggedIn()) {
-    showApp();
-    nav('dashboard');
-  } else {
-    showPage('p-login');
-  }
-});
+function resetChat(){document.getElementById('libby-messages').innerHTML='<div class="lm lm-libby"><div class="lm-bubble"><div class="lm-hd"><span class="lm-name">Libby</span><span class="lbl lbl-ok" style="font-size:.64rem">Ready</span></div>Chat cleared. Your case context is still loaded. What do you need?</div></div>';chatHistory=[];document.getElementById('lb-chips-wrap').style.display='block'}
+window.addEventListener('load',()=>{if(isLoggedIn()){showApp();nav('dashboard')}else showPub('pg-login')});
+window.addEventListener('resize',()=>{if(window.innerWidth>768)document.getElementById('sidebar').classList.remove('closed')});
 </script>
 </body>
 </html>
