@@ -741,10 +741,11 @@
       <div class="form-group">
         <div class="form-check">
           <input type="checkbox" id="terms" style="margin-top:3px;">
-          <label for="terms">I agree to the terms of service and privacy policy</label>
+          <label for="terms">I agree to the terms of service. This is a NATICO prototype - demo use only.</label>
         </div>
       </div>
-      <button class="btn btn-primary" style="width:100%;">Create account</button>
+      <div id="signup-error" class="callout callout-warn" style="display:none;margin-bottom:8px;font-size:0.875rem;"></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:4px;" onclick="doSignup()">Create account</button>
       <div class="auth-footer"><a href="#" onclick="showPage('p-login');return false;">Already have an account? Sign in</a></div>
     </div>
   </div>
@@ -1425,6 +1426,21 @@ function sendChat() {
       );
     }
   }, 600);
+}
+
+// ── Signup (mock) ──
+function doSignup() {
+  const err = document.getElementById('signup-error');
+  const checked = document.getElementById('terms').checked;
+  if (!checked) {
+    err.style.display = 'block';
+    err.innerHTML = '<strong>Required</strong>Please check the terms checkbox to continue.';
+    return;
+  }
+  err.style.display = 'none';
+  localStorage.setItem('libby_session', 'active');
+  showApp();
+  nav('dashboard');
 }
 
 // ── Init ──
