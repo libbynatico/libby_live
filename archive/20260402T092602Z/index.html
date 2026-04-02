@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Libby Live - v2.01.0-claude-preview1</title>
+  <meta name="description" content="Libby Live - advocacy dashboard, evidence workspace, and AI-assisted case support." />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #111831;
+      --panel-2: #182243;
+      --panel-3: #0f1730;
+      --text: #eef2ff;
+      --muted: #a7b0d6;
+      --line: #2a396d;
+      --accent: #75a7ff;
+      --accent-2: #9cc2ff;
+      --ok: #42c08c;
+      --warn: #f2bb5e;
+      --danger: #ef6f6f;
+      --shadow: 0 16px 40px rgba(0,0,0,.28);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: linear-gradient(180deg, #09101f 0%, #0d1530 100%);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    a { color: var(--accent-2); text-decoration: none; }
+    button, input, textarea, select {
+      font: inherit;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background: rgba(10,16,34,.88);
+      border-right: 1px solid var(--line);
+      padding: 24px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #7ba5ff 0%, #446fe0 100%);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      box-shadow: var(--shadow);
+    }
+
+    .brand-copy h1 {
+      font-size: 18px;
+      line-height: 1.1;
+      margin: 0 0 4px;
+    }
+
+    .brand-copy p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .version-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(117,167,255,.12);
+      border: 1px solid rgba(117,167,255,.28);
+      color: var(--accent-2);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      margin-bottom: 18px;
+    }
+
+    /* ---- NAV: improved active state with left border ---- */
+    .nav {
+      display: grid;
+      gap: 4px;
+    }
+
+    .nav button {
+      width: 100%;
+      text-align: left;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      border-left: 3px solid transparent;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
+      font-size: 14px;
+    }
+
+    .nav button:hover {
+      background: rgba(117,167,255,.08);
+      color: var(--text);
+    }
+
+    .nav button.active {
+      background: rgba(117,167,255,.12);
+      border-color: rgba(117,167,255,.26);
+      border-left-color: var(--accent);
+      color: var(--accent-2);
+      font-weight: 500;
+    }
+
+    .sidebar-meta {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      display: grid;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .sidebar-meta strong { color: var(--text); }
+
+    .main {
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .topbar-left h2 {
+      margin: 0 0 6px;
+      font-size: 26px;
+    }
+
+    .topbar-left p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* ---- BUTTONS: added :active scale ---- */
+    .btn {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background .15s ease, border-color .15s ease, transform .1s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(117,167,255,.4);
+    }
+
+    .btn:active {
+      transform: scale(0.97) translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #5686ff 0%, #395ed4 100%);
+      border-color: transparent;
+    }
+
+    .btn.primary:hover {
+      background: linear-gradient(135deg, #6a96ff 0%, #4a6ee4 100%);
+    }
+
+    .btn.ghost {
+      background: transparent;
+    }
+
+    .btn.warn {
+      background: rgba(242,187,94,.12);
+      border-color: rgba(242,187,94,.28);
+      color: #ffd899;
+    }
+
+    .btn.danger {
+      background: rgba(239,111,111,.1);
+      border-color: rgba(239,111,111,.24);
+      color: #ffc3c3;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid.stats {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(24,34,67,.94) 0%, rgba(14,21,44,.98) 100%);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .stat-value {
+      font-size: 30px;
+      font-weight: 800;
+      margin: 4px 0;
+    }
+
+    .muted { color: var(--muted); }
+    .small { font-size: 12px; }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+    }
+
+    .pill.ok { color: #b9ffd9; border-color: rgba(66,192,140,.25); background: rgba(66,192,140,.1); }
+    .pill.warn { color: #ffe2a3; border-color: rgba(242,187,94,.25); background: rgba(242,187,94,.1); }
+    .pill.danger { color: #ffd0d0; border-color: rgba(239,111,111,.25); background: rgba(239,111,111,.1); }
+
+    .layout-2 {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 16px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea,
+    select {
+      width: 100%;
+      background: rgba(7,12,26,.66);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 13px;
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: rgba(117,167,255,.5);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    /* ---- Chat textarea: no resize, auto-height handled in JS ---- */
+    #chatInput {
+      min-height: 44px;
+      max-height: 180px;
+      resize: none;
+      overflow-y: auto;
+      line-height: 1.5;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .form-grid.two {
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .item {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: rgba(255,255,255,.02);
+    }
+
+    .item-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+
+    .item-head strong {
+      font-size: 15px;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .mini {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--text);
+      padding: 7px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background .12s, border-color .12s;
+    }
+
+    .mini:hover {
+      background: rgba(117,167,255,.1);
+      border-color: rgba(117,167,255,.3);
+    }
+
+    .mini:active {
+      transform: scale(0.96);
+    }
+
+    .activity-log {
+      max-height: 360px;
+      overflow: auto;
+      display: grid;
+      gap: 10px;
+    }
+
+    .activity-entry {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.02);
+      font-size: 13px;
+    }
+
+    /* ---- Chat shell: improved layout with send row ---- */
+    .chat-shell {
+      display: grid;
+      gap: 14px;
+    }
+
+    .chat-log {
+      display: grid;
+      gap: 12px;
+      max-height: 520px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .chat-msg {
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+
+    .chat-msg.user {
+      background: rgba(117,167,255,.08);
+      border-color: rgba(117,167,255,.24);
+    }
+
+    .chat-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ---- Improved chat send row ---- */
+    .chat-send-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .chat-send-row textarea {
+      flex: 1;
+      margin: 0;
+    }
+
+    .chat-send-btn {
+      flex-shrink: 0;
+      padding: 11px 18px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #5686ff 0%, #395ed4 100%);
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background .15s, transform .1s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .chat-send-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, #6a96ff 0%, #4a6ee4 100%);
+    }
+
+    .chat-send-btn:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    .chat-send-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .chat-hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ---- Inline field error (replaces alert()) ---- */
+    .field-error {
+      font-size: 12px;
+      color: #ef6f6f;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .field-error.visible {
+      display: block;
+    }
+
+    .inline-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .empty {
+      color: var(--muted);
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1180px) {
+      .grid.stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .layout-2 { grid-template-columns: 1fr; }
+      .form-grid.two { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 920px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .main { padding: 18px; }
+    }
+
+    @media (max-width: 640px) {
+      .grid.stats { grid-template-columns: 1fr; }
+      .topbar-left h2 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">L</div>
+        <div class="brand-copy">
+          <h1>Libby Live</h1>
+          <p>Case support portal</p>
+        </div>
+      </div>
+
+      <div class="version-chip" id="versionChip">v2.01.0-claude-preview1</div>
+
+      <div class="nav">
+        <button class="active" data-target="dashboardPanel">Dashboard</button>
+        <button data-target="casePanel">Case Profile</button>
+        <button data-target="evidencePanel">Evidence</button>
+        <button data-target="draftsPanel">Drafts</button>
+        <button data-target="filesPanel">Files + Drive</button>
+        <button data-target="chatPanel">Libby Chat</button>
+        <button data-target="settingsPanel">Settings</button>
+      </div>
+
+      <div class="sidebar-meta">
+        <div><strong>Build</strong><br /><span id="buildModeLabel">live</span></div>
+        <div><strong>Session</strong><br /><span id="sessionStatus">Guest mode</span></div>
+        <div><strong>Supabase</strong><br /><span id="supabaseStatus">Checking...</span></div>
+        <div><strong>Drive sync</strong><br /><span id="driveSidebarStatus">Scaffold only</span></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <h2>Libby Live</h2>
+          <p>Structured advocacy workspace - local persistence, Supabase auth, Netlify chat routing via OpenRouter.</p>
+        </div>
+
+        <div class="toolbar">
+          <button class="btn" id="saveLocalBtn">Save local</button>
+          <button class="btn" id="exportBtn">Export JSON</button>
+          <label class="btn ghost" for="importJsonInput">Import JSON</label>
+          <input id="importJsonInput" class="hidden" type="file" accept=".json,application/json" />
+          <button class="btn" id="signinBtn">Sign in with GitHub</button>
+          <button class="btn danger hidden" id="signoutBtn">Sign out</button>
+        </div>
+      </div>
+
+      <section class="panel active" id="dashboardPanel">
+        <div class="grid stats">
+          <div class="card">
+            <h3>Evidence items</h3>
+            <div class="stat-value" id="statEvidence">0</div>
+            <div class="muted small">Tracked sources and supporting records</div>
+          </div>
+          <div class="card">
+            <h3>Drafts</h3>
+            <div class="stat-value" id="statDrafts">0</div>
+            <div class="muted small">Letters, notes, and generated outputs</div>
+          </div>
+          <div class="card">
+            <h3>File records</h3>
+            <div class="stat-value" id="statFiles">0</div>
+            <div class="muted small">Uploaded file metadata and linked references</div>
+          </div>
+          <div class="card">
+            <h3>Chat turns</h3>
+            <div class="stat-value" id="statChat">0</div>
+            <div class="muted small">Messages stored in this workspace</div>
+          </div>
+        </div>
+
+        <div class="layout-2">
+          <div class="stack">
+            <div class="card">
+              <h3>Case overview</h3>
+              <div class="form-grid">
+                <div>
+                  <label for="caseSituation">Current situation</label>
+                  <textarea id="caseSituation" placeholder="Summarize the current case status, urgent issues, and what needs to happen next."></textarea>
+                </div>
+                <div>
+                  <label for="caseDiagnoses">Confirmed diagnoses / conditions</label>
+                  <textarea id="caseDiagnoses" placeholder="One per line or comma-separated."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Connection status</h3>
+              <div class="status-row" style="margin-bottom: 10px;">
+                <span class="pill" id="authPill">Auth: checking</span>
+                <span class="pill" id="chatPill">Chat: wired to Netlify</span>
+                <span class="pill" id="drivePill">Drive: scaffold only</span>
+              </div>
+              <div class="muted small">
+                Browser data persists locally immediately. GitHub sign-in runs through Supabase OAuth.
+                Chat routes through <code>/.netlify/functions/chat</code> to OpenRouter server-side.
+                Google Drive is scaffolded as a stateful UI surface only.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Recent activity</h3>
+            <div class="activity-log" id="activityLog"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="casePanel">
+        <div class="layout-2">
+          <div class="card">
+            <h3>Patient realities</h3>
+            <label for="caseRealities">Day-to-day realities</label>
+            <textarea id="caseRealities" placeholder="Write plainly about functioning, barriers, practical realities, and system effects."></textarea>
+          </div>
+
+          <div class="card">
+            <h3>Patient truths</h3>
+            <label for="caseTruths">Reusable truth statements</label>
+            <textarea id="caseTruths" placeholder="Short stable statements you may want to reuse in letters and summaries."></textarea>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          These text areas auto-save into your browser workspace and are included in the context summary sent to the chat function.
+        </div>
+      </section>
+
+      <section class="panel" id="evidencePanel">
+        <div class="card" style="margin-bottom: 16px;">
+          <h3>Add evidence</h3>
+          <div class="form-grid two">
+            <div>
+              <label for="evidenceTitle">Title</label>
+              <input type="text" id="evidenceTitle" placeholder="e.g. Audiology report" />
+            </div>
+            <div>
+              <label for="evidenceType">Type</label>
+              <input type="text" id="evidenceType" placeholder="PDF, email, screenshot, letter..." />
+            </div>
+          </div>
+          <div class="form-grid" style="margin-top: 14px;">
+            <div>
+              <label for="evidenceSummary">Summary</label>
+              <textarea id="evidenceSummary" placeholder="What does this source establish?"></textarea>
+            </div>
+            <div class="inline-actions">
+              <button class="btn primary" id="addEvidenceBtn">Add evidence item</button>
+            </div>
+            <div class="field-error" id="evidenceError">Title and summary are required.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Evidence library</h3>
+          <div class="list" id="evidenceList"></div>
+        </div>
+      </section>
+
+      <section class="panel" id="draftsPanel">
+        <div class="card" style="margin-bottom: 16px;">
+          <h3>Add draft</h3>
+          <div class="form-grid two">
+            <div>
+              <label for="draftTitle">Title</label>
+              <input type="text" id="draftTitle" placeholder="Draft title" />
+            </div>
+            <div>
+              <label for="draftAudience">Audience</label>
+              <input type="text" id="draftAudience" placeholder="Caseworker, clinician, landlord..." />
+            </div>
+          </div>
+          <div class="form-grid" style="margin-top: 14px;">
+            <div>
+              <label for="draftBody">Body</label>
+              <textarea id="draftBody" placeholder="Paste or write the current draft here."></textarea>
+            </div>
+            <div class="inline-actions">
+              <button class="btn primary" id="addDraftBtn">Add draft</button>
+            </div>
+            <div class="field-error" id="draftError">Title and body are required.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Draft register</h3>
+          <div class="list" id="draftList"></div>
+        </div>
+      </section>
+
+      <section class="panel" id="filesPanel">
+        <div class="layout-2">
+          <div class="stack">
+            <div class="card">
+              <h3>File intake</h3>
+              <div class="form-grid">
+                <div>
+                  <label for="fileInput">Select local files</label>
+                  <input id="fileInput" type="file" multiple />
+                </div>
+                <div class="muted small">
+                  This stores file metadata in the workspace immediately. It does not upload file bytes to Supabase Storage or Google Drive yet.
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Google Drive sync scaffold</h3>
+              <div class="form-grid">
+                <div>
+                  <label for="driveFolderId">Drive folder ID</label>
+                  <input type="text" id="driveFolderId" placeholder="Paste a target Drive folder ID here" />
+                </div>
+                <div class="inline-actions">
+                  <button class="btn" id="saveDriveConfigBtn">Save Drive config</button>
+                  <button class="btn warn" id="simulateDriveSyncBtn">Simulate sync</button>
+                </div>
+                <div class="muted small" id="driveStatusText">
+                  No Drive sync actions run from this file yet. This panel preserves target config and workflow state.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Tracked files</h3>
+            <div class="list" id="fileList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="chatPanel">
+        <div class="card chat-shell">
+          <div class="inline-actions">
+            <div style="min-width: 220px; flex: 1;">
+              <label for="chatModel">Model</label>
+              <input type="text" id="chatModel" value="openrouter/auto" />
+            </div>
+            <div style="min-width: 220px; flex: 1;">
+              <label for="chatAudience">Audience</label>
+              <select id="chatAudience">
+                <option value="self">For yourself</option>
+                <option value="clinical">For clinical / OT</option>
+                <option value="caseworker">For caseworker / admin</option>
+                <option value="legal">For legal / formal review</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="chat-log" id="chatLog"></div>
+
+          <div>
+            <div class="chat-send-row">
+              <textarea
+                id="chatInput"
+                placeholder="Ask Libby to summarize, draft, organize, or explain the current case context..."
+                rows="2"
+              ></textarea>
+              <button class="chat-send-btn" id="sendChatBtn">
+                Send
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" style="flex-shrink:0">
+                  <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                </svg>
+              </button>
+            </div>
+            <div class="chat-hint">Enter to send &nbsp;|&nbsp; Shift+Enter for new line</div>
+          </div>
+
+          <div class="inline-actions" style="margin-top: -6px;">
+            <button class="btn" id="clearChatBtn">Clear chat</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="settingsPanel">
+        <div class="layout-2">
+          <div class="stack">
+            <div class="card">
+              <h3>Runtime settings</h3>
+              <div class="form-grid">
+                <div>
+                  <label>App version</label>
+                  <input type="text" value="v2.01.0-claude-preview1" disabled />
+                </div>
+                <div>
+                  <label>Supabase URL</label>
+                  <input type="text" value="https://mhgqfjcxpdtpzzrzadff.supabase.co" disabled />
+                </div>
+                <div>
+                  <label>Public key in browser</label>
+                  <input type="text" value="sb_publishable_q5t-hevjQqW2danKUR9h-w_5edrG3uJ" disabled />
+                </div>
+                <div>
+                  <label>Chat function endpoint</label>
+                  <input type="text" value="/.netlify/functions/chat" disabled />
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Workspace data</h3>
+              <div class="inline-actions">
+                <button class="btn" id="downloadBackupBtn">Download backup</button>
+                <button class="btn danger" id="resetWorkspaceBtn">Reset workspace</button>
+              </div>
+              <div class="footer-note">
+                Reset clears only browser-stored data for this workspace. It does not touch Supabase auth or any future remote data stores.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Implementation notes</h3>
+            <div class="list">
+              <div class="item">
+                <strong>Auth</strong>
+                <div class="muted small">GitHub sign-in is wired through Supabase OAuth. If the provider is not enabled yet, the sign-in button will fail safely.</div>
+              </div>
+              <div class="item">
+                <strong>Chat</strong>
+                <div class="muted small">The browser posts to <code>/.netlify/functions/chat</code>. OpenRouter is called only from that serverless function. API key lives in Netlify env, not in this file.</div>
+              </div>
+              <div class="item">
+                <strong>Drive</strong>
+                <div class="muted small">Drive sync is scaffolded here as stateful UI - not a full Google Drive API integration yet.</div>
+              </div>
+              <div class="item">
+                <strong>Deployment</strong>
+                <div class="muted small">Netlify is the primary deploy target. GitHub Pages also serves this file. Archive workflow snapshots every push to main.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const APP_VERSION = "v2.01.0-claude-preview1";
+    // Bumped key to avoid stale state from v2.00
+    const STORAGE_KEY = "libby_live_workspace_v2_01";
+    const SUPABASE_URL = "https://mhgqfjcxpdtpzzrzadff.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_q5t-hevjQqW2danKUR9h-w_5edrG3uJ";
+
+    const defaultState = () => ({
+      version: APP_VERSION,
+      buildMode: "live",
+      profile: {
+        situation: "",
+        diagnoses: "",
+        realities: "",
+        truths: ""
+      },
+      evidence: [],
+      drafts: [],
+      files: [],
+      drive: {
+        folderId: "",
+        status: "Scaffold only",
+        lastSync: null
+      },
+      activity: [
+        {
+          id: crypto.randomUUID(),
+          text: "Workspace initialized - v2.01.0-claude-preview1",
+          ts: new Date().toISOString()
+        }
+      ],
+      chat: []
+    });
+
+    let state = loadState();
+    let supabase = null;
+    let sessionUser = null;
+
+    const el = {
+      navButtons: [...document.querySelectorAll(".nav button")],
+      panels: [...document.querySelectorAll(".panel")],
+      versionChip: document.getElementById("versionChip"),
+      buildModeLabel: document.getElementById("buildModeLabel"),
+      sessionStatus: document.getElementById("sessionStatus"),
+      supabaseStatus: document.getElementById("supabaseStatus"),
+      driveSidebarStatus: document.getElementById("driveSidebarStatus"),
+      saveLocalBtn: document.getElementById("saveLocalBtn"),
+      exportBtn: document.getElementById("exportBtn"),
+      importJsonInput: document.getElementById("importJsonInput"),
+      signinBtn: document.getElementById("signinBtn"),
+      signoutBtn: document.getElementById("signoutBtn"),
+      statEvidence: document.getElementById("statEvidence"),
+      statDrafts: document.getElementById("statDrafts"),
+      statFiles: document.getElementById("statFiles"),
+      statChat: document.getElementById("statChat"),
+      caseSituation: document.getElementById("caseSituation"),
+      caseDiagnoses: document.getElementById("caseDiagnoses"),
+      caseRealities: document.getElementById("caseRealities"),
+      caseTruths: document.getElementById("caseTruths"),
+      activityLog: document.getElementById("activityLog"),
+      authPill: document.getElementById("authPill"),
+      chatPill: document.getElementById("chatPill"),
+      drivePill: document.getElementById("drivePill"),
+      evidenceTitle: document.getElementById("evidenceTitle"),
+      evidenceType: document.getElementById("evidenceType"),
+      evidenceSummary: document.getElementById("evidenceSummary"),
+      evidenceError: document.getElementById("evidenceError"),
+      addEvidenceBtn: document.getElementById("addEvidenceBtn"),
+      evidenceList: document.getElementById("evidenceList"),
+      draftTitle: document.getElementById("draftTitle"),
+      draftAudience: document.getElementById("draftAudience"),
+      draftBody: document.getElementById("draftBody"),
+      draftError: document.getElementById("draftError"),
+      addDraftBtn: document.getElementById("addDraftBtn"),
+      draftList: document.getElementById("draftList"),
+      fileInput: document.getElementById("fileInput"),
+      fileList: document.getElementById("fileList"),
+      driveFolderId: document.getElementById("driveFolderId"),
+      saveDriveConfigBtn: document.getElementById("saveDriveConfigBtn"),
+      simulateDriveSyncBtn: document.getElementById("simulateDriveSyncBtn"),
+      driveStatusText: document.getElementById("driveStatusText"),
+      chatModel: document.getElementById("chatModel"),
+      chatAudience: document.getElementById("chatAudience"),
+      chatLog: document.getElementById("chatLog"),
+      chatInput: document.getElementById("chatInput"),
+      sendChatBtn: document.getElementById("sendChatBtn"),
+      clearChatBtn: document.getElementById("clearChatBtn"),
+      downloadBackupBtn: document.getElementById("downloadBackupBtn"),
+      resetWorkspaceBtn: document.getElementById("resetWorkspaceBtn")
+    };
+
+    init();
+
+    function init() {
+      wireNavigation();
+      hydrateFormFields();
+      wireInputs();
+      wireActions();
+      wireChatKeyboard();
+      initializeSupabase();
+      renderAll();
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return defaultState();
+        const parsed = JSON.parse(raw);
+        return {
+          ...defaultState(),
+          ...parsed,
+          profile: {
+            ...defaultState().profile,
+            ...(parsed.profile || {})
+          },
+          drive: {
+            ...defaultState().drive,
+            ...(parsed.drive || {})
+          },
+          evidence: Array.isArray(parsed.evidence) ? parsed.evidence : [],
+          drafts: Array.isArray(parsed.drafts) ? parsed.drafts : [],
+          files: Array.isArray(parsed.files) ? parsed.files : [],
+          activity: Array.isArray(parsed.activity) && parsed.activity.length ? parsed.activity : defaultState().activity,
+          chat: Array.isArray(parsed.chat) ? parsed.chat : []
+        };
+      } catch {
+        return defaultState();
+      }
+    }
+
+    function saveState() {
+      state.version = APP_VERSION;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      renderAll();
+    }
+
+    function stampActivity(text) {
+      state.activity.unshift({
+        id: crypto.randomUUID(),
+        text,
+        ts: new Date().toISOString()
+      });
+      state.activity = state.activity.slice(0, 50);
+    }
+
+    function wireNavigation() {
+      el.navButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          el.navButtons.forEach(x => x.classList.remove("active"));
+          btn.classList.add("active");
+          const target = btn.dataset.target;
+          el.panels.forEach(panel => panel.classList.toggle("active", panel.id === target));
+        });
+      });
+    }
+
+    // ---- Chat keyboard: Enter sends, Shift+Enter newline, auto-height ----
+    function wireChatKeyboard() {
+      el.chatInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendChat();
+        }
+      });
+
+      el.chatInput.addEventListener("input", () => {
+        el.chatInput.style.height = "auto";
+        el.chatInput.style.height = Math.min(el.chatInput.scrollHeight, 180) + "px";
+      });
+    }
+
+    function wireInputs() {
+      [
+        ["caseSituation", "situation"],
+        ["caseDiagnoses", "diagnoses"],
+        ["caseRealities", "realities"],
+        ["caseTruths", "truths"]
+      ].forEach(([key, field]) => {
+        el[key].addEventListener("input", () => {
+          state.profile[field] = el[key].value;
+          saveState();
+        });
+      });
+
+      el.driveFolderId.addEventListener("input", () => {
+        state.drive.folderId = el.driveFolderId.value.trim();
+        saveState();
+      });
+    }
+
+    function wireActions() {
+      el.saveLocalBtn.addEventListener("click", () => {
+        stampActivity("Local workspace saved");
+        saveState();
+      });
+
+      el.exportBtn.addEventListener("click", downloadBackup);
+      el.downloadBackupBtn.addEventListener("click", downloadBackup);
+
+      el.importJsonInput.addEventListener("change", handleImportJson);
+
+      el.addEvidenceBtn.addEventListener("click", addEvidence);
+      el.addDraftBtn.addEventListener("click", addDraft);
+      el.fileInput.addEventListener("change", addFiles);
+      el.saveDriveConfigBtn.addEventListener("click", saveDriveConfig);
+      el.simulateDriveSyncBtn.addEventListener("click", simulateDriveSync);
+
+      el.sendChatBtn.addEventListener("click", sendChat);
+      el.clearChatBtn.addEventListener("click", () => {
+        state.chat = [];
+        stampActivity("Chat transcript cleared");
+        saveState();
+      });
+
+      el.resetWorkspaceBtn.addEventListener("click", () => {
+        if (!confirm("Reset this browser workspace? This clears local data only.")) return;
+        state = defaultState();
+        hydrateFormFields();
+        stampActivity("Workspace reset");
+        saveState();
+      });
+
+      el.signinBtn.addEventListener("click", signInWithGitHub);
+      el.signoutBtn.addEventListener("click", signOut);
+    }
+
+    function hydrateFormFields() {
+      el.versionChip.textContent = APP_VERSION;
+      el.buildModeLabel.textContent = state.buildMode || "live";
+      el.caseSituation.value = state.profile.situation || "";
+      el.caseDiagnoses.value = state.profile.diagnoses || "";
+      el.caseRealities.value = state.profile.realities || "";
+      el.caseTruths.value = state.profile.truths || "";
+      el.driveFolderId.value = state.drive.folderId || "";
+      el.chatModel.value = el.chatModel.value || "openrouter/auto";
+    }
+
+    function renderAll() {
+      renderStats();
+      renderActivity();
+      renderEvidence();
+      renderDrafts();
+      renderFiles();
+      renderDriveStatus();
+      renderChat();
+      renderAuthState();
+    }
+
+    function renderStats() {
+      el.statEvidence.textContent = state.evidence.length;
+      el.statDrafts.textContent = state.drafts.length;
+      el.statFiles.textContent = state.files.length;
+      el.statChat.textContent = state.chat.length;
+    }
+
+    function renderActivity() {
+      if (!state.activity.length) {
+        el.activityLog.innerHTML = '<div class="empty">No activity yet.</div>';
+        return;
+      }
+      el.activityLog.innerHTML = state.activity.map(entry => `
+        <div class="activity-entry">
+          <div>${escapeHtml(entry.text)}</div>
+          <div class="muted small" style="margin-top:6px;">${new Date(entry.ts).toLocaleString()}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderEvidence() {
+      if (!state.evidence.length) {
+        el.evidenceList.innerHTML = '<div class="empty">No evidence items yet.</div>';
+        return;
+      }
+
+      el.evidenceList.innerHTML = state.evidence.map(item => `
+        <div class="item">
+          <div class="item-head">
+            <div>
+              <strong>${escapeHtml(item.title)}</strong>
+              <div class="muted small">${escapeHtml(item.type || "Unspecified")}</div>
+            </div>
+            <div class="item-actions">
+              <button class="mini" onclick="removeEvidence('${item.id}')">Delete</button>
+            </div>
+          </div>
+          <div>${escapeHtml(item.summary)}</div>
+          <div class="muted small" style="margin-top:8px;">Added ${new Date(item.ts).toLocaleString()}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderDrafts() {
+      if (!state.drafts.length) {
+        el.draftList.innerHTML = '<div class="empty">No drafts yet.</div>';
+        return;
+      }
+
+      el.draftList.innerHTML = state.drafts.map(item => `
+        <div class="item">
+          <div class="item-head">
+            <div>
+              <strong>${escapeHtml(item.title)}</strong>
+              <div class="muted small">${escapeHtml(item.audience || "General")}</div>
+            </div>
+            <div class="item-actions">
+              <button class="mini" onclick="copyDraft('${item.id}')">Copy</button>
+              <button class="mini" onclick="removeDraft('${item.id}')">Delete</button>
+            </div>
+          </div>
+          <div>${escapeHtml(truncate(item.body, 280))}</div>
+          <div class="muted small" style="margin-top:8px;">Saved ${new Date(item.ts).toLocaleString()}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderFiles() {
+      if (!state.files.length) {
+        el.fileList.innerHTML = '<div class="empty">No file records yet.</div>';
+        return;
+      }
+
+      el.fileList.innerHTML = state.files.map(item => `
+        <div class="item">
+          <div class="item-head">
+            <div>
+              <strong>${escapeHtml(item.name)}</strong>
+              <div class="muted small">${escapeHtml(item.type || "unknown")} - ${formatBytes(item.size || 0)}</div>
+            </div>
+            <div class="item-actions">
+              <button class="mini" onclick="removeFileRecord('${item.id}')">Delete</button>
+            </div>
+          </div>
+          <div class="muted small">Recorded ${new Date(item.ts).toLocaleString()}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderDriveStatus() {
+      const lastSync = state.drive.lastSync ? new Date(state.drive.lastSync).toLocaleString() : "Never";
+      el.driveSidebarStatus.textContent = state.drive.status || "Scaffold only";
+      el.driveStatusText.textContent = `Folder ID: ${state.drive.folderId || "not set"} | Status: ${state.drive.status || "Scaffold only"} | Last sync: ${lastSync}`;
+      el.drivePill.className = "pill warn";
+      el.drivePill.textContent = `Drive: ${state.drive.status || "Scaffold only"}`;
+    }
+
+    function renderChat() {
+      if (!state.chat.length) {
+        el.chatLog.innerHTML = '<div class="empty">No chat yet. Ask Libby to summarize or draft from the current workspace.</div>';
+        return;
+      }
+
+      el.chatLog.innerHTML = state.chat.map(msg => `
+        <div class="chat-msg ${msg.role === "user" ? "user" : ""}">
+          <div class="chat-meta">
+            <span>${msg.role === "user" ? "You" : "Libby"}</span>
+            <span>${new Date(msg.ts).toLocaleString()}</span>
+          </div>
+          <div>${escapeHtml(msg.content)}</div>
+        </div>
+      `).join("");
+      el.chatLog.scrollTop = el.chatLog.scrollHeight;
+    }
+
+    function renderAuthState() {
+      const signedIn = !!sessionUser;
+      el.sessionStatus.textContent = signedIn ? (sessionUser.email || sessionUser.id) : "Guest mode";
+      el.authPill.className = signedIn ? "pill ok" : "pill warn";
+      el.authPill.textContent = signedIn ? "Auth: signed in" : "Auth: guest mode";
+      el.signinBtn.classList.toggle("hidden", signedIn);
+      el.signoutBtn.classList.toggle("hidden", !signedIn);
+    }
+
+    // ---- Inline errors: replaced alert() ----
+    function showFieldError(errorEl, show) {
+      if (show) {
+        errorEl.classList.add("visible");
+        setTimeout(() => errorEl.classList.remove("visible"), 4000);
+      } else {
+        errorEl.classList.remove("visible");
+      }
+    }
+
+    function addEvidence() {
+      const title = el.evidenceTitle.value.trim();
+      const type = el.evidenceType.value.trim();
+      const summary = el.evidenceSummary.value.trim();
+      if (!title || !summary) {
+        showFieldError(el.evidenceError, true);
+        return;
+      }
+
+      showFieldError(el.evidenceError, false);
+      state.evidence.unshift({
+        id: crypto.randomUUID(),
+        title,
+        type,
+        summary,
+        ts: new Date().toISOString()
+      });
+
+      el.evidenceTitle.value = "";
+      el.evidenceType.value = "";
+      el.evidenceSummary.value = "";
+      stampActivity(`Evidence added: ${title}`);
+      saveState();
+    }
+
+    function addDraft() {
+      const title = el.draftTitle.value.trim();
+      const audience = el.draftAudience.value.trim();
+      const body = el.draftBody.value.trim();
+      if (!title || !body) {
+        showFieldError(el.draftError, true);
+        return;
+      }
+
+      showFieldError(el.draftError, false);
+      state.drafts.unshift({
+        id: crypto.randomUUID(),
+        title,
+        audience,
+        body,
+        ts: new Date().toISOString()
+      });
+
+      el.draftTitle.value = "";
+      el.draftAudience.value = "";
+      el.draftBody.value = "";
+      stampActivity(`Draft added: ${title}`);
+      saveState();
+    }
+
+    function addFiles(event) {
+      const files = [...(event.target.files || [])];
+      if (!files.length) return;
+
+      files.forEach(file => {
+        state.files.unshift({
+          id: crypto.randomUUID(),
+          name: file.name,
+          size: file.size,
+          type: file.type || "unknown",
+          ts: new Date().toISOString()
+        });
+      });
+
+      stampActivity(`${files.length} file record(s) added`);
+      saveState();
+      el.fileInput.value = "";
+    }
+
+    function saveDriveConfig() {
+      state.drive.status = state.drive.folderId ? "Configured" : "Scaffold only";
+      stampActivity("Drive config saved");
+      saveState();
+    }
+
+    function simulateDriveSync() {
+      state.drive.status = state.drive.folderId ? "Simulated sync complete" : "Folder ID missing";
+      state.drive.lastSync = new Date().toISOString();
+      stampActivity(state.drive.folderId ? "Drive sync simulated" : "Drive sync failed: missing folder ID");
+      saveState();
+    }
+
+    async function initializeSupabase() {
+      try {
+        if (!window.supabase || !window.supabase.createClient) {
+          el.supabaseStatus.textContent = "Library failed to load";
+          return;
+        }
+
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true
+          }
+        });
+
+        el.supabaseStatus.textContent = "Connected";
+        const { data } = await supabase.auth.getSession();
+        sessionUser = data?.session?.user || null;
+        renderAuthState();
+
+        supabase.auth.onAuthStateChange((_event, session) => {
+          sessionUser = session?.user || null;
+          renderAuthState();
+        });
+      } catch (error) {
+        console.error(error);
+        el.supabaseStatus.textContent = "Init failed";
+      }
+    }
+
+    async function signInWithGitHub() {
+      if (!supabase) {
+        alert("Supabase is not ready yet.");
+        return;
+      }
+
+      try {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: "github",
+          options: {
+            redirectTo: window.location.href
+          }
+        });
+        if (error) throw error;
+      } catch (error) {
+        console.error(error);
+        alert(`GitHub sign-in failed: ${error.message}`);
+      }
+    }
+
+    async function signOut() {
+      if (!supabase) return;
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        alert(`Sign out failed: ${error.message}`);
+        return;
+      }
+      stampActivity("Signed out");
+      saveState();
+    }
+
+    async function sendChat() {
+      const content = el.chatInput.value.trim();
+      if (!content) return;
+
+      const model = el.chatModel.value.trim() || "openrouter/auto";
+      const audience = el.chatAudience.value;
+      const context = buildChatContext();
+
+      state.chat.push({
+        id: crypto.randomUUID(),
+        role: "user",
+        content,
+        ts: new Date().toISOString()
+      });
+      el.chatInput.value = "";
+      el.chatInput.style.height = "auto";
+      renderChat();
+
+      el.sendChatBtn.disabled = true;
+      el.chatPill.className = "pill warn";
+      el.chatPill.textContent = "Chat: sending...";
+
+      try {
+        const response = await fetch("/.netlify/functions/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model,
+            audience,
+            context,
+            messages: [
+              ...state.chat.slice(-8).map(m => ({ role: m.role, content: m.content }))
+            ]
+          })
+        });
+
+        const payload = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(payload.error || "Chat request failed");
+        }
+
+        const reply = payload.reply || "No response returned.";
+        state.chat.push({
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content: reply,
+          ts: new Date().toISOString()
+        });
+
+        stampActivity(`Chat response received (${payload.model || model})`);
+        el.chatPill.className = "pill ok";
+        el.chatPill.textContent = `Chat: ${payload.model || model}`;
+        saveState();
+      } catch (error) {
+        console.error(error);
+        state.chat.push({
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content: `Chat error: ${error.message}`,
+          ts: new Date().toISOString()
+        });
+        el.chatPill.className = "pill danger";
+        el.chatPill.textContent = "Chat: error - check Netlify logs";
+        saveState();
+      } finally {
+        el.sendChatBtn.disabled = false;
+        el.chatInput.focus();
+      }
+    }
+
+    function buildChatContext() {
+      return {
+        version: APP_VERSION,
+        user: sessionUser ? {
+          id: sessionUser.id,
+          email: sessionUser.email || null
+        } : null,
+        profile: {
+          situation: state.profile.situation,
+          diagnoses: state.profile.diagnoses,
+          realities: state.profile.realities,
+          truths: state.profile.truths
+        },
+        evidenceCount: state.evidence.length,
+        draftCount: state.drafts.length,
+        fileCount: state.files.length,
+        latestEvidence: state.evidence.slice(0, 5),
+        latestDrafts: state.drafts.slice(0, 3).map(d => ({
+          title: d.title,
+          audience: d.audience,
+          body: d.body
+        }))
+      };
+    }
+
+    function downloadBackup() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `libby_live_backup_${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      stampActivity("Workspace backup exported");
+      saveState();
+    }
+
+    async function handleImportJson(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        state = {
+          ...defaultState(),
+          ...parsed,
+          profile: { ...defaultState().profile, ...(parsed.profile || {}) },
+          drive: { ...defaultState().drive, ...(parsed.drive || {}) },
+          evidence: Array.isArray(parsed.evidence) ? parsed.evidence : [],
+          drafts: Array.isArray(parsed.drafts) ? parsed.drafts : [],
+          files: Array.isArray(parsed.files) ? parsed.files : [],
+          activity: Array.isArray(parsed.activity) ? parsed.activity : []
+        };
+        stampActivity(`Workspace imported from ${file.name}`);
+        hydrateFormFields();
+        saveState();
+      } catch (error) {
+        alert(`Import failed: ${error.message}`);
+      } finally {
+        el.importJsonInput.value = "";
+      }
+    }
+
+    function truncate(text, max) {
+      return text.length > max ? `${text.slice(0, max - 1)}\u2026` : text;
+    }
+
+    function formatBytes(bytes) {
+      if (!bytes) return "0 B";
+      const units = ["B", "KB", "MB", "GB"];
+      let value = bytes;
+      let index = 0;
+      while (value >= 1024 && index < units.length - 1) {
+        value /= 1024;
+        index += 1;
+      }
+      return `${value.toFixed(value >= 10 || index === 0 ? 0 : 1)} ${units[index]}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;")
+        .replaceAll("\n", "<br />");
+    }
+
+    window.removeEvidence = function(id) {
+      state.evidence = state.evidence.filter(item => item.id !== id);
+      stampActivity("Evidence item removed");
+      saveState();
+    };
+
+    window.removeDraft = function(id) {
+      state.drafts = state.drafts.filter(item => item.id !== id);
+      stampActivity("Draft removed");
+      saveState();
+    };
+
+    window.copyDraft = async function(id) {
+      const draft = state.drafts.find(item => item.id === id);
+      if (!draft) return;
+      await navigator.clipboard.writeText(draft.body);
+      stampActivity(`Draft copied: ${draft.title}`);
+      saveState();
+    };
+
+    window.removeFileRecord = function(id) {
+      state.files = state.files.filter(item => item.id !== id);
+      stampActivity("File record removed");
+      saveState();
+    };
+  </script>
+</body>
+</html>
