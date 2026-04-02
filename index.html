@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Libby Live - v2.00.0-live</title>
+  <title>Libby Live - v2.01.0-claude-preview1</title>
   <meta name="description" content="Libby Live - advocacy dashboard, evidence workspace, and AI-assisted case support." />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -97,27 +97,37 @@
       margin-bottom: 18px;
     }
 
+    /* ---- NAV: improved active state with left border ---- */
     .nav {
       display: grid;
-      gap: 8px;
+      gap: 4px;
     }
 
     .nav button {
       width: 100%;
       text-align: left;
-      padding: 12px 14px;
+      padding: 10px 14px;
       border-radius: 14px;
       border: 1px solid transparent;
-      color: var(--text);
+      border-left: 3px solid transparent;
+      color: var(--muted);
       background: transparent;
       cursor: pointer;
-      transition: .18s ease;
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
+      font-size: 14px;
     }
 
-    .nav button:hover,
+    .nav button:hover {
+      background: rgba(117,167,255,.08);
+      color: var(--text);
+    }
+
     .nav button.active {
       background: rgba(117,167,255,.12);
       border-color: rgba(117,167,255,.26);
+      border-left-color: var(--accent);
+      color: var(--accent-2);
+      font-weight: 500;
     }
 
     .sidebar-meta {
@@ -161,6 +171,7 @@
       align-items: center;
     }
 
+    /* ---- BUTTONS: added :active scale ---- */
     .btn {
       border: 1px solid var(--line);
       background: var(--panel);
@@ -168,7 +179,7 @@
       padding: 10px 14px;
       border-radius: 12px;
       cursor: pointer;
-      transition: .18s ease;
+      transition: background .15s ease, border-color .15s ease, transform .1s ease;
     }
 
     .btn:hover {
@@ -176,9 +187,23 @@
       border-color: rgba(117,167,255,.4);
     }
 
+    .btn:active {
+      transform: scale(0.97) translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .btn.primary {
       background: linear-gradient(135deg, #5686ff 0%, #395ed4 100%);
       border-color: transparent;
+    }
+
+    .btn.primary:hover {
+      background: linear-gradient(135deg, #6a96ff 0%, #4a6ee4 100%);
     }
 
     .btn.ghost {
@@ -288,11 +313,28 @@
       border-radius: 12px;
       padding: 12px 13px;
       outline: none;
+      transition: border-color .15s;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: rgba(117,167,255,.5);
     }
 
     textarea {
       min-height: 120px;
       resize: vertical;
+    }
+
+    /* ---- Chat textarea: no resize, auto-height handled in JS ---- */
+    #chatInput {
+      min-height: 44px;
+      max-height: 180px;
+      resize: none;
+      overflow-y: auto;
+      line-height: 1.5;
     }
 
     .form-grid {
@@ -342,6 +384,16 @@
       border-radius: 10px;
       cursor: pointer;
       font-size: 12px;
+      transition: background .12s, border-color .12s;
+    }
+
+    .mini:hover {
+      background: rgba(117,167,255,.1);
+      border-color: rgba(117,167,255,.3);
+    }
+
+    .mini:active {
+      transform: scale(0.96);
     }
 
     .activity-log {
@@ -359,6 +411,7 @@
       font-size: 13px;
     }
 
+    /* ---- Chat shell: improved layout with send row ---- */
     .chat-shell {
       display: grid;
       gap: 14px;
@@ -393,6 +446,66 @@
       margin-bottom: 8px;
       font-size: 12px;
       color: var(--muted);
+    }
+
+    /* ---- Improved chat send row ---- */
+    .chat-send-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .chat-send-row textarea {
+      flex: 1;
+      margin: 0;
+    }
+
+    .chat-send-btn {
+      flex-shrink: 0;
+      padding: 11px 18px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #5686ff 0%, #395ed4 100%);
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background .15s, transform .1s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .chat-send-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, #6a96ff 0%, #4a6ee4 100%);
+    }
+
+    .chat-send-btn:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    .chat-send-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .chat-hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ---- Inline field error (replaces alert()) ---- */
+    .field-error {
+      font-size: 12px;
+      color: #ef6f6f;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .field-error.visible {
+      display: block;
     }
 
     .inline-actions {
@@ -454,7 +567,7 @@
         </div>
       </div>
 
-      <div class="version-chip" id="versionChip">v2.00.0-live</div>
+      <div class="version-chip" id="versionChip">v2.01.0-claude-preview1</div>
 
       <div class="nav">
         <button class="active" data-target="dashboardPanel">Dashboard</button>
@@ -478,7 +591,7 @@
       <div class="topbar">
         <div class="topbar-left">
           <h2>Libby Live</h2>
-          <p>Structured advocacy workspace with local persistence, Supabase auth wiring, and Netlify chat routing.</p>
+          <p>Structured advocacy workspace - local persistence, Supabase auth, Netlify chat routing via OpenRouter.</p>
         </div>
 
         <div class="toolbar">
@@ -535,12 +648,13 @@
               <h3>Connection status</h3>
               <div class="status-row" style="margin-bottom: 10px;">
                 <span class="pill" id="authPill">Auth: checking</span>
-                <span class="pill" id="chatPill">Chat: ready to test</span>
+                <span class="pill" id="chatPill">Chat: wired to Netlify</span>
                 <span class="pill" id="drivePill">Drive: scaffold only</span>
               </div>
               <div class="muted small">
-                Browser data persists locally immediately. GitHub sign-in is wired through Supabase if your GitHub OAuth provider is enabled.
-                Google Drive is scaffolded here as a stateful UI surface, not a fully implemented API integration yet.
+                Browser data persists locally immediately. GitHub sign-in runs through Supabase OAuth.
+                Chat routes through <code>/.netlify/functions/chat</code> to OpenRouter server-side.
+                Google Drive is scaffolded as a stateful UI surface only.
               </div>
             </div>
           </div>
@@ -593,6 +707,7 @@
             <div class="inline-actions">
               <button class="btn primary" id="addEvidenceBtn">Add evidence item</button>
             </div>
+            <div class="field-error" id="evidenceError">Title and summary are required.</div>
           </div>
         </div>
 
@@ -623,6 +738,7 @@
             <div class="inline-actions">
               <button class="btn primary" id="addDraftBtn">Add draft</button>
             </div>
+            <div class="field-error" id="draftError">Title and body are required.</div>
           </div>
         </div>
 
@@ -693,15 +809,25 @@
 
           <div class="chat-log" id="chatLog"></div>
 
-          <div class="form-grid">
-            <div>
-              <label for="chatInput">Message</label>
-              <textarea id="chatInput" placeholder="Ask Libby to summarize, draft, organize, or explain the current case context."></textarea>
+          <div>
+            <div class="chat-send-row">
+              <textarea
+                id="chatInput"
+                placeholder="Ask Libby to summarize, draft, organize, or explain the current case context..."
+                rows="2"
+              ></textarea>
+              <button class="chat-send-btn" id="sendChatBtn">
+                Send
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" style="flex-shrink:0">
+                  <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                </svg>
+              </button>
             </div>
-            <div class="inline-actions">
-              <button class="btn primary" id="sendChatBtn">Send</button>
-              <button class="btn" id="clearChatBtn">Clear chat</button>
-            </div>
+            <div class="chat-hint">Enter to send &nbsp;|&nbsp; Shift+Enter for new line</div>
+          </div>
+
+          <div class="inline-actions" style="margin-top: -6px;">
+            <button class="btn" id="clearChatBtn">Clear chat</button>
           </div>
         </div>
       </section>
@@ -714,7 +840,7 @@
               <div class="form-grid">
                 <div>
                   <label>App version</label>
-                  <input type="text" value="v2.00.0-live" disabled />
+                  <input type="text" value="v2.01.0-claude-preview1" disabled />
                 </div>
                 <div>
                   <label>Supabase URL</label>
@@ -723,6 +849,10 @@
                 <div>
                   <label>Public key in browser</label>
                   <input type="text" value="sb_publishable_q5t-hevjQqW2danKUR9h-w_5edrG3uJ" disabled />
+                </div>
+                <div>
+                  <label>Chat function endpoint</label>
+                  <input type="text" value="/.netlify/functions/chat" disabled />
                 </div>
               </div>
             </div>
@@ -748,11 +878,15 @@
               </div>
               <div class="item">
                 <strong>Chat</strong>
-                <div class="muted small">The browser posts messages to `/.netlify/functions/chat`. OpenRouter runs only from the serverless function.</div>
+                <div class="muted small">The browser posts to <code>/.netlify/functions/chat</code>. OpenRouter is called only from that serverless function. API key lives in Netlify env, not in this file.</div>
               </div>
               <div class="item">
                 <strong>Drive</strong>
-                <div class="muted small">This file includes Drive sync scaffolding and state persistence, not a full Google Drive API implementation.</div>
+                <div class="muted small">Drive sync is scaffolded here as stateful UI - not a full Google Drive API integration yet.</div>
+              </div>
+              <div class="item">
+                <strong>Deployment</strong>
+                <div class="muted small">Netlify is the primary deploy target. GitHub Pages also serves this file. Archive workflow snapshots every push to main.</div>
               </div>
             </div>
           </div>
@@ -762,8 +896,9 @@
   </div>
 
   <script>
-    const APP_VERSION = "v2.00.0-live";
-    const STORAGE_KEY = "libby_live_workspace_v2";
+    const APP_VERSION = "v2.01.0-claude-preview1";
+    // Bumped key to avoid stale state from v2.00
+    const STORAGE_KEY = "libby_live_workspace_v2_01";
     const SUPABASE_URL = "https://mhgqfjcxpdtpzzrzadff.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_q5t-hevjQqW2danKUR9h-w_5edrG3uJ";
 
@@ -787,7 +922,7 @@
       activity: [
         {
           id: crypto.randomUUID(),
-          text: "Workspace initialized",
+          text: "Workspace initialized - v2.01.0-claude-preview1",
           ts: new Date().toISOString()
         }
       ],
@@ -826,11 +961,13 @@
       evidenceTitle: document.getElementById("evidenceTitle"),
       evidenceType: document.getElementById("evidenceType"),
       evidenceSummary: document.getElementById("evidenceSummary"),
+      evidenceError: document.getElementById("evidenceError"),
       addEvidenceBtn: document.getElementById("addEvidenceBtn"),
       evidenceList: document.getElementById("evidenceList"),
       draftTitle: document.getElementById("draftTitle"),
       draftAudience: document.getElementById("draftAudience"),
       draftBody: document.getElementById("draftBody"),
+      draftError: document.getElementById("draftError"),
       addDraftBtn: document.getElementById("addDraftBtn"),
       draftList: document.getElementById("draftList"),
       fileInput: document.getElementById("fileInput"),
@@ -856,6 +993,7 @@
       hydrateFormFields();
       wireInputs();
       wireActions();
+      wireChatKeyboard();
       initializeSupabase();
       renderAll();
     }
@@ -910,6 +1048,21 @@
           const target = btn.dataset.target;
           el.panels.forEach(panel => panel.classList.toggle("active", panel.id === target));
         });
+      });
+    }
+
+    // ---- Chat keyboard: Enter sends, Shift+Enter newline, auto-height ----
+    function wireChatKeyboard() {
+      el.chatInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendChat();
+        }
+      });
+
+      el.chatInput.addEventListener("input", () => {
+        el.chatInput.style.height = "auto";
+        el.chatInput.style.height = Math.min(el.chatInput.scrollHeight, 180) + "px";
       });
     }
 
@@ -1114,15 +1267,26 @@
       el.signoutBtn.classList.toggle("hidden", !signedIn);
     }
 
+    // ---- Inline errors: replaced alert() ----
+    function showFieldError(errorEl, show) {
+      if (show) {
+        errorEl.classList.add("visible");
+        setTimeout(() => errorEl.classList.remove("visible"), 4000);
+      } else {
+        errorEl.classList.remove("visible");
+      }
+    }
+
     function addEvidence() {
       const title = el.evidenceTitle.value.trim();
       const type = el.evidenceType.value.trim();
       const summary = el.evidenceSummary.value.trim();
       if (!title || !summary) {
-        alert("Add at least a title and summary.");
+        showFieldError(el.evidenceError, true);
         return;
       }
 
+      showFieldError(el.evidenceError, false);
       state.evidence.unshift({
         id: crypto.randomUUID(),
         title,
@@ -1143,10 +1307,11 @@
       const audience = el.draftAudience.value.trim();
       const body = el.draftBody.value.trim();
       if (!title || !body) {
-        alert("Add at least a title and body.");
+        showFieldError(el.draftError, true);
         return;
       }
 
+      showFieldError(el.draftError, false);
       state.drafts.unshift({
         id: crypto.randomUUID(),
         title,
@@ -1270,11 +1435,12 @@
         ts: new Date().toISOString()
       });
       el.chatInput.value = "";
+      el.chatInput.style.height = "auto";
       renderChat();
 
       el.sendChatBtn.disabled = true;
       el.chatPill.className = "pill warn";
-      el.chatPill.textContent = "Chat: sending";
+      el.chatPill.textContent = "Chat: sending...";
 
       try {
         const response = await fetch("/.netlify/functions/chat", {
@@ -1319,10 +1485,11 @@
           ts: new Date().toISOString()
         });
         el.chatPill.className = "pill danger";
-        el.chatPill.textContent = "Chat: error";
+        el.chatPill.textContent = "Chat: error - check Netlify logs";
         saveState();
       } finally {
         el.sendChatBtn.disabled = false;
+        el.chatInput.focus();
       }
     }
 
@@ -1391,7 +1558,7 @@
     }
 
     function truncate(text, max) {
-      return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+      return text.length > max ? `${text.slice(0, max - 1)}\u2026` : text;
     }
 
     function formatBytes(bytes) {
