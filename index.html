@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Libby Live - v2.01.0-claude-preview1</title>
+  <title>Libby Live - v2.02.0-byok</title>
   <meta name="description" content="Libby Live - advocacy dashboard, evidence workspace, and AI-assisted case support." />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -554,7 +554,23 @@
       .grid.stats { grid-template-columns: 1fr; }
       .topbar-left h2 { font-size: 22px; }
     }
-  </style>
+  
+/* BYOK Chat Styles */
+#byokSetupPanel,#chatShellPanel{width:100%}
+#byokSetupPanel{display:flex;flex-direction:column;gap:1rem;padding:1.5rem;background:var(--panel-3,#0f1730);border-radius:8px;border:1px solid var(--line,#1e2d50)}
+#byokKeyInput{width:100%;padding:.6rem .8rem;background:#0b1020;border:1px solid var(--line,#1e2d50);border-radius:4px;color:var(--text,#c8d8f0);font-family:monospace;font-size:.85rem}
+#byokKeyInput:focus{outline:none;border-color:var(--accent,#75a7ff)}
+.byok-notice{font-size:.75rem;color:var(--muted,#4a6080)}
+.byok-actions{display:flex;gap:.5rem;align-items:center}
+#byokSaveBtn{padding:.5rem 1rem;background:var(--accent,#75a7ff);color:#0b1020;border:none;border-radius:4px;font-size:.85rem;cursor:pointer;font-weight:600}
+#byokSaveBtn:hover{opacity:.9}
+#chatKeyBar{display:flex;align-items:center;gap:.75rem;padding:.4rem .6rem;background:var(--panel-3,#0f1730);border-radius:4px;margin-bottom:.5rem;font-size:.75rem}
+#chatKeyStatus{color:var(--ok,#42c08c);flex:1}
+#byokForgetBtn{padding:.25rem .6rem;background:transparent;border:1px solid var(--danger,#ef6f6f);color:var(--danger,#ef6f6f);border-radius:3px;font-size:.75rem;cursor:pointer}
+#byokForgetBtn:hover{background:var(--danger,#ef6f6f);color:#fff}
+.byok-link{color:var(--accent,#75a7ff);font-size:.75rem;text-decoration:none}
+.byok-link:hover{text-decoration:underline}
+</style>
 </head>
 <body>
   <div class="app">
@@ -567,7 +583,7 @@
         </div>
       </div>
 
-      <div class="version-chip" id="versionChip">v2.01.0-claude-preview1</div>
+      <div class="version-chip" id="versionChip">v2.02.0-byok</div>
 
       <div class="nav">
         <button class="active" data-target="dashboardPanel">Dashboard</button>
@@ -790,47 +806,37 @@
       </section>
 
       <section class="panel" id="chatPanel">
-        <div class="card chat-shell">
-          <div class="inline-actions">
-            <div style="min-width: 220px; flex: 1;">
-              <label for="chatModel">Model</label>
-              <input type="text" id="chatModel" value="openrouter/auto" />
-            </div>
-            <div style="min-width: 220px; flex: 1;">
-              <label for="chatAudience">Audience</label>
-              <select id="chatAudience">
-                <option value="self">For yourself</option>
-                <option value="clinical">For clinical / OT</option>
-                <option value="caseworker">For caseworker / admin</option>
-                <option value="legal">For legal / formal review</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="chat-log" id="chatLog"></div>
-
-          <div>
-            <div class="chat-send-row">
-              <textarea
-                id="chatInput"
-                placeholder="Ask Libby to summarize, draft, organize, or explain the current case context..."
-                rows="2"
-              ></textarea>
-              <button class="chat-send-btn" id="sendChatBtn">
-                Send
-                <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" style="flex-shrink:0">
-                  <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                </svg>
-              </button>
-            </div>
-            <div class="chat-hint">Enter to send &nbsp;|&nbsp; Shift+Enter for new line</div>
-          </div>
-
-          <div class="inline-actions" style="margin-top: -6px;">
-            <button class="btn" id="clearChatBtn">Clear chat</button>
-          </div>
-        </div>
-      </section>
+  <div id="byokSetupPanel">
+    <h3 style="margin:0;font-size:1rem;color:var(--accent,#75a7ff)">Libby Assistant — Setup Required</h3>
+    <p style="margin:0;font-size:.85rem;color:var(--muted,#4a6080)">To use the Libby chat, enter your OpenRouter API key below. Your key is stored only on this device and is never sent to NATICO servers.</p>
+    <input id="byokKeyInput" type="password" autocomplete="off" placeholder="sk-or-v1-..." spellcheck="false" />
+    <div class="byok-actions">
+      <button id="byokSaveBtn">Save Key</button>
+      <a href="https://openrouter.ai/keys" target="_blank" rel="noopener" class="byok-link">Get a free key at openrouter.ai</a>
+    </div>
+    <span class="byok-notice">Your key is stored in your browser only. NATICO never sees it.</span>
+  </div>
+  <div id="chatShellPanel" style="display:none">
+    <div id="chatKeyBar">
+      <span id="chatKeyStatus">Key stored on device</span>
+      <button id="byokForgetBtn">Forget Key</button>
+    </div>
+    <div class="chat-controls">
+      <input id="chatModel" type="text" value="qwen/qwen3.6-plus:free" placeholder="Model" class="input-sm" style="width:200px" />
+      <select id="chatAudience" class="input-sm">
+        <option value="">General</option>
+        <option value="worker">Support Worker</option>
+        <option value="legal">Legal</option>
+        <option value="medical">Medical</option>
+      </select>
+    </div>
+    <div id="chatLog" class="chat-log"></div>
+    <div class="chat-send-row">
+      <textarea id="chatInput" rows="2" placeholder="Ask Libby..." class="chat-input"></textarea>
+      <button id="sendChatBtn" class="btn-primary">Send</button>
+    </div>
+  </div>
+</section>
 
       <section class="panel" id="settingsPanel">
         <div class="layout-2">
@@ -840,7 +846,7 @@
               <div class="form-grid">
                 <div>
                   <label>App version</label>
-                  <input type="text" value="v2.01.0-claude-preview1" disabled />
+                  <input type="text" value="v2.02.0-byok" disabled />
                 </div>
                 <div>
                   <label>Supabase URL</label>
@@ -896,7 +902,7 @@
   </div>
 
   <script>
-    const APP_VERSION = "v2.01.0-claude-preview1";
+    const APP_VERSION = "v2.02.0-byok";
     // Bumped key to avoid stale state from v2.00
     const STORAGE_KEY = "libby_live_workspace_v2_01";
     const SUPABASE_URL = "https://mhgqfjcxpdtpzzrzadff.supabase.co";
@@ -922,7 +928,7 @@
       activity: [
         {
           id: crypto.randomUUID(),
-          text: "Workspace initialized - v2.01.0-claude-preview1",
+          text: "Workspace initialized - v2.02.0-byok",
           ts: new Date().toISOString()
         }
       ],
@@ -1609,5 +1615,68 @@
       saveState();
     };
   </script>
+<script>
+(function(){
+  'use strict';
+  var STORE_KEY='libby_or_key';
+  var HIST_KEY='libby_byok_chat_v1';
+  var MAX_HIST=40;
+  var SYS_PROMPT='You are Libby, a conversational case navigator for the NATICO advocacy portal. You help users navigate healthcare, disability systems (ODSP, ODB), accessibility rights (AODA), and government processes. You surface relevant case information, help document evidence, and guide users through complex systems with clarity and compassion. You are not a lawyer or medical professional. You never fabricate case details.';
+  var OR_URL='https://openrouter.ai/api/v1/chat/completions';
+  function getKey(){return localStorage.getItem(STORE_KEY)||'';}
+  function saveKey(k){localStorage.setItem(STORE_KEY,k);}
+  function forgetKey(){localStorage.removeItem(STORE_KEY);localStorage.removeItem(HIST_KEY);}
+  function getHist(){try{return JSON.parse(localStorage.getItem(HIST_KEY)||'[]');}catch(e){return[];}}
+  function saveHist(h){localStorage.setItem(HIST_KEY,JSON.stringify(h.slice(-MAX_HIST)));}
+  function showSetup(){document.getElementById('byokSetupPanel').style.display='flex';document.getElementById('chatShellPanel').style.display='none';}
+  function showChat(){document.getElementById('byokSetupPanel').style.display='none';document.getElementById('chatShellPanel').style.display='block';}
+  function appendMsg(role,text){
+    var log=document.getElementById('chatLog');if(!log)return;
+    var div=document.createElement('div');div.className='chat-msg chat-msg-'+(role==='user'?'user':'assistant');
+    var p=document.createElement('p');p.textContent=text;div.appendChild(p);log.appendChild(div);log.scrollTop=log.scrollHeight;
+  }
+  function renderHistory(){var log=document.getElementById('chatLog');if(!log)return;log.innerHTML='';getHist().forEach(function(m){if(m.role!=='system')appendMsg(m.role,m.content);});}
+  function errMsg(status){if(status===401)return'Invalid key. Check your OpenRouter API key and try again.';if(status===402)return'No credits on this key. Check your OpenRouter account.';if(status===429)return'Rate limit hit. Wait a moment and try again.';return'Request failed ('+status+'). Check the console for details.';}
+  async function sendByok(){
+    var key=getKey();if(!key){showSetup();return;}
+    var input=document.getElementById('chatInput');
+    var model=(document.getElementById('chatModel')||{}).value||'qwen/qwen3.6-plus:free';
+    var audience=(document.getElementById('chatAudience')||{}).value||'';
+    var text=(input?input.value:'').trim();if(!text)return;
+    var sysPrompt=SYS_PROMPT+(audience?' Audience context: '+audience+'.':'');
+    var hist=getHist();if(!hist.length)hist=[{role:'system',content:sysPrompt}];
+    hist.push({role:'user',content:text});if(hist.length>MAX_HIST)hist=hist.slice(-MAX_HIST);
+    saveHist(hist);if(input)input.value='';appendMsg('user',text);
+    var thinkDiv=document.createElement('div');thinkDiv.className='chat-msg chat-msg-assistant';thinkDiv.id='byok-thinking';
+    var thinkP=document.createElement('p');thinkP.textContent='Libby is thinking...';thinkP.style.color='var(--muted,#4a6080)';thinkDiv.appendChild(thinkP);
+    var log=document.getElementById('chatLog');if(log){log.appendChild(thinkDiv);log.scrollTop=log.scrollHeight;}
+    try{
+      var res=await fetch(OR_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key,'HTTP-Referer':'https://libbynatico.github.io/libby_live/','X-Title':'Libby NATICO Portal'},body:JSON.stringify({model:model,messages:hist})});
+      var thinking=document.getElementById('byok-thinking');if(thinking)thinking.remove();
+      if(!res.ok){appendMsg('assistant',errMsg(res.status));return;}
+      var data=await res.json();
+      var reply=(data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'No response.';
+      hist.push({role:'assistant',content:reply});saveHist(hist);appendMsg('assistant',reply);
+    }catch(err){var thinking2=document.getElementById('byok-thinking');if(thinking2)thinking2.remove();appendMsg('assistant','Network error: '+err.message);}
+  }
+  window.sendChat=sendByok;window.renderChat=renderHistory;
+  document.addEventListener('DOMContentLoaded',function(){
+    var saveBtn=document.getElementById('byokSaveBtn');
+    var forgetBtn=document.getElementById('byokForgetBtn');
+    var sendBtn=document.getElementById('sendChatBtn');
+    var input=document.getElementById('chatInput');
+    if(getKey()){showChat();renderHistory();}else{showSetup();}
+    if(saveBtn)saveBtn.addEventListener('click',function(){
+      var keyInput=document.getElementById('byokKeyInput');
+      var val=(keyInput?keyInput.value:'').trim();
+      if(!val||!val.startsWith('sk-or-')){alert('Please enter a valid OpenRouter key (starts with sk-or-).');return;}
+      saveKey(val);showChat();renderHistory();
+    });
+    if(forgetBtn)forgetBtn.addEventListener('click',function(){if(confirm('Forget your key and clear chat history?')){forgetKey();showSetup();}});
+    if(sendBtn){var newBtn=sendBtn.cloneNode(true);sendBtn.parentNode.replaceChild(newBtn,sendBtn);newBtn.addEventListener('click',sendByok);}
+    if(input){var newInput=input.cloneNode(true);input.parentNode.replaceChild(newInput,input);newInput.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendByok();}});}
+  });
+})();
+</script>
 </body>
 </html>
