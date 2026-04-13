@@ -1,0 +1,73 @@
+'use strict';
+
+const el = {
+    byokSetupPanel: document.getElementById('byokSetupPanel'),
+    chatShellPanel: document.getElementById('chatShellPanel'),
+    byokKeyInput: document.getElementById('byokKeyInput'),
+    byokSaveBtn: document.getElementById('byokSaveBtn'),
+    byokForgetBtn: document.getElementById('byokForgetBtn'),
+    chatKeyStatus: document.getElementById('chatKeyStatus'),
+    chatInput: document.getElementById('chatInput'),
+    sendChatBtn: document.getElementById('sendChatBtn'),
+};
+
+function saveByokKey() {
+    const key = el.byokKeyInput.value;
+    localStorage.setItem('libby_byok_key', key);
+    // Additional code to swap UI panels if necessary
+}
+
+function forgetByokKey() {
+    localStorage.removeItem('libby_byok_key');
+    // Additional code to swap UI panels if necessary
+}
+
+function checkByokKey() {
+    const keyExists = localStorage.getItem('libby_byok_key') !== null;
+    // Show or hide panels accordingly
+}
+
+async function sendChat() {
+    const userMessage = el.chatInput.value;
+    const byokKey = localStorage.getItem('libby_byok_key');
+    // Assumes `workspaceContext` is defined elsewhere
+    const context = await assembleWorkspaceContext();
+
+    try {
+        const response = await fetch('/.netlify/functions/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userMessage, context, byokKey }),
+        });
+        const data = await response.json();
+        renderChatMessage('user', userMessage);
+        renderChatMessage('assistant', data.message);
+        // Store messages in state.chat and update count
+        // Clear input field and show loading state on button
+    } catch (error) {
+        // Handle error with inline message
+    }
+}
+
+function pruneContext(state) {
+    // Code to trim context to ~1500 chars, keeping essentials
+}
+
+function renderChatMessage(role, text) {
+    // Code to append message to chat log
+}
+
+function getFormattedTimestamp() {
+    return new Date().toISOString();
+}
+
+function init() {
+    el.byokSaveBtn.addEventListener('click', saveByokKey);
+    el.byokForgetBtn.addEventListener('click', forgetByokKey);
+    el.sendChatBtn.addEventListener('click', sendChat);
+    checkByokKey();
+}
+
+document.addEventListener('DOMContentLoaded', init);
