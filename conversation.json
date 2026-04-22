@@ -60,7 +60,7 @@
   "currentPhase": {
     "number": 2,
     "name": "Unified Architecture Implementation (Claude + GPT + Libby)",
-    "status": "ready_to_start",
+    "status": "in_progress",
     "architecture_source": "ARCHITECTURE_UNIFIED.md (see full details there)",
     "core_principle": "State-first, not chat-first. Evidence in → Claims → Confidence → Human approval → iPad briefing console",
     "priority": [
