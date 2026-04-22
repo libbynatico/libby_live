@@ -43,6 +43,7 @@ function ingestUser(userId) {
     evidence: [],
     transcripts: [],
     indexes: {},
+    ledgers: {},
     missing: [],
   };
 
@@ -119,6 +120,28 @@ function ingestUser(userId) {
     }
   }
 
+  // Operational ledgers (from Life Librarian framework)
+  const ledgersDir = path.join(userRoot, 'ledgers');
+  const knownLedgers = [
+    'correspondence.csv',
+    'contacts_master.csv',
+    'appointments_transportation.csv',
+    'drive_index_inventory.csv',
+  ];
+  if (fs.existsSync(ledgersDir)) {
+    for (const filename of knownLedgers) {
+      const text = readFileIfExists(path.join(ledgersDir, filename));
+      if (text) {
+        const key = filename.replace('.csv', '');
+        const rows = readCSV(text);
+        result.ledgers[key] = {
+          rows: rows.length,
+          sample: rows.slice(0, 2),
+        };
+      }
+    }
+  }
+
   return result;
 }
 
@@ -129,7 +152,13 @@ console.log(JSON.stringify(summary, null, 2));
 const evidenceCount = summary.evidence.length;
 const transcriptCount = summary.transcripts.length;
 const indexCount = Object.keys(summary.indexes).length;
+const ledgerCount = Object.keys(summary.ledgers).length;
 const missingCount = summary.missing.length;
+
+// Calculate ledger stats
+const ledgerStats = Object.entries(summary.ledgers).map(([name, data]) => {
+  return `${name} (${data.rows} rows)`;
+}).join(', ');
 
 process.stderr.write(`
 === Ingest Summary ===
@@ -141,6 +170,7 @@ Context:     ${summary.context ? 'OK' : 'MISSING'}
 Evidence:    ${evidenceCount} entries
 Transcripts: ${transcriptCount} files
 Indexes:     ${indexCount} files loaded
+Ledgers:     ${ledgerCount} files (${ledgerStats || 'none'})
 Missing:     ${missingCount > 0 ? summary.missing.join(', ') : 'none'}
 ======================
 `);

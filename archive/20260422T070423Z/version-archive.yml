@@ -1,0 +1,90 @@
+name: version-archive
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  archive:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create archive snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          stamp="$(date -u +'%Y%m%dT%H%M%SZ')"
+          archive_dir="archive/${stamp}"
+
+          mkdir -p "${archive_dir}"
+          mkdir -p "${archive_dir}/netlify/functions"
+          mkdir -p "${archive_dir}/.github/workflows"
+
+          if [ -f "index.html" ]; then
+            cp "index.html" "${archive_dir}/index.html"
+          fi
+
+          if [ -f "netlify/functions/chat.js" ]; then
+            cp "netlify/functions/chat.js" "${archive_dir}/netlify-functions-chat.js"
+          fi
+
+          if [ -f ".github/workflows/version-archive.yml" ]; then
+            cp ".github/workflows/version-archive.yml" "${archive_dir}/version-archive.yml"
+          fi
+
+          cat > "${archive_dir}/manifest.json" <<EOF
+          {
+            "archived_at_utc": "${stamp}",
+            "source_branch": "${GITHUB_REF_NAME}",
+            "source_sha": "${GITHUB_SHA}",
+            "source_repository": "${GITHUB_REPOSITORY}",
+            "files": [
+              "index.html",
+              "netlify/functions/chat.js",
+              ".github/workflows/version-archive.yml"
+            ]
+          }
+          EOF
+
+          if [ ! -f "archive/README.md" ]; then
+            cat > "archive/README.md" <<'EOF'
+          # Archive
+
+          This folder stores automated snapshots of the live site files from pushes to `main`.
+
+          Snapshot contents:
+          - index.html
+          - netlify/functions/chat.js
+          - .github/workflows/version-archive.yml
+          - manifest.json
+          EOF
+          fi
+
+      - name: Commit archive snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add archive
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git commit -m "chore: archive live snapshot [skip ci]"
+          git push
