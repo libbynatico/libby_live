@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <title>Libby Live - v2.04.0</title>
+  <meta name="description" content="Meeting-first case advocacy app with evidence briefing and real-time note capture." />
+
+  <!-- PWA & iOS -->
+  <meta name="theme-color" content="#75a7ff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Libby Live">
+  <link rel="manifest" href="/libby_live/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%237ba5ff' width='192' height='192'/><text x='50%' y='50%' font-size='100' font-weight='bold' fill='%23fff' text-anchor='middle' dominant-baseline='central'>L</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%237ba5ff' width='180' height='180' rx='40'/><text x='50%' y='50%' font-size='90' font-weight='bold' fill='%23fff' text-anchor='middle' dominant-baseline='central'>L</text></svg>">
+
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #111831;
+      --text: #eef2ff;
+      --muted: #a7b0d6;
+      --line: #2a396d;
+      --accent: #75a7ff;
+      --ok: #42c08c;
+      --warn: #f2bb5e;
+      --danger: #ef6f6f;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: linear-gradient(180deg, #09101f 0%, #0d1530 100%);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 280px 1fr 360px;
+      min-height: 100vh;
+      gap: 0;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      background: rgba(10,16,34,.95);
+      border-right: 1px solid var(--line);
+      padding: 24px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #7ba5ff 0%, #446fe0 100%);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .brand-copy h1 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .brand-copy p {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .version-badge {
+      display: inline-block;
+      background: rgba(117,167,255,.15);
+      border: 1px solid rgba(117,167,255,.25);
+      color: #9cc2ff;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      margin-top: 8px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .nav button {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      padding: 12px 14px;
+      border-radius: 10px;
+      text-align: left;
+      cursor: pointer;
+      transition: all .15s;
+      font-size: 14px;
+    }
+
+    .nav button:hover {
+      background: rgba(117,167,255,.1);
+      color: var(--text);
+    }
+
+    .nav button.active {
+      background: rgba(117,167,255,.2);
+      border-color: rgba(117,167,255,.4);
+      color: var(--accent);
+    }
+
+    .sidebar-divider {
+      height: 1px;
+      background: var(--line);
+      margin: 20px 0;
+    }
+
+    .sidebar-section {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    /* MAIN CONTENT */
+    .main {
+      padding: 32px;
+      overflow-y: auto;
+      display: grid;
+      gap: 24px;
+    }
+
+    .header {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 20px;
+    }
+
+    .header h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(24,34,67,.6) 0%, rgba(14,21,44,.8) 100%);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .card h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    textarea {
+      width: 100%;
+      background: rgba(7,12,26,.7);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: rgba(117,167,255,.5);
+    }
+
+    /* RIGHT SIDEBAR - CHAT */
+    .chat-sidebar {
+      background: rgba(10,16,34,.95);
+      border-left: 1px solid var(--line);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .chat-header {
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 12px;
+    }
+
+    .chat-header h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      display: grid;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-right: 4px;
+    }
+
+    .message {
+      background: rgba(117,167,255,.1);
+      border-left: 2px solid var(--accent);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .message.bot {
+      background: rgba(66,192,140,.1);
+      border-left-color: var(--ok);
+      color: #b9ffd9;
+    }
+
+    .chat-input-area {
+      display: flex;
+      gap: 8px;
+      flex-direction: column;
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: rgba(42,57,109,.4);
+      border: 1px solid var(--line);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      resize: none;
+      min-height: 40px;
+      max-height: 100px;
+      font-family: inherit;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: rgba(117,167,255,.5);
+    }
+
+    .btn {
+      background: var(--accent);
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all .15s;
+    }
+
+    .btn:hover {
+      background: #9cc2ff;
+    }
+
+    .btn.secondary {
+      background: rgba(117,167,255,.15);
+      color: var(--accent);
+      border: 1px solid rgba(117,167,255,.3);
+    }
+
+    .btn.secondary:hover {
+      background: rgba(117,167,255,.25);
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(117,167,255,.3);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(117,167,255,.5);
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">🎙️</div>
+        <div class="brand-copy">
+          <h1>Libby Live</h1>
+          <p>Case Advocacy</p>
+          <div class="version-badge">v2.04.0</div>
+        </div>
+      </div>
+
+      <div class="nav">
+        <button data-section="overview" class="active">📊 Overview</button>
+        <button data-section="situation">📋 Situation</button>
+        <button data-section="evidence">🔍 Evidence</button>
+        <button data-section="contacts">👥 Contacts</button>
+      </nav>
+
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-section">User</div>
+      <div style="font-size:12px; color: var(--muted); padding: 8px; background: rgba(117,167,255,.05); border-radius: 8px;">
+        <strong id="activeUser">mattherbert01</strong><br/>
+        <span id="activeRole">Advocate</span>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="header">
+        <h2 id="sectionTitle">Overview</h2>
+        <p id="sectionDesc">Case advocacy dashboard and intake system</p>
+      </div>
+
+      <!-- OVERVIEW -->
+      <section id="overview" class="content-section">
+        <div class="card">
+          <h3>Quick Start</h3>
+          <p style="color: var(--muted); font-size: 14px; margin: 0;">
+            Use the sidebar to navigate case information. Chat with Libby on the right for real-time assistance.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Recent Activity</h3>
+          <div id="activityLog" style="font-size: 13px; color: var(--muted);">
+            <div>—</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SITUATION -->
+      <section id="situation" class="content-section hidden">
+        <div class="card">
+          <h3>Case Situation</h3>
+          <div class="form-group">
+            <label>Medical History & Current Status</label>
+            <textarea id="caseSituation" placeholder="Document the patient's medical situation, diagnoses, and current status..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Current Goals & Advocacy Focus</label>
+            <textarea id="caseGoals" placeholder="What are we trying to achieve for this case?"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- EVIDENCE -->
+      <section id="evidence" class="content-section hidden">
+        <div class="card">
+          <h3>Evidence & Documentation</h3>
+          <p style="color: var(--muted); font-size: 13px; margin: 0 0 16px;">
+            Key documents, records, and corroborating evidence for this case.
+          </p>
+          <div id="evidenceList" style="display: grid; gap: 10px;">
+            <div style="padding: 12px; background: rgba(255,255,255,.02); border: 1px solid var(--line); border-radius: 8px; font-size: 13px; color: var(--muted);">
+              No evidence items yet. Add via chat or sidebar.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACTS -->
+      <section id="contacts" class="content-section hidden">
+        <div class="card">
+          <h3>Relevant Contacts & Organizations</h3>
+          <p style="color: var(--muted); font-size: 13px; margin: 0 0 16px;">
+            Healthcare providers, government agencies, legal contacts, and support services.
+          </p>
+          <div id="contactsList" style="display: grid; gap: 10px;">
+            <div style="padding: 12px; background: rgba(255,255,255,.02); border: 1px solid var(--line); border-radius: 8px; font-size: 13px; color: var(--muted);">
+              No contacts yet. Add via chat or sidebar.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- CHAT SIDEBAR -->
+    <div class="chat-sidebar">
+      <div class="chat-header">
+        <h3>🤖 Libby</h3>
+      </div>
+
+      <div class="chat-messages" id="chatMessages"></div>
+
+      <div class="chat-input-area">
+        <textarea id="messageInput" class="chat-input" placeholder="Ask Libby..." maxlength="500"></textarea>
+        <div class="chat-input-row">
+          <button id="sendBtn" class="btn" style="flex: 1;">Send</button>
+        </div>
+        <div id="chatStatus" style="font-size: 11px; color: var(--muted); text-align: center;">Ready</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const APP_VERSION = "v2.04.0";
+    const STORAGE_KEY = "libby_live_v2_04";
+
+    let state = loadState();
+    let currentSection = "overview";
+
+    function defaultState() {
+      return {
+        version: APP_VERSION,
+        activeUser: "mattherbert01",
+        activeRole: "Advocate",
+        situation: "",
+        goals: "",
+        evidence: [],
+        contacts: [],
+        chatMessages: [],
+        activity: [{ ts: new Date().toISOString(), text: "Libby Live v2.04.0 initialized" }]
+      };
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : defaultState();
+      } catch {
+        return defaultState();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function render() {
+      // Update visible content section
+      document.querySelectorAll(".content-section").forEach(el => {
+        el.classList.toggle("hidden", el.id !== currentSection);
+      });
+
+      // Update section title
+      const titles = { overview: "📊 Overview", situation: "📋 Situation", evidence: "🔍 Evidence", contacts: "👥 Contacts" };
+      const descs = {
+        overview: "Case advocacy dashboard and intake system",
+        situation: "Medical and advocacy information for this case",
+        evidence: "Documentation, records, and supporting evidence",
+        contacts: "Healthcare, government, and support contacts"
+      };
+      document.getElementById("sectionTitle").textContent = titles[currentSection];
+      document.getElementById("sectionDesc").textContent = descs[currentSection];
+
+      // Update nav buttons
+      document.querySelectorAll(".nav button").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.section === currentSection);
+      });
+
+      // Render chat
+      const chatEl = document.getElementById("chatMessages");
+      chatEl.innerHTML = state.chatMessages.map(msg => `
+        <div class="message ${msg.role === 'bot' ? 'bot' : ''}">
+          <strong>${msg.role === 'bot' ? 'Libby' : 'You'}:</strong><br/>
+          ${msg.text}
+        </div>
+      `).join("");
+      chatEl.scrollTop = chatEl.scrollHeight;
+
+      // Restore form values
+      const caseSituation = document.getElementById("caseSituation");
+      if (caseSituation) caseSituation.value = state.situation || "";
+    }
+
+    function addChatMessage(text, role = "user") {
+      state.chatMessages.push({ text, role, ts: new Date().toISOString() });
+      state.chatMessages = state.chatMessages.slice(-20);
+      saveState();
+      render();
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById("messageInput");
+      const text = input.value.trim();
+      if (!text) return;
+
+      addChatMessage(text, "user");
+      input.value = "";
+
+      document.getElementById("chatStatus").textContent = "Thinking...";
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: state.activeUser,
+            messages: state.chatMessages.map(m => ({ role: m.role, content: m.text })),
+            context: { situation: state.situation }
+          })
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        addChatMessage(data.reply || "I'm unable to respond right now.", "bot");
+      } catch (err) {
+        addChatMessage(`Error: ${err.message}. (Check that libby-local-server is running.)`, "bot");
+      }
+
+      document.getElementById("chatStatus").textContent = "Ready";
+    }
+
+    // Wire nav
+    document.querySelectorAll(".nav button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        currentSection = btn.dataset.section;
+        render();
+      });
+    });
+
+    // Wire chat
+    document.getElementById("sendBtn").addEventListener("click", sendMessage);
+    document.getElementById("messageInput").addEventListener("keydown", e => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Wire form inputs
+    document.getElementById("caseSituation")?.addEventListener("input", e => {
+      state.situation = e.target.value;
+      saveState();
+    });
+
+    // Initial render
+    render();
+    addChatMessage("Hi, I'm Libby. I can help you navigate this case. What do you need assistance with?", "bot");
+
+    // Register service worker for PWA + offline support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/libby_live/sw.js').then(reg => {
+        console.log('Service worker registered');
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'activated') {
+              console.log('Service worker updated');
+            }
+          });
+        });
+      }).catch(err => console.error('Service worker registration failed', err));
+    }
+
+    // Orientation change listener
+    window.addEventListener('orientationchange', () => {
+      const portrait = window.innerHeight > window.innerWidth;
+      document.body.classList.toggle('portrait-mode', portrait);
+    });
+
+    // Trigger on load
+    window.dispatchEvent(new Event('orientationchange'));
+  </script>
+</body>
+</html>
