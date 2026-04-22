@@ -1,0 +1,252 @@
+{
+  "project": "Libby Live - Case Advocacy Dashboard",
+  "version": "2.04.0",
+  "lastUpdated": "2026-04-22T22:15:00Z",
+  "activeAgent": "claude (instructor)",
+  "coordinator": {
+    "name": "claude",
+    "role": "Project instructor, multi-agent coordinator",
+    "responsibilities": [
+      "Direct work for libbyclaudecode, Gemini, GPT, and other agents",
+      "Monitor progress via conversation.json",
+      "Unblock issues, bring in specialists as needed",
+      "Rate all agents fairly",
+      "Synthesize results",
+      "Keep user updated with consolidated status"
+    ],
+    "currentStatus": "Phase 2 infrastructure ready - agents can execute in parallel"
+  },
+  "agents": {
+    "claude": {
+      "role": "Project instructor, multi-agent coordinator",
+      "lastActive": "2026-04-22T22:15:00Z",
+      "sessionsCompleted": 2,
+      "tasksCompleted": [
+        "Rebuilt index.html v2.04.0 with working UI",
+        "Implemented Ollama + OpenRouter fallback",
+        "Created LLM setup documentation",
+        "Designed comprehensive feature specification",
+        "Set up agent collaboration protocol",
+        "Created instructor coordination system",
+        "Built direct data import endpoint (no connectors)",
+        "Generated sample fixture data for briefing console",
+        "Implemented multi-patient isolation guardrails"
+      ],
+      "currentTasks": [
+        "Coordinating parallel Phase 2 execution",
+        "Monitoring libbyclaudecode UI development",
+        "Monitoring Gemini source discovery",
+        "Maintaining conversation.json heartbeat"
+      ],
+      "rating": null,
+      "notes": "Phase 2 infrastructure complete. Ready to direct libbyclaudecode, Gemini, and GPT work."
+    },
+    "libbyclaudecode": {
+      "role": "Design implementation, UI polish, feature development",
+      "lastActive": null,
+      "sessionsCompleted": 0,
+      "tasksCompleted": [],
+      "currentTasks": [
+        "Task 1: Define 12 core schemas (1-1.5 hrs)",
+        "Task 2: Implement confidence model (30-45 min)",
+        "Task 3: Build iPad briefing console (1.5-2 hrs)",
+        "Task 4: Implement meeting mode (1-1.5 hrs)"
+      ],
+      "resourcesReady": [
+        "Sample fixture data: /fixtures/sample-briefing-data.json",
+        "Design spec: /design_spec.md",
+        "Architecture: /ARCHITECTURE_UNIFIED.md",
+        "Schema definitions: /PHASE_2_TASK_ASSIGNMENTS.md"
+      ],
+      "rating": null,
+      "notes": "Ready to start. Sample data and architecture docs prepared. Focus on making confidence model hard-enforced (not optional)."
+    },
+    "gemini": {
+      "role": "Drive research, data extraction, file discovery",
+      "lastActive": null,
+      "sessionsCompleted": 0,
+      "tasksCompleted": [],
+      "currentTasks": [
+        "Search Matthew's Drive for 2001-2015 medical records",
+        "Search for pre-2024 administrative documents",
+        "Search for 2024 crisis documentation",
+        "Search for 2025 recognition documents",
+        "Search for 2026 surgery/pain documents",
+        "Report findings in structured markdown format"
+      ],
+      "resourcesReady": [
+        "Search prompt: /GEMINI_PROMPT_READY_TO_SEND.txt",
+        "Import endpoint: POST /api/import-sources (format: markdown or json)",
+        "Drive folder: https://drive.google.com/drive/folders/1gcaYvxHoz_anlWEsq0KsLk_7IYYJCAcK"
+      ],
+      "rating": null,
+      "notes": "Ready to start. Prompt is copy-paste ready. Output will be imported via /api/import-sources endpoint (no connectors needed)."
+    },
+    "gpt": {
+      "role": "System architecture, complex logic, refinement",
+      "lastActive": null,
+      "sessionsCompleted": 0,
+      "tasksCompleted": [],
+      "rating": null,
+      "notes": "On standby. Available for architectural decisions or code review as needed."
+    }
+  },
+  "currentPhase": {
+    "number": 2,
+    "name": "Unified Architecture Implementation (Claude + GPT + Libby)",
+    "status": "in_progress",
+    "kickoff": "2026-04-22T22:15:00Z",
+    "architecture_source": "ARCHITECTURE_UNIFIED.md (see full details there)",
+    "core_principle": "State-first, not chat-first. Evidence in → Claims → Confidence → Human approval → iPad briefing console",
+    "parallelWorkstreams": [
+      "libbyclaudecode: Schemas + Confidence + iPad UI + Meeting Mode",
+      "Gemini: Drive source discovery + structured reporting",
+      "Claude: Multi-patient guardrails + coordination"
+    ],
+    "priority": [
+      "1. Define all 12 schemas (source_document, evidence_card, claim, timeline_event, matter, task, contact, interaction, draft, decision, alert, agent_run)",
+      "2. Implement confidence model as hard schema (Confirmed/Draft/Inferred/Missing/Needs Review enums)",
+      "3. Build iPad briefing console (6 tabs: Summary, Timeline, Evidence, Live Notes, Responses, Tasks)",
+      "4. Implement meeting mode (questions → answers → follow-ups → recap)",
+      "5. Find missing sources from Drive (Gemini task)",
+      "6. Implement multi-patient isolation guardrails (permission enforcement)",
+      "7. Generate post-meeting recaps",
+      "8. Test with real data (ODSP scenario, DSO scenario, Rogers scenario)"
+    ],
+    "estimatedTokens": "~50-60% for comprehensive implementation",
+    "owner": "claude (instructor) + libbyclaudecode + gemini + gpt (as needed)",
+    "successCriteria": "See ARCHITECTURE_UNIFIED.md MVP Acceptance Criteria section"
+  },
+  "blockers": [],
+  "nextMilestone": {
+    "name": "v2.05.0 - Phase 2 Complete",
+    "target": "This session + next session",
+    "criteria": [
+      "✅ All 12 schemas functional and validated",
+      "✅ Confidence model hard-enforced (can't save without it)",
+      "✅ 6-tab briefing console works end-to-end",
+      "✅ Meeting mode captures questions → answers → follow-ups",
+      "✅ Multi-patient isolation enforced (permission tests passing)",
+      "✅ Source discovery complete (Gemini report in _shared/)",
+      "✅ Sample data imported and visible in briefing console",
+      "✅ Zero hallucinations (templates only)"
+    ]
+  },
+  "handoff": {
+    "from": "claude (session 1)",
+    "to": "libbyclaudecode (session 2)",
+    "timestamp": "2026-04-22T22:15:00Z",
+    "context": {
+      "website_live": "https://libbynatico.github.io/libby_live/ or localhost:3000",
+      "local_server_ready": "node libby-local-server.js",
+      "documentation": [
+        "ARCHITECTURE_UNIFIED.md - Full specification",
+        "PHASE_2_TASK_ASSIGNMENTS.md - Detailed task breakdown",
+        "MULTI_PATIENT_ISOLATION.md - Permission model",
+        "design_spec.md - UI/UX specification",
+        "fixtures/sample-briefing-data.json - Sample data for testing"
+      ],
+      "codebase_status": "All Phase 1 committed to main. Phase 2 branch ready.",
+      "phase2_ready": [
+        "✅ import-sources.js (direct Gemini output import)",
+        "✅ auth-middleware.js (multi-patient permission enforcement)",
+        "✅ sample-briefing-data.json (fixture data for UI testing)",
+        "✅ GEMINI_PROMPT_READY_TO_SEND.txt (copy-paste ready)"
+      ],
+      "next_agent_actions": {
+        "libbyclaudecode": "Start Task 1 - define 12 schemas in /schemas/*.schema.json",
+        "gemini": "Copy GEMINI_PROMPT_READY_TO_SEND.txt, search Drive, post to /api/import-sources",
+        "claude": "Monitor progress, coordinate blockers, maintain conversation.json heartbeat"
+      }
+    },
+    "message": "Phase 2 infrastructure is ready. All three agents can start parallel work immediately. Sample data and import endpoints prepared. Update conversation.json after each milestone."
+  },
+  "ratingSystem": {
+    "scale": "1-5 stars",
+    "dimensions": [
+      {
+        "name": "Code Quality",
+        "description": "Clean, maintainable, no dependencies, follows patterns"
+      },
+      {
+        "name": "Feature Completeness",
+        "description": "Does what was asked, no gaps, edge cases handled"
+      },
+      {
+        "name": "UX/Polish",
+        "description": "Professional appearance, smooth interactions, accessible"
+      },
+      {
+        "name": "Documentation",
+        "description": "Clear explanations, handoff notes, future-proof"
+      },
+      {
+        "name": "Communication",
+        "description": "Clear status updates, asks questions when stuck, proactive"
+      }
+    ]
+  },
+  "sessionHistory": [
+    {
+      "session": 1,
+      "agent": "claude",
+      "date": "2026-04-22",
+      "goals": [
+        "Get website working end-to-end",
+        "Remove broken auth blocker",
+        "Wire Ollama + OpenRouter",
+        "Document LLM setup"
+      ],
+      "accomplished": [
+        "✅ Rebuilt index.html (no auth, working chat UI)",
+        "✅ Implemented Ollama with OpenRouter fallback",
+        "✅ Created comprehensive docs (NEXT_STEPS, QUICKSTART, LLM_SETUP)",
+        "✅ Deployed to GitHub Pages"
+      ],
+      "issues": [
+        "Git merge conflicts (resolved with rebase)"
+      ],
+      "tokenUsageStart": "unknown",
+      "tokenUsageEnd": "35%",
+      "notes": "Delivered working product. Ready for Phase 2 infrastructure."
+    },
+    {
+      "session": 2,
+      "agent": "claude",
+      "date": "2026-04-22",
+      "goals": [
+        "Set up Phase 2 parallel workstreams",
+        "Create import mechanism for Gemini",
+        "Generate sample data for UI testing",
+        "Implement multi-patient guardrails"
+      ],
+      "accomplished": [
+        "✅ Created import-sources.js (direct Gemini output endpoint)",
+        "✅ Generated sample fixture data (timeline, claims, tasks)",
+        "✅ Implemented auth-middleware.js (permission enforcement)",
+        "✅ Updated conversation.json for coordination",
+        "✅ Prepared Gemini prompt for copy-paste handoff"
+      ],
+      "blockers": [],
+      "tokenUsageStart": "35%",
+      "tokenUsageEnd": "TBD",
+      "notes": "Infrastructure complete. Three agents can now execute in parallel."
+    }
+  ],
+  "collaboration": {
+    "protocol": "Update conversation.json after each major task",
+    "heartbeat": "Add entry to sessionHistory every time you complete a milestone",
+    "handshake": "Read conversation.json before starting, update it after finishing",
+    "format": {
+      "task_complete": {
+        "timestamp": "ISO 8601",
+        "agent": "your name",
+        "task": "what you did",
+        "files_changed": ["file1.html", "file2.js"],
+        "status": "success | blocked",
+        "notes": "any important context"
+      }
+    },
+    "rating_feedback": "After each session, rate the other agent on the 5 dimensions. Be honest and constructive."
+  }
+}

@@ -1,0 +1,239 @@
+{
+  "userID": "mattherbert01",
+  "timeline_events": [
+    {
+      "id": "tbi_2001",
+      "date": "2001-12-15",
+      "event": "Traumatic Brain Injury (TBI) at age 12, Kingston General Hospital",
+      "confidence": "Confirmed",
+      "sources": ["kingston_general_discharge_2001.pdf"],
+      "matter_id": "medical_history",
+      "category": "Medical"
+    },
+    {
+      "id": "crohns_2002",
+      "date": "2002-07-20",
+      "event": "Crohn's Disease diagnosed, gastroenterology assessment",
+      "confidence": "Confirmed",
+      "sources": ["gastroenterology_report_2002.pdf"],
+      "matter_id": "medical_history",
+      "category": "Medical"
+    },
+    {
+      "id": "colectomy_2013",
+      "date": "2013-06-10",
+      "event": "First major surgery: partial colectomy",
+      "confidence": "Confirmed",
+      "sources": ["operative_note_colectomy_2013.pdf"],
+      "matter_id": "medical_history",
+      "category": "Medical"
+    },
+    {
+      "id": "ileostomy_2015",
+      "date": "2015-03-22",
+      "event": "Permanent ileostomy placement",
+      "confidence": "Confirmed",
+      "sources": ["operative_note_ileostomy_2015.pdf"],
+      "matter_id": "medical_history",
+      "category": "Medical"
+    },
+    {
+      "id": "odsp_attempt_2020",
+      "date": "2020-05-15",
+      "event": "ODSP application attempt (rejected)",
+      "confidence": "Confirmed",
+      "sources": ["odsp_rejection_letter_2020.pdf"],
+      "matter_id": "benefits_history",
+      "category": "Administrative"
+    },
+    {
+      "id": "cambridge_admission_2024",
+      "date": "2024-06-08",
+      "event": "Emergency admission to Cambridge Memorial Hospital",
+      "confidence": "Confirmed",
+      "sources": ["cambridge_admission_form_2024.pdf"],
+      "matter_id": "current_crisis",
+      "category": "Medical"
+    },
+    {
+      "id": "emergency_surgery_2024",
+      "date": "2024-06-15",
+      "event": "Emergency bowel surgery at Cambridge Memorial",
+      "confidence": "Confirmed",
+      "sources": ["operative_note_cambridge_2024.pdf"],
+      "matter_id": "current_crisis",
+      "category": "Medical"
+    },
+    {
+      "id": "44day_hospitalization_2024",
+      "date": "2024-06-15",
+      "event": "44-day inpatient stay with TPN and PICC line management",
+      "confidence": "Confirmed",
+      "sources": ["discharge_summary_cambridge_2024.pdf"],
+      "matter_id": "current_crisis",
+      "category": "Medical"
+    },
+    {
+      "id": "odsp_approval_2025",
+      "date": "2025-12-03",
+      "event": "ODSP approval (formal Notice of Decision)",
+      "confidence": "Confirmed",
+      "sources": ["odsp_notice_decision_2025.pdf"],
+      "matter_id": "benefits_history",
+      "category": "Administrative"
+    },
+    {
+      "id": "dso_assessment_2025",
+      "date": "2025-11-30",
+      "event": "Disability Services Ontario (DSO) assessment completed",
+      "confidence": "Confirmed",
+      "sources": ["dso_assessment_report_2025.pdf"],
+      "matter_id": "disability_services",
+      "category": "Administrative"
+    },
+    {
+      "id": "juravinski_admission_2026",
+      "date": "2026-01-18",
+      "event": "Admission to Juravinski Hospital, Hamilton",
+      "confidence": "Confirmed",
+      "sources": ["juravinski_admission_2026.pdf"],
+      "matter_id": "current_crisis_2026",
+      "category": "Medical"
+    },
+    {
+      "id": "forbes_surgery_2026",
+      "date": "2026-01-20",
+      "event": "Bowel resection surgery by Dr. S. Forbes",
+      "confidence": "Confirmed",
+      "sources": ["operative_note_forbes_2026.pdf"],
+      "matter_id": "current_crisis_2026",
+      "category": "Medical"
+    },
+    {
+      "id": "pain_crisis_2026",
+      "date": "2026-01-22",
+      "event": "Pain management crisis, PCA (Patient Controlled Analgesia) implementation",
+      "confidence": "Confirmed",
+      "sources": ["pain_management_note_2026.pdf"],
+      "matter_id": "current_crisis_2026",
+      "category": "Medical"
+    }
+  ],
+
+  "claims": [
+    {
+      "id": "claim_tbi_impact",
+      "text": "Traumatic brain injury at age 12 resulted in ongoing cognitive and executive function challenges",
+      "confidence": "Confirmed",
+      "evidence_ids": ["tbi_2001"],
+      "matter_id": "medical_history"
+    },
+    {
+      "id": "claim_gi_complexity",
+      "text": "Complex gastrointestinal history: Crohn's diagnosis (2002) → partial colectomy (2013) → permanent ileostomy (2015)",
+      "confidence": "Confirmed",
+      "evidence_ids": ["crohns_2002", "colectomy_2013", "ileostomy_2015"],
+      "matter_id": "medical_history"
+    },
+    {
+      "id": "claim_systemic_attrition",
+      "text": "Pattern of recognition delay: 23-year gap between TBI (2001) and TBI-related support acknowledgment, 15-year gap between diagnosis (2002) and symptom support",
+      "confidence": "Inferred",
+      "evidence_ids": ["tbi_2001", "crohns_2002", "odsp_approval_2025"],
+      "matter_id": "systemic_failure"
+    },
+    {
+      "id": "claim_2024_crisis_severity",
+      "text": "June 2024 Cambridge Memorial admission marked critical escalation: emergency bowel surgery, 44-day TPN-dependent hospitalization",
+      "confidence": "Confirmed",
+      "evidence_ids": ["cambridge_admission_2024", "emergency_surgery_2024", "44day_hospitalization_2024"],
+      "matter_id": "current_crisis"
+    },
+    {
+      "id": "claim_odsp_recognition_overdue",
+      "text": "ODSP approval (December 2025) occurred 1.5 years after medical crisis recognition was medically and socially imperative",
+      "confidence": "Draft",
+      "evidence_ids": ["cambridge_admission_2024", "odsp_approval_2025"],
+      "matter_id": "systemic_failure"
+    }
+  ],
+
+  "summary": {
+    "current_issue": "Complex medical history with delayed systemic recognition. Recent escalation (Jan 2026 bowel surgery + pain crisis) demonstrates ongoing medical fragility and need for coordinated support.",
+    "key_dates": [
+      "2001: TBI (age 12)",
+      "2002: Crohn's diagnosis",
+      "2024: Crisis escalation (emergency surgery, 44-day hospitalization)",
+      "2025: ODSP/DSO recognition",
+      "2026: Ongoing surgical and pain management needs"
+    ],
+    "key_providers": [
+      "Cambridge Memorial Hospital",
+      "Juravinski Hospital (Hamilton)",
+      "Dr. S. Forbes (Bowel Surgery)",
+      "ODSP Office",
+      "Disability Services Ontario"
+    ]
+  },
+
+  "tasks": [
+    {
+      "id": "task_1",
+      "title": "Obtain complete operative notes from Cambridge Memorial (June 2024)",
+      "owner": "mattherbert01",
+      "status": "Pending",
+      "deadline": "2026-05-15",
+      "priority": "High",
+      "linked_matter": "current_crisis"
+    },
+    {
+      "id": "task_2",
+      "title": "Request discharge summaries from Juravinski (January 2026)",
+      "owner": "mattherbert01",
+      "status": "In Progress",
+      "deadline": "2026-05-10",
+      "priority": "High",
+      "linked_matter": "current_crisis_2026"
+    },
+    {
+      "id": "task_3",
+      "title": "Follow up on ODSP payment schedule and accommodation requests",
+      "owner": "worker",
+      "status": "Pending",
+      "deadline": "2026-05-20",
+      "priority": "Medium",
+      "linked_matter": "benefits_history"
+    },
+    {
+      "id": "task_4",
+      "title": "Schedule DSO reassessment for updated disability support needs",
+      "owner": "mattherbert01",
+      "status": "Pending",
+      "deadline": "2026-06-01",
+      "priority": "Medium",
+      "linked_matter": "disability_services"
+    }
+  ],
+
+  "responses": {
+    "odsp_brief": {
+      "title": "ODSP Recognition Brief",
+      "content": "Matthew Herbert received formal ODSP approval effective December 3, 2025, following submission of comprehensive medical documentation and Disability Services Ontario assessment. Approval acknowledges 25+ year history of documented disability (TBI, Crohn's Disease, permanent ileostomy) and recent escalation requiring immediate medical and financial support.",
+      "confidence": "Confirmed",
+      "source": "odsp_notice_decision_2025.pdf"
+    },
+    "medical_chronology": {
+      "title": "Medical History Timeline",
+      "content": "Age 12 (2001): Traumatic brain injury. Age 13 (2002): Crohn's Disease diagnosis. Age 25 (2013): Partial colectomy. Age 27 (2015): Permanent ileostomy placement. Age 36 (June 2024): Emergency hospitalization, bowel surgery, 44-day inpatient care. Age 37 (Jan 2026): Additional bowel resection, pain management crisis.",
+      "confidence": "Confirmed",
+      "sources": ["kingston_general_discharge_2001.pdf", "gastroenterology_report_2002.pdf", "operative_note_colectomy_2013.pdf", "operative_note_ileostomy_2015.pdf", "cambridge_admission_2024.pdf", "operative_note_forbes_2026.pdf"]
+    }
+  },
+
+  "metadata": {
+    "userID": "mattherbert01",
+    "lastUpdated": "2026-04-22",
+    "version": "1.0",
+    "notes": "Sample fixture data for briefing console testing. Replace with real data from /data/mattherbert01/"
+  }
+}
