@@ -571,9 +571,11 @@
 
       <div class="sidebar-meta">
         <div><strong>Build</strong><br /><span id="buildModeLabel">live</span></div>
+        <div><strong>Role</strong><br /><span id="roleLabel">—</span></div>
+        <div><strong>User ID</strong><br /><span id="userIdLabel">—</span></div>
         <div><strong>Session</strong><br /><span id="sessionStatus">Guest mode</span></div>
         <div><strong>Supabase</strong><br /><span id="supabaseStatus">Checking...</span></div>
-        <div><strong>Drive sync</strong><br /><span id="driveSidebarStatus">Initializing...</span></div>
+        <div><strong>Knowledge</strong><br /><span id="knowledgeStatus">Not loaded</span></div>
       </div>
     </aside>
 
@@ -589,8 +591,7 @@
           <button class="btn" id="exportBtn">Export JSON</button>
           <label class="btn ghost" for="importJsonInput">Import JSON</label>
           <input id="importJsonInput" class="hidden" type="file" accept=".json,application/json" />
-          <button class="btn" id="connectDriveBtn">Connect Drive</button>
-          <button class="btn" id="signinBtn">Sign in</button>
+          <button class="btn primary" id="signinBtn">Sign in</button>
           <button class="btn danger hidden" id="signoutBtn">Sign out</button>
         </div>
       </div>
@@ -846,6 +847,57 @@
     </main>
   </div>
 
+  <!-- Role-aware login modal -->
+  <div id="loginModal" style="
+    display:none; position:fixed; inset:0; z-index:9999;
+    background:rgba(7,12,26,.88); backdrop-filter:blur(12px);
+    align-items:center; justify-content:center;
+  ">
+    <div style="
+      background:linear-gradient(180deg,#111831 0%,#0b1020 100%);
+      border:1px solid #2a396d; border-radius:20px;
+      padding:36px; width:100%; max-width:420px; box-shadow:0 24px 60px rgba(0,0,0,.5);
+    ">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:28px;">
+        <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#7ba5ff,#446fe0);display:grid;place-items:center;font-weight:800;font-size:18px;">L</div>
+        <div>
+          <div style="font-size:18px;font-weight:700;">Libby Live</div>
+          <div style="font-size:12px;color:#a7b0d6;">NATICO Case Portal</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <label style="display:block;font-size:13px;color:#a7b0d6;margin-bottom:8px;">Sign in as</label>
+        <div style="display:grid;gap:10px;">
+          <button class="role-btn" data-role="admin" data-userid="libby" style="
+            border:1px solid #2a396d;background:rgba(117,167,255,.08);color:#eef2ff;
+            padding:14px 16px;border-radius:14px;cursor:pointer;text-align:left;
+            transition:border-color .15s,background .15s;
+          ">
+            <div style="font-weight:600;margin-bottom:3px;">Admin — Libby</div>
+            <div style="font-size:12px;color:#a7b0d6;">Full portal access, all cases</div>
+          </button>
+          <button class="role-btn" data-role="patient_zero" data-userid="mattherbert01" style="
+            border:1px solid #2a396d;background:rgba(117,167,255,.08);color:#eef2ff;
+            padding:14px 16px;border-radius:14px;cursor:pointer;text-align:left;
+            transition:border-color .15s,background .15s;
+          ">
+            <div style="font-weight:600;margin-bottom:3px;">Patient Zero — Matt Herbert</div>
+            <div style="font-size:12px;color:#a7b0d6;">user ID: mattherbert01 (001)</div>
+          </button>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid #2a396d;padding-top:18px;margin-top:6px;">
+        <label style="display:block;font-size:13px;color:#a7b0d6;margin-bottom:8px;">Or sign in with GitHub via Supabase</label>
+        <button id="githubSigninBtn" style="
+          width:100%;border:1px solid #2a396d;background:rgba(255,255,255,.04);
+          color:#eef2ff;padding:12px;border-radius:12px;cursor:pointer;font-size:14px;
+        ">Continue with GitHub</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const APP_VERSION = "v2.03.0-claude-oauth";
     const STORAGE_KEY = "libby_live_workspace_v2_03";
@@ -877,6 +929,8 @@
     let state = loadState();
     let supabase = null;
     let sessionUser = null;
+    let activeUserId = state.activeUserId || null;
+    let activeRole = state.activeRole || null;
 
     const el = {
       navButtons: [...document.querySelectorAll(".nav button")],
@@ -885,7 +939,10 @@
       buildModeLabel: document.getElementById("buildModeLabel"),
       sessionStatus: document.getElementById("sessionStatus"),
       supabaseStatus: document.getElementById("supabaseStatus"),
-      driveSidebarStatus: document.getElementById("driveSidebarStatus"),
+      roleLabel: document.getElementById("roleLabel"),
+      userIdLabel: document.getElementById("userIdLabel"),
+      knowledgeStatus: document.getElementById("knowledgeStatus"),
+      loginModal: document.getElementById("loginModal"),
       saveLocalBtn: document.getElementById("saveLocalBtn"),
       exportBtn: document.getElementById("exportBtn"),
       importJsonInput: document.getElementById("importJsonInput"),
@@ -934,13 +991,40 @@
 
     function init() {
       wireNavigation();
+      wireLoginModal();
       hydrateFormFields();
       wireInputs();
       wireActions();
       wireChatKeyboard();
       initializeSupabase();
-      checkDriveAuth();
       renderAll();
+    }
+
+    function wireLoginModal() {
+      el.signinBtn.addEventListener("click", () => {
+        el.loginModal.style.display = "flex";
+      });
+
+      document.querySelectorAll(".role-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const role = btn.dataset.role;
+          const userId = btn.dataset.userid;
+          activeRole = role;
+          activeUserId = userId;
+          state.activeRole = role;
+          state.activeUserId = userId;
+          saveState();
+          el.loginModal.style.display = "none";
+          stampActivity(`Signed in as ${userId} (${role})`);
+          renderAll();
+        });
+      });
+
+      document.getElementById("githubSigninBtn").addEventListener("click", signInWithGitHub);
+
+      el.loginModal.addEventListener("click", e => {
+        if (e.target === el.loginModal) el.loginModal.style.display = "none";
+      });
     }
 
     function loadState() {
@@ -1166,12 +1250,18 @@
     }
 
     function renderAuthState() {
-      const signedIn = !!sessionUser;
-      el.sessionStatus.textContent = signedIn ? (sessionUser.email || sessionUser.id) : "Guest mode";
+      const signedIn = !!sessionUser || !!activeUserId;
+      el.sessionStatus.textContent = sessionUser
+        ? (sessionUser.email || sessionUser.id)
+        : activeUserId
+        ? activeUserId
+        : "Guest mode";
       el.authPill.className = signedIn ? "pill ok" : "pill warn";
-      el.authPill.textContent = signedIn ? "Auth: signed in" : "Auth: guest mode";
+      el.authPill.textContent = signedIn ? "Auth: signed in" : "Auth: guest";
       el.signinBtn.classList.toggle("hidden", signedIn);
       el.signoutBtn.classList.toggle("hidden", !signedIn);
+      el.roleLabel.textContent = activeRole || (sessionUser ? "github" : "—");
+      el.userIdLabel.textContent = activeUserId || (sessionUser ? sessionUser.email : "—");
     }
 
     function updateDriveStatus() {
@@ -1303,13 +1393,17 @@
     }
 
     async function signOut() {
-      if (!supabase) return;
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        alert(`Sign out failed: ${error.message}`);
-        return;
-      }
+      activeUserId = null;
+      activeRole = null;
+      state.activeUserId = null;
+      state.activeRole = null;
       stampActivity("Signed out");
+
+      if (supabase) {
+        const { error } = await supabase.auth.signOut();
+        if (error) console.error("Supabase signout error:", error.message);
+      }
+
       saveState();
     }
 
@@ -1342,6 +1436,7 @@
           body: JSON.stringify({
             model,
             audience,
+            userId: activeUserId || (sessionUser ? sessionUser.id : "patient_zero"),
             context,
             messages: [...state.chat.slice(-8).map(m => ({ role: m.role, content: m.content }))]
           })
@@ -1364,6 +1459,9 @@
         stampActivity(`Chat response received`);
         el.chatPill.className = "pill ok";
         el.chatPill.textContent = "Chat: ready";
+        if (el.knowledgeStatus) {
+          el.knowledgeStatus.textContent = payload.knowledge_loaded ? "Loaded" : "Not found";
+        }
         saveState();
       } catch (error) {
         console.error(error);

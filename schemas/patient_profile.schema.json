@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PatientProfile",
+  "type": "object",
+  "required": ["user_id", "display_name"],
+  "properties": {
+    "user_id": { "type": "string", "description": "e.g. mattherbert01" },
+    "display_name": { "type": "string" },
+    "role": { "type": "string", "enum": ["patient_zero", "patient", "admin"] },
+    "diagnoses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "condition": { "type": "string" },
+          "confirmed_date": { "type": "string", "format": "date" },
+          "source": { "type": "string" }
+        }
+      }
+    },
+    "current_situation": { "type": "string" },
+    "daily_realities": { "type": "string" },
+    "reusable_truths": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "system_contacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": { "type": "string" },
+          "name": { "type": "string" },
+          "org": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "active_systems": {
+      "type": "array",
+      "description": "ODSP, ODB, AODA, legal proceedings, etc.",
+      "items": { "type": "string" }
+    }
+  }
+}
