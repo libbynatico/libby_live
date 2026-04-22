@@ -1448,9 +1448,98 @@
       console.log(`[Template Revision] ${templateKey} requires revision`);
     };
 
-    // MEETING PRE-BRIEFING SYSTEM - Phase 3 Task 1
-    const upcomingMeetings = {
-      'odsp-review-april22': {
+    // LOAD REAL CASE DATA
+    let caseData = null;
+    let upcomingMeetings = {};
+
+    async function loadCaseData() {
+      try {
+        const response = await fetch('/libby_live/data/cases.json');
+        const data = await response.json();
+        const mattCase = data.cases.mattherbert01;
+
+        // Build meetings from case data
+        mattCase.upcomingMeetings.forEach(meeting => {
+          upcomingMeetings[meeting.id] = {
+            ...meeting,
+            briefingPoints: generateBriefingPoints(mattCase, meeting.matter),
+            talkingPoints: generateTalkingPoints(mattCase, meeting.matter),
+            templates: selectTemplatesForMeeting(meeting.matter)
+          };
+        });
+
+        // Update UI with real data
+        updateUIWithCaseData(mattCase);
+        caseData = mattCase;
+        console.log('[Data] Loaded real case data for ' + mattCase.name);
+      } catch (e) {
+        console.log('[Data] Using fallback sample data (cases.json not found)');
+        loadSampleData();
+      }
+    }
+
+    function generateBriefingPoints(caseInfo, matterType) {
+      const points = [];
+
+      if (matterType === 'ODSP') {
+        points.push(`ODSP approval: ${caseInfo.currentBenefits.approved} (backdated ${caseInfo.currentBenefits.backdatedTo})`);
+        points.push(`Monthly benefit: $${caseInfo.currentBenefits.monthlyAmount}`);
+        points.push(`Annual review due: ${caseInfo.currentBenefits.nextReviewDate}`);
+      }
+
+      caseInfo.diagnoses.forEach(d => {
+        points.push(`${d.condition} (${d.diagnosisDate.split('-')[0]})`);
+      });
+
+      if (caseInfo.hospitalizations.length > 0) {
+        const lastHosp = caseInfo.hospitalizations[0];
+        points.push(`Recent hospitalization: ${lastHosp.date} (${lastHosp.duration} days, ${lastHosp.facility})`);
+      }
+
+      points.push('Supporting documents ready: Medical chronology, accommodation statement');
+      return points;
+    }
+
+    function generateTalkingPoints(caseInfo, matterType) {
+      const points = [];
+
+      points.push(`✓ Medical history is well-documented with ${caseInfo.diagnoses.length} confirmed diagnoses`);
+      if (caseInfo.hospitalizations.length > 0) {
+        points.push(`✓ Recent hospitalization demonstrates ongoing medical needs`);
+      }
+      points.push(`✓ Functional limitations justify continued support`);
+      points.push(`⚠ Key question: [Update based on meeting topic]`);
+      points.push(`→ Action: Confirm next steps and timeline`);
+
+      return points;
+    }
+
+    function selectTemplatesForMeeting(matterType) {
+      if (matterType === 'ODSP') return ['medical_chronology', 'odsp_summary'];
+      if (matterType === 'Medical') return ['medical_chronology'];
+      if (matterType === 'Admin') return [];
+      return [];
+    }
+
+    function updateUIWithCaseData(caseInfo) {
+      // Update header
+      const header = document.querySelector('.header-title');
+      const headerMeta = document.querySelector('.header-meta');
+      if (header) header.textContent = caseInfo.primaryMatters[0] || 'Case Review';
+      if (headerMeta) headerMeta.innerHTML = `<span>${caseInfo.name}</span><span>•</span><span>${new Date().toLocaleDateString()}</span>`;
+
+      // Update sidebar matter
+      const matterLabel = document.querySelector('.matter-item-label');
+      const matterValue = document.querySelector('.matter-item-value');
+      if (matterLabel) matterLabel.textContent = caseInfo.primaryMatters[0] || 'Active Case';
+      if (matterValue && caseInfo.currentBenefits) {
+        matterValue.textContent = `Due: ${caseInfo.currentBenefits.nextReviewDate}`;
+      }
+    }
+
+    function loadSampleData() {
+      upcomingMeetings = {
+        'odsp-review-april22': {
         title: 'ODSP Officer Review',
         date: 'April 22, 2026',
         time: '2:00 PM',
@@ -1570,7 +1659,8 @@
           '→ Next annual review: June 2027'
         ]
       }
-    };
+      };
+    }
 
     function filterCalendarByMonth(month) {
       console.log(`[Calendar] Filtered by ${month}`);
@@ -1663,10 +1753,14 @@
     console.log('[Evidence-Driven Architecture] All evidence requires source reference and confidence level');
     console.log('[Multi-Patient Ready] All data isolated by userID');
     console.log('[Phase 3 - Document Templating] Template engine initialized with 3 core templates');
+    console.log('[Phase 3 - Meeting Mode] Calendar dashboard + pre-briefing system ready');
 
-    // Initialize templates and render in UI
+    // Initialize templates
     initializeTemplates();
     renderTemplateInResponsesTab();
+
+    // Load real case data
+    loadCaseData();
   </script>
 </body>
 </html>
