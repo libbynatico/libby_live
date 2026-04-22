@@ -2,9 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
   <title>Libby Live - v2.04.0</title>
-  <meta name="description" content="Libby Live - case advocacy dashboard with always-on AI chat." />
+  <meta name="description" content="Meeting-first case advocacy app with evidence briefing and real-time note capture." />
+
+  <!-- PWA & iOS -->
+  <meta name="theme-color" content="#75a7ff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Libby Live">
+  <link rel="manifest" href="/libby_live/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%237ba5ff' width='192' height='192'/><text x='50%' y='50%' font-size='100' font-weight='bold' fill='%23fff' text-anchor='middle' dominant-baseline='central'>L</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%237ba5ff' width='180' height='180' rx='40'/><text x='50%' y='50%' font-size='90' font-weight='bold' fill='%23fff' text-anchor='middle' dominant-baseline='central'>L</text></svg>">
+
   <style>
     :root {
       --bg: #0b1020;
@@ -569,6 +579,30 @@
     // Initial render
     render();
     addChatMessage("Hi, I'm Libby. I can help you navigate this case. What do you need assistance with?", "bot");
+
+    // Register service worker for PWA + offline support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/libby_live/sw.js').then(reg => {
+        console.log('Service worker registered');
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'activated') {
+              console.log('Service worker updated');
+            }
+          });
+        });
+      }).catch(err => console.error('Service worker registration failed', err));
+    }
+
+    // Orientation change listener
+    window.addEventListener('orientationchange', () => {
+      const portrait = window.innerHeight > window.innerWidth;
+      document.body.classList.toggle('portrait-mode', portrait);
+    });
+
+    // Trigger on load
+    window.dispatchEvent(new Event('orientationchange'));
   </script>
 </body>
 </html>
