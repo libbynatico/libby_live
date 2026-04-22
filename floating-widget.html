@@ -275,15 +275,37 @@
         displayTranscript(widget.transcript + interim);
       };
 
-      widget.recognition.onend = () => {
+      widget.recognition.onend = async () => {
         widget.isRecording = false;
         widget.recordBtn.classList.remove('recording');
-        widget.statusPill.textContent = 'Ready';
-        widget.statusPill.classList.remove('recording');
+        widget.statusPill.textContent = 'Saving...';
+
         if (widget.transcript.trim()) {
+          // Save transcript in real-time
+          try {
+            const ingestResponse = await fetch('/.netlify/functions/ingest-transcript', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: 'mattherbert01',
+                transcript: widget.transcript,
+                location: widget.context.location,
+                contacts: widget.context.contacts,
+                timestamp: new Date().toISOString(),
+              }),
+            });
+            const ingestData = await ingestResponse.json();
+            console.log('Transcript saved:', ingestData);
+          } catch (err) {
+            console.error('Save failed:', err);
+          }
+
           widget.chatInput.value = widget.transcript;
           widget.transcript = '';
         }
+
+        widget.statusPill.textContent = 'Ready';
+        widget.statusPill.classList.remove('recording');
       };
     }
 
