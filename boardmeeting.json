@@ -1,84 +1,139 @@
 {
   "project": "Libby Live",
-  "status": "Phase 2 Active Development",
-  "lastUpdated": "2026-04-22T21:30Z",
-  "oneLineSummary": "Meeting-first case advocacy app (iOS/iPad/Web PWA) with evidence briefing and real-time notes. State-first, zero hallucinations, encrypted local data.",
+  "status": "Phase 3 Active — Morning Launch Target",
+  "lastUpdated": "2026-04-22T22:30Z",
+  "sessionAgent": "claude-sonnet-4-6",
+  "oneLineSummary": "Evidence-driven case advocacy briefing console. 6-tab iPad interface live. Gmail/Drive sync built. Ollama/OpenRouter chat ready. Blocked on: Google OAuth credentials + local server running.",
 
-  "deliverables": {
-    "website": {
-      "url": "https://libbynatico.github.io/libby_live/",
-      "version": "2.04.0",
-      "status": "Live & Functional",
-      "features": ["Briefing console (6 tabs)", "Dark/light themes ready", "Ollama chat (free, local)", "iOS/iPad install-as-app"]
+  "liveDeployment": {
+    "url": "https://libbynatico.github.io/libby_live/",
+    "version": "v2.06.0",
+    "branch": "main → gh-pages (force-pushed, live now)",
+    "status": "Live. Hard refresh to see latest."
+  },
+
+  "completedThisSession": [
+    "v2.05.0 → v2.06.0: Full 6-tab briefing console (Summary, Calendar, Timeline, Evidence, Live Notes, Responses, Tasks)",
+    "Document templating engine: Medical Chronology, Accommodation Statement, ODSP Summary — auto-compile from schema data",
+    "Calendar tab: Upcoming meetings with urgency coloring (today/this week/later)",
+    "Meeting pre-briefing: Click any meeting → full prep modal (briefing points, talking points, documents, print button)",
+    "Gmail/Drive auto-sync function (netlify/functions/gmail-drive-sync.js) — extracts meetings, contacts, medical docs",
+    "Sync button in header — one click triggers OAuth flow",
+    "Real case data structure: /data/cases.json with Matthew Herbert ODSP Review case",
+    "Confidence badge system enforced: Confirmed/Draft/Inferred/Missing/Needs Review",
+    "Schema validation layer: validateEvidenceCard(), CONFIDENCE enum",
+    "Removed fake contacts (Dr. Sarah Chen never existed)",
+    "12-entity schema definitions: /schemas/schema_definitions.json",
+    "BOARD_PRESENTATION_v2.05.md: Full status report",
+    "gh-pages forced updated — live site now current"
+  ],
+
+  "blockers": {
+    "gmail_drive_sync": {
+      "status": "BLOCKED",
+      "reason": "Google OAuth credentials not configured",
+      "what_is_built": "Full sync function exists at /netlify/functions/gmail-drive-sync.js",
+      "what_is_missing": "Google Cloud project with Gmail API + Drive API enabled, Client ID + Secret in Netlify env vars",
+      "fix": "See GMAIL_DRIVE_SETUP.md — 3 steps, ~15 minutes to configure",
+      "impact": "Without this, all case data is sample data. With this, everything auto-populates from real Gmail/Drive"
     },
-    "backend": {
-      "chat": "Ollama (free, localhost) + OpenRouter fallback (cheap cloud)",
-      "offline": "Service worker + localStorage",
-      "architecture": "State-first (Evidence → Claims → Confidence → Human approval → Display)"
+    "local_server": {
+      "status": "BLOCKED",
+      "reason": "User installing PowerShell, hasn't run node command yet",
+      "what_is_built": "libby-local-server.js ready, runs on localhost:3000",
+      "what_is_missing": "User needs to: cd to libby_live folder, run: node libby-local-server.js",
+      "impact": "Ollama chat only works when local server is running. GitHub Pages uses Netlify → OpenRouter fallback"
     },
-    "data": {
-      "timeline": "2001-present (expanded, status-labeled)",
-      "truths": "14 working patient statements",
-      "system_narrative": "Attrition-before-recognition pattern",
-      "ledgers": "Correspondence, contacts, appointments, evidence"
+    "ollama": {
+      "status": "WIRED BUT UNREACHABLE FROM CLOUD",
+      "reason": "Netlify functions try localhost:11434 — that's Netlify's server, not user's laptop",
+      "fix": "Local server solves this. Or set OLLAMA_URL to publicly tunneled address (ngrok etc)",
+      "impact": "Chat falls through to OpenRouter. Need OPENROUTER_API_KEY in Netlify env to make cloud chat work"
+    },
+    "real_patient_data": {
+      "status": "WAITING ON GMAIL/DRIVE SYNC",
+      "reason": "No external agent (Gemini/ChatGPT) has populated the evidence ledger yet",
+      "what_exists": "data/cases.json has Matthew Herbert ODSP structure, all sample values",
+      "what_is_needed": "Real diagnoses, real contacts, real meetings, real documents from Drive"
     }
   },
 
-  "currentPhase": {
-    "name": "Phase 2: Design Polish + Data Integration",
-    "duration": "In progress",
-    "parallelTracks": [
-      "libbyclaudecode: Build UI (schemas → confidence → iPad interface)",
-      "Gemini: Find sources (Drive search)",
-      "Claude: Coordinate + synthesize"
+  "morningLaunchPlan": {
+    "step1": {
+      "title": "Run local server",
+      "command": "node libby-local-server.js",
+      "directory": "libby_live folder",
+      "result": "Ollama chat works, real-time transcript ingestion works"
+    },
+    "step2": {
+      "title": "Set up Google OAuth (15 min)",
+      "instructions": "GMAIL_DRIVE_SETUP.md",
+      "result": "Gmail/Drive sync button works, real meetings/contacts auto-populate"
+    },
+    "step3": {
+      "title": "Click Sync in Libby Live",
+      "action": "Open https://libbynatico.github.io/libby_live/ → click 🔄 Sync",
+      "result": "Real ODSP meetings, real contacts, real documents populate briefing console"
+    },
+    "step4": {
+      "title": "Feed patient updates from other apps",
+      "method": "POST to /.netlify/functions/ingest-transcript with patient data",
+      "or": "Update /data/cases.json directly until sync is live",
+      "result": "Briefing console reflects real case status"
+    }
+  },
+
+  "patientOnboardingInstructions": {
+    "preferred_method": "Gmail/Drive auto-sync (once OAuth is configured)",
+    "manual_method": "Edit /data/cases.json — structure is at data/cases.json, follows 12-entity schema",
+    "ingest_endpoint": "POST /.netlify/functions/ingest-transcript",
+    "ingest_payload": {
+      "userId": "mattherbert01",
+      "transcript": "Text content of session/document",
+      "location": {"lat": 0, "lng": 0},
+      "contacts": ["Person Name"],
+      "timestamp": "2026-04-22T22:00:00Z"
+    }
+  },
+
+  "nextAgentInstructions": {
+    "priority_1": "Verify local server starts (node libby-local-server.js) and chat works via Ollama",
+    "priority_2": "Complete Google OAuth setup (see GMAIL_DRIVE_SETUP.md) so sync button works",
+    "priority_3": "Once sync works — verify real meetings populate Calendar tab",
+    "priority_4": "If patient data is coming from external apps — wire POST endpoint to ingest-transcript.js",
+    "priority_5": "Meeting mode pre-briefing auto-generates talking points — test with real meeting",
+    "do_not": [
+      "Do not add more fake sample contacts or fake doctor names",
+      "Do not rebuild UI from scratch — it is complete",
+      "Do not change architecture — schema-first is settled",
+      "Do not add external dependencies or build steps"
     ]
   },
 
-  "keyArchitecturePoints": {
-    "runtime": "8-12 core capabilities (NOT 150 agents)",
-    "data": "12 entities with schemas (SourceDocument, EvidenceCard, Claim, Matter, etc)",
-    "confidence": "Hard enum (Confirmed/Draft/Inferred/Missing/Needs Review)",
-    "interface": "iPad briefing console (Summary | Timeline | Evidence | Notes | Responses | Tasks)",
-    "hallucination": "Zero: templates only, all backed by sources, every statement tagged with confidence"
+  "architecture_settled": {
+    "frontend": "index.html — single file, no framework, no build step",
+    "backend": "netlify/functions/ — serverless, no server needed for cloud",
+    "local": "libby-local-server.js — runs on user's laptop for Ollama",
+    "data": "data/cases.json — source of truth until Gmail/Drive sync active",
+    "schemas": "schemas/schema_definitions.json — 12 entities, DO NOT change",
+    "chat": "Ollama (local) → OpenRouter (cloud fallback)"
   },
 
-  "nextPriorities": [
-    "Schemas: Define all 12 entities in code",
-    "UI: Build 6-tab briefing console",
-    "Sources: Run Gemini source discovery",
-    "Meeting mode: Live unfolding with confidence badges",
-    "Templates: Medical chronology + accommodation statement + ODSP brief"
-  ],
-
-  "resources": {
-    "architecture": "/ARCHITECTURE_UNIFIED.md",
-    "pwa_setup": "/PWA_NATIVE_APP_GUIDE.md",
-    "gemini_task": "/GEMINI_SOURCE_FINDING_PROMPT.md",
-    "coordination": "/conversation.json",
-    "instructor_role": "/INSTRUCTOR_ROLE.md"
+  "keyFiles": {
+    "main_ui": "index.html",
+    "case_data": "data/cases.json",
+    "chat_function": "netlify/functions/chat.js",
+    "sync_function": "netlify/functions/gmail-drive-sync.js",
+    "ingest_function": "netlify/functions/ingest-transcript.js",
+    "local_server": "libby-local-server.js",
+    "schemas": "schemas/schema_definitions.json",
+    "gmail_setup": "GMAIL_DRIVE_SETUP.md",
+    "board_presentation": "BOARD_PRESENTATION_v2.05.md"
   },
 
   "tokenUsage": {
-    "claude": "~35%",
-    "libbyclaudecode": "27%",
-    "gemini": "Available",
-    "remaining": "~38-40% for Phase 2"
-  },
-
-  "installationForUsers": {
-    "iOS": "Safari → Share → Add to Home Screen",
-    "iPad": "Same (auto-detects landscape/portrait)",
-    "Web": "Direct browser or Chrome install prompt"
-  },
-
-  "successCriteria": [
-    "All 12 schemas functional",
-    "Confidence model enforced (UI + storage)",
-    "iPad interface with all 6 tabs working",
-    "Meeting mode captures questions/answers/follow-ups",
-    "Post-meeting recap auto-generates",
-    "Handshake/heartbeat logging operational",
-    "Zero hallucinations (templates only)",
-    "Sources visible for all claims"
-  ]
+    "thisSession": "claude-sonnet-4-6 nearly exhausted",
+    "nextSession": "Fresh context — read this file + COORDINATOR_STATUS.md + GMAIL_DRIVE_SETUP.md first",
+    "recommendation": "Next session should focus on OAuth setup + real data flow, not UI changes"
+  }
 }
