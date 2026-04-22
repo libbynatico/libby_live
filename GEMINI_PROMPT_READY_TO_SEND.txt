@@ -1,0 +1,100 @@
+===== COPY EVERYTHING BELOW AND SEND TO GEMINI =====
+
+You are searching Matthew Herbert's Google Drive for missing medical and administrative documents.
+
+Drive folder: https://drive.google.com/drive/folders/1gcaYvxHoz_anlWEsq0KsLk_7IYYJCAcK
+
+MISSION: Find any files that match these missing sources and report them in a specific format so they can be imported directly into the case system.
+
+PRIORITY ORDER (search in this order):
+
+HIGHEST PRIORITY - Medical Records (2001-2015)
+- Search: "TBI" OR "neurology" OR "2001" (Traumatic Brain Injury, age 12, Kingston)
+- Search: "Crohn's" OR "gastroenterology" OR "2002" OR "diagnosis" (Crohn's diagnosis, Summer 2002)
+- Search: "colectomy" OR "2013" OR "operative" (First major surgery, 2013)
+- Search: "ileostomy" OR "ostomy" OR "2015" (Permanent ileostomy, 2015)
+
+MEDIUM PRIORITY - Administrative (Pre-2024)
+- Search: "ODSP" OR "Ontario Works" OR "OW" (Benefit applications)
+- Search: "physician" OR "documentation" OR "rejected" (Failed applications)
+
+CRITICAL PRIORITY - 2024 Crisis
+- Search: "Cambridge Memorial" OR "June 2024" OR "emergency" (Hospital admission)
+- Search: "ileoscopy" OR "procedure" (Diagnostic confirmation)
+- Search: "surgery" OR "operative" OR "2024" (Emergency surgery, June 2024)
+- Search: "TPN" OR "PICC" OR "inpatient" (Hospital care, 44-day stay)
+
+HIGH PRIORITY - 2025 Recognition
+- Search: "ODSP" AND "approval" AND "2025" OR "December" (Formal approval, Dec 3, 2025)
+- Search: "backdate" OR "July 2025" (Effective date)
+- Search: "DSO" OR "assessment" (Disability assessment)
+
+CRITICAL PRIORITY - 2026 Surgery & Pain
+- Search: "Juravinski" OR "January 2026" (Hospital)
+- Search: "Forbes" OR "bowel" OR "surgical" (Dr. S. Forbes surgery, Jan 20, 2026)
+- Search: "pain" OR "PCA" OR "analgesia" (Pain management crisis, Jan 22, 2026)
+
+FOR EACH FILE YOU FIND:
+Report in this exact format (copy-paste format):
+
+---
+FILE_ID: [Google Drive file ID or name]
+FILENAME: [Exact filename as shown in Drive]
+DATE: [Document date if visible]
+TYPE: [Operative Note | Discharge Summary | Procedure Report | Pathology | Letter | Assessment | Assessment | Other]
+RELEVANCE: [What timeline gap does this fill? e.g., "2013 colectomy operative note"]
+CONFIDENCE: [HIGH | MEDIUM | LOW - based on date match, specificity, source]
+FOLDER_PATH: [Full path in Drive where found]
+STATUS: [Confirmed Match | Possible Match | Needs Verification]
+NOTES: [Any relevant excerpt or observation]
+---
+
+IF YOU DON'T FIND A FILE:
+Report gaps like this:
+
+---
+MISSING_ID: [your naming, e.g., TBI_2001]
+WHAT_SEARCHED: [What you looked for, e.g., "TBI neurology 2001 Kingston"]
+SEARCH_TERMS_USED: ["TBI", "neurology", "2001", "Kingston"]
+RESULT: [File not found in Drive | Found related but not exact match | Possibly in physical files only]
+RECOMMENDATION: [Request from: Kingston General Hospital | Cambridge Memorial | Juravinski Hospital | ODSP office | Dr. Name's office | Other]
+---
+
+FINAL OUTPUT FORMAT:
+
+When done, create a markdown report like this and send it back to me:
+
+```markdown
+# GEMINI_SOURCE_DISCOVERY_REPORT
+
+## Files Found (High Confidence)
+[List of HIGH confidence matches]
+
+## Files Found (Medium Confidence)
+[List of MEDIUM confidence matches]
+
+## Files Not Found (Recommend Requesting)
+[List of missing items with recommended source]
+
+## Summary
+- Total files found: X
+- High confidence: X
+- Medium confidence: X
+- Missing/Request from provider: X
+- Patterns observed: [note anything]
+
+## Search Completion Checklist
+- [x] 2001-2015 medical records
+- [x] Pre-2024 administrative
+- [x] 2024 crisis documents
+- [x] 2025 recognition documents
+- [x] 2026 surgery documents
+```
+
+IMPORTANT: Format each found file entry exactly as specified above (between the --- lines). This allows direct import into the system.
+
+When you send the report, Matthew will copy it directly into a file that the case system will read.
+
+Start searching. Report back with all findings in the format above.
+
+===== END GEMINI PROMPT =====
