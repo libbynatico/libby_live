@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Libby Live - v2.04.0</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Libby Live" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%237ba5ff' width='180' height='180'/><text x='50%' y='50%' font-size='90' fill='white' text-anchor='middle' dominant-baseline='central' font-weight='bold'>L</text></svg>" />
+  <title>Libby Live - v2.05.0</title>
   <meta name="description" content="Libby Live - case advocacy dashboard with always-on AI chat." />
   <style>
     :root {
@@ -84,6 +88,180 @@
       border-radius: 6px;
       font-size: 11px;
       margin-top: 8px;
+    }
+
+    /* TAB SYSTEM */
+    .tabs {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 0;
+    }
+
+    .tab-button {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 12px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .tab-button:hover {
+      color: var(--text);
+      background: rgba(117,167,255,.05);
+    }
+
+    .tab-button.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* CONFIDENCE BADGES */
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: 4px;
+      margin-bottom: 4px;
+    }
+
+    .badge-confirmed {
+      background: rgba(66,192,140,.2);
+      color: #42c08c;
+      border: 1px solid rgba(66,192,140,.3);
+    }
+
+    .badge-draft {
+      background: rgba(242,187,94,.2);
+      color: #f2bb5e;
+      border: 1px solid rgba(242,187,94,.3);
+    }
+
+    .badge-inferred {
+      background: rgba(117,167,255,.2);
+      color: var(--accent);
+      border: 1px solid rgba(117,167,255,.3);
+    }
+
+    .badge-missing {
+      background: rgba(239,111,111,.2);
+      color: #ef6f6f;
+      border: 1px solid rgba(239,111,111,.3);
+    }
+
+    .badge-needs-review {
+      background: rgba(200,120,200,.2);
+      color: #d88dd8;
+      border: 1px solid rgba(200,120,200,.3);
+    }
+
+    /* TIMELINE */
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline-item {
+      padding: 12px;
+      border-left: 3px solid var(--line);
+      background: rgba(117,167,255,.03);
+      border-radius: 4px;
+    }
+
+    .timeline-date {
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .timeline-summary {
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    /* TASKS & RESPONSES */
+    .task-item {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .task-item.critical {
+      border-left: 3px solid #ef6f6f;
+    }
+
+    .task-item.high {
+      border-left: 3px solid #f2bb5e;
+    }
+
+    .task-title {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .task-due {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* LIVE NOTES */
+    .notes-textarea {
+      width: 100%;
+      min-height: 300px;
+      background: rgba(7,12,26,.7);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      color: var(--text);
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 12px;
+    }
+
+    .notes-textarea:focus {
+      outline: none;
+      border-color: rgba(117,167,255,.5);
+    }
+
+    /* RESPONSES (COPY READY) */
+    .response-box {
+      background: rgba(7,12,26,.7);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+    }
+
+    .copy-btn {
+      background: var(--ok);
+      color: white;
+    }
+
+    .copy-btn:hover {
+      background: #3aa574;
     }
 
     .nav {
@@ -327,16 +505,18 @@
         <div class="brand-copy">
           <h1>Libby Live</h1>
           <p>Case Advocacy</p>
-          <div class="version-badge">v2.04.0</div>
+          <div class="version-badge">v2.05.0</div>
         </div>
       </div>
 
       <div class="nav">
-        <button data-section="overview" class="active">📊 Overview</button>
-        <button data-section="situation">📋 Situation</button>
+        <button data-section="summary" class="active">📊 Summary</button>
+        <button data-section="timeline">📅 Timeline</button>
         <button data-section="evidence">🔍 Evidence</button>
-        <button data-section="contacts">👥 Contacts</button>
-      </nav>
+        <button data-section="notes">📝 Live Notes</button>
+        <button data-section="responses">📄 Responses</button>
+        <button data-section="tasks">✓ Tasks</button>
+      </div>
 
       <div class="sidebar-divider"></div>
       <div class="sidebar-section">User</div>
@@ -349,67 +529,256 @@
     <!-- MAIN -->
     <main class="main">
       <div class="header">
-        <h2 id="sectionTitle">Overview</h2>
-        <p id="sectionDesc">Case advocacy dashboard and intake system</p>
+        <h2 id="sectionTitle">Summary</h2>
+        <p id="sectionDesc">Matthew Herbert — case advocacy briefing</p>
       </div>
 
-      <!-- OVERVIEW -->
-      <section id="overview" class="content-section">
+      <div class="tabs">
+        <button class="tab-button active" data-tab="summary">📊 Summary</button>
+        <button class="tab-button" data-tab="timeline">📅 Timeline</button>
+        <button class="tab-button" data-tab="evidence">🔍 Evidence</button>
+        <button class="tab-button" data-tab="notes">📝 Live Notes</button>
+        <button class="tab-button" data-tab="responses">📄 Responses</button>
+        <button class="tab-button" data-tab="tasks">✓ Tasks</button>
+      </div>
+
+      <!-- SUMMARY TAB -->
+      <section id="summary" class="tab-content active">
         <div class="card">
-          <h3>Quick Start</h3>
-          <p style="color: var(--muted); font-size: 14px; margin: 0;">
-            Use the sidebar to navigate case information. Chat with Libby on the right for real-time assistance.
-          </p>
+          <h3>Case Status</h3>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;">
+            <div style="padding: 12px; background: rgba(66,192,140,.1); border: 1px solid rgba(66,192,140,.2); border-radius: 8px;">
+              <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px;">Active Matters</div>
+              <div style="font-size: 18px; font-weight: 700; color: #42c08c;">4</div>
+            </div>
+            <div style="padding: 12px; background: rgba(242,187,94,.1); border: 1px solid rgba(242,187,94,.2); border-radius: 8px;">
+              <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px;">Pending Tasks</div>
+              <div style="font-size: 18px; font-weight: 700; color: #f2bb5e;" id="pendingTaskCount">6</div>
+            </div>
+            <div style="padding: 12px; background: rgba(117,167,255,.1); border: 1px solid rgba(117,167,255,.2); border-radius: 8px;">
+              <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px;">Evidence Confirmed</div>
+              <div style="font-size: 18px; font-weight: 700; color: var(--accent);" id="confirmedCount">8</div>
+            </div>
+          </div>
         </div>
 
         <div class="card">
-          <h3>Recent Activity</h3>
-          <div id="activityLog" style="font-size: 13px; color: var(--muted);">
-            <div>—</div>
+          <h3>Key Dates</h3>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+            <div style="padding: 8px; border-left: 3px solid var(--accent); padding-left: 12px;">
+              <div style="font-size: 12px; color: var(--muted);">TBI Onset</div>
+              <div style="font-weight: 600;">2001 (age 12)</div>
+            </div>
+            <div style="padding: 8px; border-left: 3px solid var(--ok); padding-left: 12px;">
+              <div style="font-size: 12px; color: var(--muted);">ODSP Approved</div>
+              <div style="font-weight: 600;">2025-12-02</div>
+            </div>
+            <div style="padding: 8px; border-left: 3px solid var(--warn); padding-left: 12px;">
+              <div style="font-size: 12px; color: var(--muted);">CMH Admission</div>
+              <div style="font-weight: 600;">2025-06-26 to 2025-08-08</div>
+            </div>
+            <div style="padding: 8px; border-left: 3px solid var(--ok); padding-left: 12px;">
+              <div style="font-size: 12px; color: var(--muted);">ODSP Backdate Due</div>
+              <div style="font-weight: 600;">2025-07-01</div>
+            </div>
           </div>
         </div>
-      </section>
 
-      <!-- SITUATION -->
-      <section id="situation" class="content-section hidden">
         <div class="card">
-          <h3>Case Situation</h3>
-          <div class="form-group">
-            <label>Medical History & Current Status</label>
-            <textarea id="caseSituation" placeholder="Document the patient's medical situation, diagnoses, and current status..."></textarea>
-          </div>
-          <div class="form-group">
-            <label>Current Goals & Advocacy Focus</label>
-            <textarea id="caseGoals" placeholder="What are we trying to achieve for this case?"></textarea>
-          </div>
-        </div>
-      </section>
-
-      <!-- EVIDENCE -->
-      <section id="evidence" class="content-section hidden">
-        <div class="card">
-          <h3>Evidence & Documentation</h3>
-          <p style="color: var(--muted); font-size: 13px; margin: 0 0 16px;">
-            Key documents, records, and corroborating evidence for this case.
-          </p>
-          <div id="evidenceList" style="display: grid; gap: 10px;">
-            <div style="padding: 12px; background: rgba(255,255,255,.02); border: 1px solid var(--line); border-radius: 8px; font-size: 13px; color: var(--muted);">
-              No evidence items yet. Add via chat or sidebar.
+          <h3>Urgent Items</h3>
+          <div id="urgentList" style="display: grid; gap: 8px;">
+            <div style="padding: 12px; background: rgba(239,111,111,.1); border-left: 3px solid #ef6f6f; border-radius: 4px;">
+              <div style="font-weight: 500; margin-bottom: 2px;">CMH Medical Records (FOI)</div>
+              <div style="font-size: 12px; color: var(--muted);">Request ready to send — fill DOB/OHIP</div>
+            </div>
+            <div style="padding: 12px; background: rgba(239,111,111,.1); border-left: 3px solid #ef6f6f; border-radius: 4px;">
+              <div style="font-weight: 500; margin-bottom: 2px;">DSO Eligibility Appeal</div>
+              <div style="font-size: 12px; color: var(--muted);">Letter template ready — developmental period framing</div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- CONTACTS -->
-      <section id="contacts" class="content-section hidden">
+      <!-- TIMELINE TAB -->
+      <section id="timeline" class="tab-content">
         <div class="card">
-          <h3>Relevant Contacts & Organizations</h3>
-          <p style="color: var(--muted); font-size: 13px; margin: 0 0 16px;">
-            Healthcare providers, government agencies, legal contacts, and support services.
-          </p>
-          <div id="contactsList" style="display: grid; gap: 10px;">
-            <div style="padding: 12px; background: rgba(255,255,255,.02); border: 1px solid var(--line); border-radius: 8px; font-size: 13px; color: var(--muted);">
-              No contacts yet. Add via chat or sidebar.
+          <h3>Case Timeline</h3>
+          <div class="timeline" id="timelineContent">
+            <div class="timeline-item">
+              <div class="timeline-date">2001 (age 12)</div>
+              <div class="timeline-summary">Traumatic Brain Injury — motor vehicle accident</div>
+              <div><span class="badge badge-confirmed">Confirmed</span></div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">2002 (age 13)</div>
+              <div class="timeline-summary">Crohn's Disease diagnosed — onset of GI symptoms</div>
+              <div><span class="badge badge-confirmed">Confirmed</span></div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">2025-06-26</div>
+              <div class="timeline-summary">CMH admission — acute abdominal pain, post-operative complications</div>
+              <div><span class="badge badge-confirmed">Confirmed</span></div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">2025-07-09</div>
+              <div class="timeline-summary">Unauthorized codeine administration despite written refusal (July 5)</div>
+              <div><span class="badge badge-confirmed">Confirmed</span><span class="badge badge-needs-review">Legal</span></div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">2025-07-22</div>
+              <div class="timeline-summary">CMH documented symptoms as "psychosomatic/functional"</div>
+              <div><span class="badge badge-confirmed">Confirmed</span></div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">2025-08-08</div>
+              <div class="timeline-summary">Unsafe discharge over formal objection; home care denied (false "no fixed address" claim)</div>
+              <div><span class="badge badge-confirmed">Confirmed</span><span class="badge badge-needs-review">Litigation</span></div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">2025-12-02</div>
+              <div class="timeline-summary">ODSP approval — confirms disability status</div>
+              <div><span class="badge badge-confirmed">Confirmed</span></div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-date">2026-01-20</div>
+              <div class="timeline-summary">Juravinski Hospital: confirmed kinked bowel + hernia (mechanical obstruction, not psychosomatic)</div>
+              <div><span class="badge badge-confirmed">Confirmed</span><span class="badge badge-needs-review">Smoking Gun</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EVIDENCE TAB -->
+      <section id="evidence" class="tab-content">
+        <div class="card">
+          <h3>CMH Negligence</h3>
+          <div style="display: grid; gap: 8px; margin-bottom: 16px;">
+            <div style="padding: 12px; border-left: 3px solid #ef6f6f; background: rgba(239,111,111,.03); border-radius: 4px;">
+              <div style="font-weight: 500; margin-bottom: 2px;">29% Body Weight Loss</div>
+              <div style="font-size: 13px; margin-bottom: 4px;">164 lbs → 117 lbs (43-day stay, unmonitored)</div>
+              <div><span class="badge badge-confirmed">Confirmed</span></div>
+            </div>
+            <div style="padding: 12px; border-left: 3px solid #ef6f6f; background: rgba(239,111,111,.03); border-radius: 4px;">
+              <div style="font-weight: 500; margin-bottom: 2px;">Unauthorized Medication</div>
+              <div style="font-size: 13px; margin-bottom: 4px;">Codeine administered despite written refusal (July 5 → July 9)</div>
+              <div><span class="badge badge-confirmed">Confirmed</span></div>
+            </div>
+            <div style="padding: 12px; border-left: 3px solid #ef6f6f; background: rgba(239,111,111,.03); border-radius: 4px;">
+              <div style="font-weight: 500; margin-bottom: 2px;">Diagnostic Failure (Smoking Gun)</div>
+              <div style="font-size: 13px; margin-bottom: 4px;">CMH: "psychosomatic" (July 22) vs Juravinski: kinked bowel + hernia (Jan 20)</div>
+              <div><span class="badge badge-confirmed">Confirmed</span><span class="badge badge-danger">Critical</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>DSO Eligibility</h3>
+          <div style="display: grid; gap: 8px; margin-bottom: 16px;">
+            <div style="padding: 12px; border-left: 3px solid var(--ok); background: rgba(66,192,140,.03); border-radius: 4px;">
+              <div style="font-weight: 500; margin-bottom: 2px;">Developmental Period Onset</div>
+              <div style="font-size: 13px; margin-bottom: 4px;">TBI (2001, age 12) + Crohn's (2002, age 13) = both pre-18</div>
+              <div><span class="badge badge-confirmed">Confirmed</span></div>
+            </div>
+            <div style="padding: 12px; border-left: 3px solid var(--ok); background: rgba(66,192,140,.03); border-radius: 4px;">
+              <div style="font-weight: 500; margin-bottom: 2px;">School Records Evidence</div>
+              <div style="font-size: 13px; margin-bottom: 4px;">54 educational records (A-1 to A-54) documenting adaptive impairment</div>
+              <div><span class="badge badge-confirmed">Confirmed</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>ODSP Make Whole</h3>
+          <div style="display: grid; gap: 8px;">
+            <div style="padding: 12px; border-left: 3px solid var(--accent); background: rgba(117,167,255,.03); border-radius: 4px;">
+              <div style="font-weight: 500; margin-bottom: 2px;">Administrative Barrier</div>
+              <div style="font-size: 13px; margin-bottom: 4px;">32 call attempts across 22 occasions = Duty to Accommodate violation</div>
+              <div><span class="badge badge-confirmed">Confirmed</span></div>
+            </div>
+            <div style="padding: 12px; border-left: 3px solid var(--accent); background: rgba(117,167,255,.03); border-radius: 4px;">
+              <div style="font-weight: 500; margin-bottom: 2px;">Backdate Justification</div>
+              <div style="font-size: 13px; margin-bottom: 4px;">Application complete July 2025 → effective date must be July 1, 2025</div>
+              <div><span class="badge badge-inferred">Inferred</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- LIVE NOTES TAB -->
+      <section id="notes" class="tab-content">
+        <div class="card">
+          <h3>Live Notes (auto-saving)</h3>
+          <textarea id="liveNotes" class="notes-textarea" placeholder="Notes from meetings, conversations, findings..."></textarea>
+        </div>
+      </section>
+
+      <!-- RESPONSES TAB -->
+      <section id="responses" class="tab-content">
+        <div class="card">
+          <h3>ODSP Brief (copy ready)</h3>
+          <div style="margin-bottom: 12px;">
+            <button class="btn copy-btn" id="copyBriefBtn">📋 Copy to Clipboard</button>
+          </div>
+          <div class="response-box" id="briefContent">KEY DATES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TBI Onset (age 12):          2001
+Crohn's Diagnosed (age 13):  2002
+Crisis Hospitalization:      June 26 – Aug 8, 2025
+ODSP Approval:               December 2, 2025
+Backdate Eligible:           July 1, 2025
+
+MEDICAL SUMMARY:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• TBI sequelae: memory disruption, auditory processing deficits, photophobia
+• Crohn's + permanent ileostomy (2015)
+• Both disabilities originate before age 18 (MCCSS eligibility criteria met)
+
+WHAT I NEED TODAY:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+☐ Backdate approval to July 1, 2025
+☐ Notice of Determination copy
+☐ Confirmation letter (email preferred)
+☐ Budget written confirmation
+☐ All communication in writing (TBI accommodation)
+
+For questions: mattherbert01@gmail.com</div>
+        </div>
+      </section>
+
+      <!-- TASKS TAB -->
+      <section id="tasks" class="tab-content">
+        <div class="card">
+          <h3>Follow-Up Tasks</h3>
+          <div id="tasksContent">
+            <div class="task-item critical">
+              <div class="task-title">🔴 Send CMH FOI Request</div>
+              <div style="font-size: 13px; margin-bottom: 4px;">Complete inpatient records June–Aug 2025</div>
+              <div class="task-due">Due: 2026-04-30</div>
+            </div>
+            <div class="task-item critical">
+              <div class="task-title">🔴 Request Juravinski Operative Note</div>
+              <div style="font-size: 13px; margin-bottom: 4px;">January 20, 2026 surgical documentation</div>
+              <div class="task-due">Due: 2026-04-25</div>
+            </div>
+            <div class="task-item critical">
+              <div class="task-title">🔴 File Ontario Patient Ombudsman Complaint</div>
+              <div style="font-size: 13px; margin-bottom: 4px;">Attach CMH correspondence + medical records</div>
+              <div class="task-due">Due: 2026-05-08</div>
+            </div>
+            <div class="task-item high">
+              <div class="task-title">🟡 ODSP Clarification Letter v3</div>
+              <div style="font-size: 13px; margin-bottom: 4px;">Send to Sarah + Sheri Roberts (ILWR)</div>
+              <div class="task-due">Due: 2026-04-29</div>
+            </div>
+            <div class="task-item high">
+              <div class="task-title">🟡 DSO Eligibility Appeal</div>
+              <div style="font-size: 13px; margin-bottom: 4px;">Submit with developmental period documentation</div>
+              <div class="task-due">Due: 2026-05-15</div>
+            </div>
+            <div class="task-item high">
+              <div class="task-title">🟡 Print + Laminate AODA Cards</div>
+              <div style="font-size: 13px; margin-bottom: 4px;">Keep 5–10 copies in bag at all times</div>
+              <div class="task-due">Due: 2026-04-28</div>
             </div>
           </div>
         </div>
@@ -435,23 +804,20 @@
   </div>
 
   <script>
-    const APP_VERSION = "v2.04.0";
-    const STORAGE_KEY = "libby_live_v2_04";
+    const APP_VERSION = "v2.05.0";
+    const STORAGE_KEY = "libby_live_v2_05";
 
     let state = loadState();
-    let currentSection = "overview";
+    let currentTab = "summary";
 
     function defaultState() {
       return {
         version: APP_VERSION,
         activeUser: "mattherbert01",
         activeRole: "Advocate",
-        situation: "",
-        goals: "",
-        evidence: [],
-        contacts: [],
+        liveNotes: "",
         chatMessages: [],
-        activity: [{ ts: new Date().toISOString(), text: "Libby Live v2.04.0 initialized" }]
+        activity: [{ ts: new Date().toISOString(), text: "Libby Live v2.05.0 initialized" }]
       };
     }
 
@@ -468,29 +834,50 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
 
-    function render() {
-      // Update visible content section
-      document.querySelectorAll(".content-section").forEach(el => {
-        el.classList.toggle("hidden", el.id !== currentSection);
+    function switchTab(tabName) {
+      currentTab = tabName;
+
+      // Hide all tabs
+      document.querySelectorAll(".tab-content").forEach(el => {
+        el.classList.remove("active");
       });
 
-      // Update section title
-      const titles = { overview: "📊 Overview", situation: "📋 Situation", evidence: "🔍 Evidence", contacts: "👥 Contacts" };
-      const descs = {
-        overview: "Case advocacy dashboard and intake system",
-        situation: "Medical and advocacy information for this case",
-        evidence: "Documentation, records, and supporting evidence",
-        contacts: "Healthcare, government, and support contacts"
-      };
-      document.getElementById("sectionTitle").textContent = titles[currentSection];
-      document.getElementById("sectionDesc").textContent = descs[currentSection];
+      // Show active tab
+      const activeTab = document.getElementById(tabName);
+      if (activeTab) activeTab.classList.add("active");
 
-      // Update nav buttons
+      // Update tab buttons
+      document.querySelectorAll(".tab-button").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tab === tabName);
+      });
+
+      // Update sidebar nav buttons too
       document.querySelectorAll(".nav button").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.section === currentSection);
+        btn.classList.toggle("active", btn.dataset.section === tabName);
       });
 
-      // Render chat
+      // Update header
+      const titles = {
+        summary: "Summary",
+        timeline: "Timeline",
+        evidence: "Evidence",
+        notes: "Live Notes",
+        responses: "Responses",
+        tasks: "Tasks"
+      };
+      const descs = {
+        summary: "Case status, key dates, urgent items",
+        timeline: "Complete chronological history",
+        evidence: "Documentation and supporting materials",
+        notes: "Meeting notes and findings (auto-saving)",
+        responses: "Ready-to-send letter templates and briefs",
+        tasks: "Follow-up actions and deadlines"
+      };
+      document.getElementById("sectionTitle").textContent = titles[tabName];
+      document.getElementById("sectionDesc").textContent = descs[tabName];
+    }
+
+    function render() {
       const chatEl = document.getElementById("chatMessages");
       chatEl.innerHTML = state.chatMessages.map(msg => `
         <div class="message ${msg.role === 'bot' ? 'bot' : ''}">
@@ -500,9 +887,8 @@
       `).join("");
       chatEl.scrollTop = chatEl.scrollHeight;
 
-      // Restore form values
-      const caseSituation = document.getElementById("caseSituation");
-      if (caseSituation) caseSituation.value = state.situation || "";
+      const notesEl = document.getElementById("liveNotes");
+      if (notesEl) notesEl.value = state.liveNotes || "";
     }
 
     function addChatMessage(text, role = "user") {
@@ -529,7 +915,7 @@
           body: JSON.stringify({
             userId: state.activeUser,
             messages: state.chatMessages.map(m => ({ role: m.role, content: m.text })),
-            context: { situation: state.situation }
+            context: { notes: state.liveNotes }
           })
         });
 
@@ -543,11 +929,17 @@
       document.getElementById("chatStatus").textContent = "Ready";
     }
 
-    // Wire nav
+    // Wire tab buttons
+    document.querySelectorAll(".tab-button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        switchTab(btn.dataset.tab);
+      });
+    });
+
+    // Wire sidebar nav buttons
     document.querySelectorAll(".nav button").forEach(btn => {
       btn.addEventListener("click", () => {
-        currentSection = btn.dataset.section;
-        render();
+        switchTab(btn.dataset.section);
       });
     });
 
@@ -560,15 +952,39 @@
       }
     });
 
-    // Wire form inputs
-    document.getElementById("caseSituation")?.addEventListener("input", e => {
-      state.situation = e.target.value;
+    // Wire live notes auto-save
+    document.getElementById("liveNotes")?.addEventListener("input", e => {
+      state.liveNotes = e.target.value;
       saveState();
+    });
+
+    // Wire copy button
+    document.getElementById("copyBriefBtn")?.addEventListener("click", () => {
+      const briefText = document.getElementById("briefContent").textContent;
+      navigator.clipboard.writeText(briefText).then(() => {
+        const btn = document.getElementById("copyBriefBtn");
+        const original = btn.textContent;
+        btn.textContent = "✓ Copied!";
+        setTimeout(() => { btn.textContent = original; }, 2000);
+      });
+    });
+
+    // Service worker registration (PWA)
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {
+        // SW not available (offline apps not critical here)
+      });
+    }
+
+    // Detect portrait mode for mobile/iPad
+    window.addEventListener("orientationchange", () => {
+      const isPortrait = window.innerHeight > window.innerWidth;
+      document.documentElement.style.setProperty("--viewport-height", isPortrait ? "100vh" : "100dvh");
     });
 
     // Initial render
     render();
-    addChatMessage("Hi, I'm Libby. I can help you navigate this case. What do you need assistance with?", "bot");
+    addChatMessage("Hi, I'm Libby. What do you need help with today?", "bot");
   </script>
 </body>
 </html>
