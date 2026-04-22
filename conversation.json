@@ -59,17 +59,23 @@
   },
   "currentPhase": {
     "number": 2,
-    "name": "Design Polish + Feature Implementation",
+    "name": "Unified Architecture Implementation (Claude + GPT + Libby)",
     "status": "ready_to_start",
+    "architecture_source": "ARCHITECTURE_UNIFIED.md (see full details there)",
+    "core_principle": "State-first, not chat-first. Evidence in → Claims → Confidence → Human approval → iPad briefing console",
     "priority": [
-      "Implement dark/light theme toggle",
-      "Build settings panel (appearance, account, integrations, notifications)",
-      "Add email compose + templates",
-      "Create connector status dashboard (Google Calendar, Gmail, Drive, Ollama, OpenRouter)",
-      "Mobile responsive design"
+      "1. Define all 12 schemas (source_document, evidence_card, claim, timeline_event, matter, task, contact, interaction, draft, decision, alert, agent_run)",
+      "2. Implement confidence model as hard schema (Confirmed/Draft/Inferred/Missing/Needs Review enums)",
+      "3. Build artifact compiler (templates → polished outputs with confidence badges)",
+      "4. Implement iPad briefing console (6 tabs: Summary, Timeline, Evidence, Live Notes, Responses, Tasks)",
+      "5. Build meeting mode UI (controlled unfolding, source visibility, task capture)",
+      "6. Implement handshake/heartbeat logging (10 permanent workflows)",
+      "7. Ingest new chronology (2001-present with evidence gaps marked)",
+      "8. Test with real data (ODSP scenario, DSO scenario, Rogers scenario)"
     ],
-    "estimatedTokens": "~40-50% of budget",
-    "owner": "libbyclaudecode"
+    "estimatedTokens": "~50-60% for comprehensive implementation",
+    "owner": "claude (instructor) + libbyclaudecode + gemini (if data extraction needed)",
+    "successCriteria": "See ARCHITECTURE_UNIFIED.md MVP Acceptance Criteria section"
   },
   "blockers": [],
   "nextMilestone": {
