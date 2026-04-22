@@ -13,6 +13,12 @@ const corsHeaders = {
 // Netlify: set DATA_ROOT in environment variables dashboard
 const DATA_ROOT = process.env.DATA_ROOT || path.join(process.cwd(), 'data');
 
+// LLM backend configuration
+const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'mistral';
+const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
+const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || 'mistralai/mistral-7b-instruct';
+
 function json(status, body) {
   return new Response(JSON.stringify(body), { status, headers: corsHeaders });
 }
@@ -33,6 +39,63 @@ function flattenContent(content) {
   return '';
 }
 
+// Try Ollama first (free, local)
+async function callOllama(messages) {
+  const response = await fetch(`${OLLAMA_URL}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: OLLAMA_MODEL,
+      messages: messages.filter(m => m.role !== 'system'),
+      system: messages.find(m => m.role === 'system')?.content || '',
+      stream: false,
+    }),
+  });
+
+  if (!response.ok) throw new Error(`Ollama error: ${response.status}`);
+  const data = await response.json();
+  return {
+    reply: data?.message?.content || 'No response from Ollama.',
+    model: `ollama/${OLLAMA_MODEL}`,
+    source: 'ollama',
+  };
+}
+
+// Fallback to OpenRouter
+async function callOpenRouter(messages) {
+  if (!OPENROUTER_KEY) {
+    throw new Error('OPENROUTER_API_KEY not configured. Install Ollama or set the key.');
+  }
+
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${OPENROUTER_KEY}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': 'https://libbynatico.github.io/libby_live/',
+      'X-Title': 'libby_live',
+    },
+    body: JSON.stringify({
+      model: OPENROUTER_MODEL,
+      messages,
+      temperature: 0.3,
+      max_tokens: 1200,
+    }),
+  });
+
+  if (!response.ok) {
+    const errData = await response.json().catch(() => ({}));
+    throw new Error(errData?.error?.message || `OpenRouter error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return {
+    reply: flattenContent(data?.choices?.[0]?.message?.content) || 'No response from OpenRouter.',
+    model: data?.model || OPENROUTER_MODEL,
+    source: 'openrouter',
+  };
+}
+
 export default async (request) => {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders });
@@ -40,11 +103,6 @@ export default async (request) => {
 
   if (request.method !== 'POST') {
     return json(405, { error: 'Method not allowed' });
-  }
-
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    return json(500, { error: 'OPENROUTER_API_KEY missing from Netlify environment variables.' });
   }
 
   let body;
@@ -102,37 +160,36 @@ export default async (request) => {
   ];
 
   try {
-    const referer =
-      request.headers.get('origin') ||
-      process.env.URL ||
-      'https://libbylive.netlify.app';
+    let result;
+    let source = 'unknown';
 
-    const upstream = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': referer,
-        'X-Title': 'libby_live',
-      },
-      body: JSON.stringify({ model, messages, temperature: 0.3, max_tokens: 1200 }),
-    });
+    // Try Ollama first (free, local)
+    try {
+      console.log(`[chat] Attempting Ollama at ${OLLAMA_URL}...`);
+      result = await callOllama(messages);
+      source = 'ollama';
+    } catch (ollamaErr) {
+      console.log(`[chat] Ollama failed: ${ollamaErr.message}. Trying OpenRouter...`);
 
-    const data = await upstream.json().catch(() => ({}));
-
-    if (!upstream.ok) {
-      return json(upstream.status, {
-        error: data?.error?.message || 'OpenRouter request failed.',
-        upstream: data,
-      });
+      // Fall back to OpenRouter
+      try {
+        console.log(`[chat] Attempting OpenRouter...`);
+        result = await callOpenRouter(messages);
+        source = 'openrouter';
+      } catch (openrouterErr) {
+        // Both failed
+        return json(503, {
+          error: 'Chat unavailable.',
+          details: `Ollama: ${ollamaErr.message} | OpenRouter: ${openrouterErr.message}`,
+          help: 'Start Ollama locally: `ollama serve` or configure OPENROUTER_API_KEY',
+        });
+      }
     }
 
-    const reply = flattenContent(data?.choices?.[0]?.message?.content) || 'No response returned.';
-
     return json(200, {
-      reply,
-      model: data?.model || model,
-      usage: data?.usage || null,
+      reply: result.reply,
+      model: result.model,
+      source: source,
       knowledge_loaded: !!knowledgeContext && !knowledgeContext.startsWith('No structured'),
     });
   } catch (error) {
