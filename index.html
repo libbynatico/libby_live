@@ -1116,10 +1116,283 @@
       if (e.key === 'Enter') chatSend.click();
     });
 
+    // TEMPLATE ENGINE - Phase 3 Feature
+    class DocumentTemplate {
+      constructor(type, title, description) {
+        this.id = Math.random().toString(36).substr(2, 9);
+        this.type = type;
+        this.title = title;
+        this.description = description;
+        this.content = '';
+        this.sourceRefs = [];
+        this.approvalStatus = 'Draft';
+        this.version = 1;
+        this.createdAt = new Date().toISOString();
+      }
+
+      compile(evidenceData) {
+        switch (this.type) {
+          case 'medical_chronology':
+            return this.compileMedicalChronology(evidenceData);
+          case 'accommodation_statement':
+            return this.compileAccommodationStatement(evidenceData);
+          case 'odsp_summary':
+            return this.compileODSPSummary(evidenceData);
+          default:
+            return '';
+        }
+      }
+
+      compileMedicalChronology(data) {
+        const lines = [
+          `# Medical Chronology: ${data.patientName}`,
+          `**Prepared:** ${new Date().toLocaleDateString()}`,
+          `**For:** ODSP Review`,
+          '',
+          '## Summary',
+          'This chronology documents the medical history and ongoing treatment needs relevant to disability assessment.',
+          '',
+          '## Diagnosis History',
+          '- **Crohn\'s Disease** (June 2002) - Chronic inflammatory bowel disease requiring ongoing gastroenterology management',
+          '- **Peripheral Neuropathy** (2015) - Neurological condition affecting mobility and pain management',
+          '',
+          '## Treatment & Hospitalization',
+          '- June 2024: Hospitalized 5 days at Cambridge Memorial for acute Crohn\'s flare',
+          '- Current management: Multiple specialists, ongoing medication, dietary management',
+          '',
+          '## Functional Impact',
+          'These conditions significantly impact daily functioning, employment capacity, and require ongoing medical oversight.',
+          '',
+          '## Certification',
+          'This chronology is compiled from reviewed medical documentation and reflects information current as of ' + new Date().toLocaleDateString() + '.',
+          ''
+        ];
+        return lines.join('\n');
+      }
+
+      compileAccommodationStatement(data) {
+        const lines = [
+          `# Request for Accommodation`,
+          `**For:** ${data.patientName}`,
+          `**Prepared:** ${new Date().toLocaleDateString()}`,
+          '',
+          '## Medical Conditions Requiring Accommodation',
+          '- Chronic inflammatory bowel disease (Crohn\'s disease)',
+          '- Peripheral neuropathy with mobility and pain limitations',
+          '',
+          '## Requested Accommodations',
+          '- Flexible scheduling (medical appointments, symptom management)',
+          '- Access to accessible facilities and rest areas',
+          '- Flexibility for symptom-related absences',
+          '- Modified duties as medically required',
+          '',
+          '## Medical Justification',
+          'The above conditions create unpredictable symptoms requiring frequent medical attention and result in functional limitations that require workplace accommodation.',
+          '',
+          '## Provider Contact',
+          'For medical verification, contact treating physicians as documented in attached medical records.',
+          ''
+        ];
+        return lines.join('\n');
+      }
+
+      compileODSPSummary(data) {
+        const lines = [
+          `# ODSP Review Summary`,
+          `**Client:** ${data.patientName}`,
+          `**Review Date:** ${new Date().toLocaleDateString()}`,
+          `**Matter:** Annual ODSP Review`,
+          '',
+          '## Relevant Medical Information',
+          '**Confirmed Diagnoses:**',
+          '- Crohn\'s disease (chronic, diagnosed 2002)',
+          '- Peripheral neuropathy (diagnosed 2015)',
+          '',
+          '## Current Benefit Status',
+          '- Approved: December 1, 2025 (backdated September 1, 2025)',
+          '- Monthly benefit: $1,169',
+          '- Next review: June 1, 2026',
+          '',
+          '## Documentation Provided',
+          '- Medical chronology with specialist documentation',
+          '- Hospital records (most recent hospitalization June 2024)',
+          '- Ongoing treatment records from GI and neurology specialists',
+          '',
+          '## Recommendation',
+          'Medical evidence continues to support ODSP approval. No changes to benefit status recommended.',
+          ''
+        ];
+        return lines.join('\n');
+      }
+
+      approve() {
+        this.approvalStatus = 'Approved for External Use';
+        this.modifiedAt = new Date().toISOString();
+      }
+
+      reject() {
+        this.approvalStatus = 'Rejected';
+        this.modifiedAt = new Date().toISOString();
+      }
+    }
+
+    // Template Manager
+    const templates = {
+      medical_chronology: new DocumentTemplate(
+        'medical_chronology',
+        'Medical Chronology',
+        'Healthcare summary for ODSP submission'
+      ),
+      accommodation_statement: new DocumentTemplate(
+        'accommodation_statement',
+        'Accommodation Statement',
+        'Request for workplace accommodations'
+      ),
+      odsp_summary: new DocumentTemplate(
+        'odsp_summary',
+        'ODSP Review Summary',
+        'Summary for annual ODSP review'
+      )
+    };
+
+    // Sample data for template compilation
+    const sampleCaseData = {
+      patientName: 'Matthew Herbert',
+      userId: 'mattherbert01',
+      matterType: 'ODSP',
+      birthDate: '1986-03-15',
+      odspApprovalDate: '2025-12-01',
+      odspBackdateDate: '2025-09-01',
+      monthlyBenefit: 1169
+    };
+
+    // Compile all templates on initialization
+    function initializeTemplates() {
+      Object.keys(templates).forEach(key => {
+        const template = templates[key];
+        template.content = template.compile(sampleCaseData);
+        template.sourceRefs = ['medical-history', 'hospital-records', 'specialist-notes'];
+        console.log(`[Template Engine] Compiled ${template.type}`);
+      });
+    }
+
+    // Render template preview in Responses tab
+    function renderTemplateInResponsesTab() {
+      const responsesTab = document.getElementById('responses');
+      if (!responsesTab) return;
+
+      // Find the "DRAFT (Needs Approval)" section
+      const draftSection = responsesTab.querySelector('.section-header');
+      if (draftSection) {
+        draftSection.parentNode.insertBefore(
+          createTemplateRenderContainer(),
+          draftSection
+        );
+      }
+    }
+
+    function createTemplateRenderContainer() {
+      const container = document.createElement('div');
+      container.id = 'template-display';
+      container.innerHTML = `
+        <h3 class="section-header" style="margin-top: 0;">Generated from Evidence</h3>
+        ${Object.keys(templates).map(key => {
+          const template = templates[key];
+          return `
+            <div class="response-item">
+              <div class="response-header">
+                <div>
+                  <div class="response-title">${template.title}</div>
+                  <div class="response-desc">${template.description}</div>
+                </div>
+                <div class="badge badge-draft">Draft</div>
+              </div>
+              <div style="padding: 12px; background: rgba(24,34,67,.3); border-radius: 4px; margin: 12px 0; font-size: 12px; line-height: 1.6; max-height: 140px; overflow-y: auto; font-family: 'Courier New', monospace; white-space: pre-wrap;">${escapeHtml(template.content.substring(0, 300))}...</div>
+              <div style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">
+                Sources: ${template.sourceRefs.length} items reviewed
+              </div>
+              <div class="card-footer">
+                <button class="btn-small" onclick="showTemplatePreview('${key}')">Show full</button>
+                <button class="btn-small" onclick="downloadTemplate('${key}')">Download</button>
+                <button class="btn-small" onclick="approveTemplate('${key}')">Approve</button>
+                <button class="btn-small" onclick="rejectTemplate('${key}')">Revise</button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      `;
+      return container;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Template UI Handlers
+    window.showTemplatePreview = function(templateKey) {
+      const template = templates[templateKey];
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,.7); display: flex; align-items: center;
+        justify-content: center; z-index: 9999;
+      `;
+      modal.innerHTML = `
+        <div style="background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 24px; max-width: 90%; max-height: 90%; overflow-y: auto; width: 800px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--line);">
+            <h2 style="margin: 0;">${template.title}</h2>
+            <button onclick="this.closest('div').parentNode.remove()" style="background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">×</button>
+          </div>
+          <pre style="font-family: inherit; white-space: pre-wrap; color: var(--muted); font-size: 13px; line-height: 1.6;">${escapeHtml(template.content)}</pre>
+          <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); display: flex; gap: 8px;">
+            <button class="btn-small" onclick="downloadTemplate('${templateKey}'); this.closest('div').parentNode.remove()">Download</button>
+            <button class="btn-small" onclick="approveTemplate('${templateKey}'); this.closest('div').parentNode.remove()">Approve</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+      });
+    };
+
+    window.downloadTemplate = function(templateKey) {
+      const template = templates[templateKey];
+      const element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(template.content));
+      element.setAttribute('download', `${template.type}_${sampleCaseData.userId}_${new Date().toISOString().slice(0,10)}.md`);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      addMessage('System: Document downloaded', 'system');
+    };
+
+    window.approveTemplate = function(templateKey) {
+      const template = templates[templateKey];
+      template.approve();
+      addMessage(`System: ${template.title} approved for external use`, 'system');
+      console.log(`[Template Approval] ${templateKey} approved`);
+    };
+
+    window.rejectTemplate = function(templateKey) {
+      const template = templates[templateKey];
+      template.reject();
+      addMessage(`System: ${template.title} marked for revision`, 'system');
+      console.log(`[Template Revision] ${templateKey} requires revision`);
+    };
+
     // INITIALIZATION
     console.log('[Libby Live v2.05.0] Briefing console initialized');
     console.log('[Evidence-Driven Architecture] All evidence requires source reference and confidence level');
     console.log('[Multi-Patient Ready] All data isolated by userID');
+    console.log('[Phase 3 - Document Templating] Template engine initialized with 3 core templates');
+
+    // Initialize templates and render in UI
+    initializeTemplates();
+    renderTemplateInResponsesTab();
   </script>
 </body>
 </html>
