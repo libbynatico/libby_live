@@ -1,0 +1,210 @@
+{
+  "project": "Libby Live - Unified Schema Set",
+  "version": "1.0.0",
+  "generated": "2026-04-22T21:15:00Z",
+  "description": "12 core entities for evidence-driven case advocacy system",
+  "confidence_enum": ["Confirmed", "Draft", "Inferred", "Missing Evidence", "Needs Review"],
+  "matter_types": ["ODSP", "DSO", "Rogers", "Housing", "Surgery", "Travel", "Admin"],
+
+  "SourceDocument": {
+    "description": "Immutable raw document, email, transcript, or audio file",
+    "fields": {
+      "id": { "type": "uuid", "required": true },
+      "userId": { "type": "string", "required": true, "description": "mattherbert01 or other patient ID" },
+      "filePath": { "type": "string", "required": true },
+      "fileType": { "type": "enum", "values": ["pdf", "email", "transcript", "image", "audio", "markdown"], "required": true },
+      "ingestionDate": { "type": "timestamp", "required": true },
+      "rawText": { "type": "text", "description": "OCR'd or extracted text" },
+      "metadata": { "type": "object", "fields": { "sourceOrg": "string", "documentDate": "date", "createdBy": "string" } },
+      "createdAt": { "type": "timestamp", "required": true },
+      "modifiedAt": { "type": "timestamp", "required": true }
+    }
+  },
+
+  "Claim": {
+    "description": "Discrete factual statement extracted from a source document",
+    "fields": {
+      "id": { "type": "uuid", "required": true },
+      "userId": { "type": "string", "required": true },
+      "text": { "type": "string", "required": true },
+      "sourceRefs": { "type": "array", "itemType": "uuid", "description": "References to SourceDocument.id" },
+      "confidence": { "type": "enum", "values": ["Confirmed", "Draft", "Inferred", "Missing Evidence", "Needs Review"], "required": true },
+      "extractedBy": { "type": "string", "description": "Agent or human who extracted" },
+      "humanReviewed": { "type": "boolean", "default": false },
+      "reasoningSummary": { "type": "string", "description": "Why this confidence level" },
+      "topic": { "type": "string", "examples": ["diagnosis", "hospitalization", "income", "housing"] },
+      "createdAt": { "type": "timestamp", "required": true },
+      "modifiedAt": { "type": "timestamp", "required": true }
+    }
+  },
+
+  "EvidenceCard": {
+    "description": "Indexed claim with topic, date range, and matter assignment",
+    "fields": {
+      "id": { "type": "uuid", "required": true },
+      "userId": { "type": "string", "required": true },
+      "claimId": { "type": "uuid", "required": true, "references": "Claim.id" },
+      "sourceRef": { "type": "uuid", "references": "SourceDocument.id" },
+      "claimText": { "type": "string", "required": true },
+      "confidence": { "type": "enum", "values": ["Confirmed", "Draft", "Inferred", "Missing Evidence", "Needs Review"], "required": true },
+      "topic": { "type": "string", "required": true },
+      "dateRange": { "type": "object", "fields": { "start": "date", "end": "date" } },
+      "matterId": { "type": "uuid", "references": "Matter.id" },
+      "approvalStatus": { "type": "enum", "values": ["Draft", "Approved", "Rejected"], "default": "Draft" },
+      "createdAt": { "type": "timestamp", "required": true },
+      "modifiedAt": { "type": "timestamp", "required": true }
+    }
+  },
+
+  "TimelineEvent": {
+    "description": "Chronological event with evidence backing and confidence label",
+    "fields": {
+      "id": { "type": "uuid", "required": true },
+      "userId": { "type": "string", "required": true },
+      "dateStart": { "type": "date", "required": true },
+      "dateEnd": { "type": "date" },
+      "eventType": { "type": "enum", "values": ["clinical", "administrative", "system_interaction", "decision", "transition"], "required": true },
+      "description": { "type": "string", "required": true },
+      "sourceRefs": { "type": "array", "itemType": "uuid", "description": "References to EvidenceCard or SourceDocument" },
+      "confidence": { "type": "enum", "values": ["Confirmed", "Draft", "Inferred", "Missing Evidence", "Needs Review"], "required": true },
+      "matterId": { "type": "uuid", "references": "Matter.id" },
+      "tags": { "type": "array", "itemType": "string", "examples": ["diagnosis", "hospitalization", "surgery", "approval"] },
+      "createdAt": { "type": "timestamp", "required": true },
+      "modifiedAt": { "type": "timestamp", "required": true }
+    }
+  },
+
+  "Matter": {
+    "description": "Case routing entity for ODSP, DSO, Rogers, housing, surgery, etc.",
+    "fields": {
+      "id": { "type": "uuid", "required": true },
+      "userId": { "type": "string", "required": true },
+      "type": { "type": "enum", "values": ["ODSP", "DSO", "Rogers", "Housing", "Surgery", "Travel", "Admin"], "required": true },
+      "status": { "type": "enum", "values": ["Open", "In Progress", "Resolved", "On Hold"], "default": "Open" },
+      "ownerRole": { "type": "string", "description": "e.g. 'case_worker', 'advocate', 'patient'" },
+      "createdAt": { "type": "timestamp", "required": true },
+      "deadline": { "type": "date" },
+      "approvalStatus": { "type": "enum", "values": ["Draft", "Approved", "Submitted", "Denied"], "default": "Draft" },
+      "description": { "type": "string" },
+      "modifiedAt": { "type": "timestamp", "required": true }
+    }
+  },
+
+  "Task": {
+    "description": "Action item with deadline and matter affiliation",
+    "fields": {
+      "id": { "type": "uuid", "required": true },
+      "userId": { "type": "string", "required": true },
+      "title": { "type": "string", "required": true },
+      "description": { "type": "string" },
+      "owner": { "type": "string", "required": true, "description": "User or role name" },
+      "dueDate": { "type": "date", "required": true },
+      "status": { "type": "enum", "values": ["Created", "In Progress", "Completed", "Blocked"], "default": "Created" },
+      "matterId": { "type": "uuid", "references": "Matter.id" },
+      "evidenceRefs": { "type": "array", "itemType": "uuid", "description": "Related EvidenceCard IDs" },
+      "followUpFor": { "type": "uuid", "description": "Parent task if this is a follow-up" },
+      "createdAt": { "type": "timestamp", "required": true },
+      "modifiedAt": { "type": "timestamp", "required": true }
+    }
+  },
+
+  "Contact": {
+    "description": "Provider, specialist, or support person",
+    "fields": {
+      "id": { "type": "uuid", "required": true },
+      "userId": { "type": "string", "required": true },
+      "name": { "type": "string", "required": true },
+      "role": { "type": "string", "required": true, "examples": ["doctor", "case_worker", "landlord", "advocate"] },
+      "organization": { "type": "string" },
+      "contactInfo": { "type": "object", "fields": { "email": "string", "phone": "string", "address": "string" } },
+      "lastContacted": { "type": "date" },
+      "nextContactDate": { "type": "date" },
+      "interactionCount": { "type": "integer", "default": 0 },
+      "createdAt": { "type": "timestamp", "required": true },
+      "modifiedAt": { "type": "timestamp", "required": true }
+    }
+  },
+
+  "Interaction": {
+    "description": "Communication record (email, phone, visit, meeting)",
+    "fields": {
+      "id": { "type": "uuid", "required": true },
+      "userId": { "type": "string", "required": true },
+      "contactId": { "type": "uuid", "required": true, "references": "Contact.id" },
+      "type": { "type": "enum", "values": ["email", "phone", "visit", "meeting", "letter"], "required": true },
+      "date": { "type": "timestamp", "required": true },
+      "notes": { "type": "text" },
+      "matterId": { "type": "uuid", "references": "Matter.id" },
+      "outcome": { "type": "string", "examples": ["positive", "negative", "no_change", "follow_up_needed"] },
+      "sourceRef": { "type": "uuid", "description": "Link to SourceDocument if email/letter" },
+      "createdAt": { "type": "timestamp", "required": true },
+      "modifiedAt": { "type": "timestamp", "required": true }
+    }
+  },
+
+  "Draft": {
+    "description": "Compiled artifact (letter, brief, chronology, etc.) from approved evidence blocks",
+    "fields": {
+      "id": { "type": "uuid", "required": true },
+      "userId": { "type": "string", "required": true },
+      "type": { "type": "enum", "values": ["medical_chronology", "accommodation_request", "appeal_letter", "meeting_brief", "odsp_summary", "post_meeting_recap"], "required": true },
+      "content": { "type": "markdown", "required": true },
+      "sourceRefs": { "type": "array", "itemType": "uuid", "description": "EvidenceCard IDs this was compiled from" },
+      "confidenceChecks": { "type": "object", "description": "Summary of confidence levels in content" },
+      "approvalStatus": { "type": "enum", "values": ["Draft", "Approved for External Use", "Rejected"], "default": "Draft" },
+      "compiledFrom": { "type": "array", "itemType": "uuid", "description": "Template IDs or manual selections" },
+      "version": { "type": "integer", "default": 1 },
+      "createdAt": { "type": "timestamp", "required": true },
+      "modifiedAt": { "type": "timestamp", "required": true }
+    }
+  },
+
+  "Decision": {
+    "description": "Recorded decision point with evidence trail",
+    "fields": {
+      "id": { "type": "uuid", "required": true },
+      "userId": { "type": "string", "required": true },
+      "matterId": { "type": "uuid", "required": true, "references": "Matter.id" },
+      "decisionDate": { "type": "date", "required": true },
+      "decisionText": { "type": "string", "required": true },
+      "sourceRefs": { "type": "array", "itemType": "uuid", "description": "Evidence backing this decision" },
+      "confidence": { "type": "enum", "values": ["Confirmed", "Draft", "Inferred", "Missing Evidence", "Needs Review"], "required": true },
+      "approvedBy": { "type": "string", "required": true },
+      "documented": { "type": "boolean", "default": false },
+      "createdAt": { "type": "timestamp", "required": true },
+      "modifiedAt": { "type": "timestamp", "required": true }
+    }
+  },
+
+  "Alert": {
+    "description": "Flag for deadline, missing evidence, contradiction, or follow-up",
+    "fields": {
+      "id": { "type": "uuid", "required": true },
+      "userId": { "type": "string", "required": true },
+      "alertType": { "type": "enum", "values": ["deadline", "missing_evidence", "unconfirmed_claim", "contradiction", "follow_up_needed"], "required": true },
+      "severity": { "type": "enum", "values": ["low", "medium", "high", "critical"], "default": "medium" },
+      "matterId": { "type": "uuid", "references": "Matter.id" },
+      "createdAt": { "type": "timestamp", "required": true },
+      "resolvedAt": { "type": "timestamp" },
+      "actionRequired": { "type": "string" },
+      "modifiedAt": { "type": "timestamp", "required": true }
+    }
+  },
+
+  "AgentRun": {
+    "description": "Log of system capability execution (ingest, extract, review, draft, etc.)",
+    "fields": {
+      "id": { "type": "uuid", "required": true },
+      "userId": { "type": "string", "required": true },
+      "timestamp": { "type": "timestamp", "required": true },
+      "capability": { "type": "enum", "values": ["ingest", "extract", "index", "update_timeline", "assign_matter", "build_artifact", "approve_artifact", "run_meeting", "generate_recap", "alert_deadline"], "required": true },
+      "inputId": { "type": "uuid", "description": "Input entity ID" },
+      "outputId": { "type": "uuid", "description": "Output entity ID" },
+      "actorType": { "type": "enum", "values": ["system", "human"] },
+      "confidenceDelta": { "type": "float", "description": "Change in average confidence" },
+      "humanRequired": { "type": "boolean", "default": false },
+      "notes": { "type": "string" },
+      "createdAt": { "type": "timestamp", "required": true }
+    }
+  }
+}
