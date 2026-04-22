@@ -3,25 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Libby Live - v2.03.0-claude-oauth</title>
-  <meta name="description" content="Libby Live - advocacy dashboard, evidence workspace, and AI-assisted case support." />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <title>Libby Live - v2.04.0</title>
+  <meta name="description" content="Libby Live - case advocacy dashboard with always-on AI chat." />
   <style>
     :root {
       --bg: #0b1020;
       --panel: #111831;
-      --panel-2: #182243;
-      --panel-3: #0f1730;
       --text: #eef2ff;
       --muted: #a7b0d6;
       --line: #2a396d;
       --accent: #75a7ff;
-      --accent-2: #9cc2ff;
       --ok: #42c08c;
       --warn: #f2bb5e;
       --danger: #ef6f6f;
-      --shadow: 0 16px 40px rgba(0,0,0,.28);
-      --radius: 18px;
     }
 
     * { box-sizing: border-box; }
@@ -33,1538 +27,548 @@
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    a { color: var(--accent-2); text-decoration: none; }
-    button, input, textarea, select {
-      font: inherit;
-    }
-
     .app {
       display: grid;
-      grid-template-columns: 290px 1fr;
+      grid-template-columns: 280px 1fr 360px;
       min-height: 100vh;
+      gap: 0;
     }
 
+    /* SIDEBAR */
     .sidebar {
-      background: rgba(10,16,34,.88);
+      background: rgba(10,16,34,.95);
       border-right: 1px solid var(--line);
       padding: 24px 18px;
       position: sticky;
       top: 0;
       height: 100vh;
-      backdrop-filter: blur(18px);
+      overflow-y: auto;
     }
 
     .brand {
       display: flex;
       gap: 12px;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
 
     .brand-mark {
       width: 46px;
       height: 46px;
-      border-radius: 14px;
+      border-radius: 12px;
       background: linear-gradient(135deg, #7ba5ff 0%, #446fe0 100%);
       display: grid;
       place-items: center;
       font-weight: 800;
-      box-shadow: var(--shadow);
+      font-size: 18px;
     }
 
     .brand-copy h1 {
-      font-size: 18px;
-      line-height: 1.1;
-      margin: 0 0 4px;
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
     }
 
     .brand-copy p {
-      margin: 0;
       font-size: 12px;
       color: var(--muted);
+      margin: 0;
     }
 
-    .version-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(117,167,255,.12);
-      border: 1px solid rgba(117,167,255,.28);
-      color: var(--accent-2);
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      margin-bottom: 18px;
+    .version-badge {
+      display: inline-block;
+      background: rgba(117,167,255,.15);
+      border: 1px solid rgba(117,167,255,.25);
+      color: #9cc2ff;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      margin-top: 8px;
     }
 
     .nav {
       display: grid;
-      gap: 4px;
+      gap: 8px;
+      margin-bottom: 24px;
     }
 
     .nav button {
-      width: 100%;
-      text-align: left;
-      padding: 10px 14px;
-      border-radius: 14px;
-      border: 1px solid transparent;
-      border-left: 3px solid transparent;
-      color: var(--muted);
       background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      padding: 12px 14px;
+      border-radius: 10px;
+      text-align: left;
       cursor: pointer;
-      transition: background .15s ease, color .15s ease, border-color .15s ease;
+      transition: all .15s;
       font-size: 14px;
     }
 
     .nav button:hover {
-      background: rgba(117,167,255,.08);
+      background: rgba(117,167,255,.1);
       color: var(--text);
     }
 
     .nav button.active {
-      background: rgba(117,167,255,.12);
-      border-color: rgba(117,167,255,.26);
-      border-left-color: var(--accent);
-      color: var(--accent-2);
-      font-weight: 500;
+      background: rgba(117,167,255,.2);
+      border-color: rgba(117,167,255,.4);
+      color: var(--accent);
     }
 
-    .sidebar-meta {
-      margin-top: 22px;
-      padding-top: 18px;
-      border-top: 1px solid var(--line);
-      display: grid;
-      gap: 10px;
-      font-size: 13px;
+    .sidebar-divider {
+      height: 1px;
+      background: var(--line);
+      margin: 20px 0;
+    }
+
+    .sidebar-section {
+      font-size: 12px;
       color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
     }
 
-    .sidebar-meta strong { color: var(--text); }
-
+    /* MAIN CONTENT */
     .main {
-      padding: 24px;
+      padding: 32px;
       overflow-y: auto;
+      display: grid;
+      gap: 24px;
     }
 
-    .topbar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 20px;
+    .header {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 20px;
     }
 
-    .topbar-left h2 {
-      margin: 0 0 6px;
-      font-size: 26px;
+    .header h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
     }
 
-    .topbar-left p {
+    .header p {
       margin: 0;
       color: var(--muted);
-    }
-
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .btn {
-      border: 1px solid var(--line);
-      background: var(--panel);
-      color: var(--text);
-      padding: 10px 14px;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background .15s ease, border-color .15s ease, transform .1s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-      border-color: rgba(117,167,255,.4);
-    }
-
-    .btn:active {
-      transform: scale(0.97) translateY(0);
-    }
-
-    .btn:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .btn.primary {
-      background: linear-gradient(135deg, #5686ff 0%, #395ed4 100%);
-      border-color: transparent;
-    }
-
-    .btn.primary:hover {
-      background: linear-gradient(135deg, #6a96ff 0%, #4a6ee4 100%);
-    }
-
-    .btn.ghost {
-      background: transparent;
-    }
-
-    .btn.warn {
-      background: rgba(242,187,94,.12);
-      border-color: rgba(242,187,94,.28);
-      color: #ffd899;
-    }
-
-    .btn.danger {
-      background: rgba(239,111,111,.1);
-      border-color: rgba(239,111,111,.24);
-      color: #ffc3c3;
-    }
-
-    .grid {
-      display: grid;
-      gap: 16px;
-    }
-
-    .grid.stats {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      margin-bottom: 20px;
+      font-size: 14px;
     }
 
     .card {
-      background: linear-gradient(180deg, rgba(24,34,67,.94) 0%, rgba(14,21,44,.98) 100%);
+      background: linear-gradient(180deg, rgba(24,34,67,.6) 0%, rgba(14,21,44,.8) 100%);
       border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 18px;
-      box-shadow: var(--shadow);
+      border-radius: 14px;
+      padding: 20px;
     }
 
     .card h3 {
-      margin: 0 0 10px;
+      margin: 0 0 12px;
       font-size: 16px;
     }
 
-    .stat-value {
-      font-size: 30px;
-      font-weight: 800;
-      margin: 4px 0;
+    .form-group {
+      margin-bottom: 16px;
     }
 
-    .muted { color: var(--muted); }
-    .small { font-size: 12px; }
-
-    .status-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 11px;
-      border-radius: 999px;
-      font-size: 12px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.03);
-    }
-
-    .pill.ok { color: #b9ffd9; border-color: rgba(66,192,140,.25); background: rgba(66,192,140,.1); }
-    .pill.warn { color: #ffe2a3; border-color: rgba(242,187,94,.25); background: rgba(242,187,94,.1); }
-    .pill.danger { color: #ffd0d0; border-color: rgba(239,111,111,.25); background: rgba(239,111,111,.1); }
-
-    .layout-2 {
-      display: grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 16px;
-    }
-
-    .stack {
-      display: grid;
-      gap: 16px;
-    }
-
-    .panel {
-      display: none;
-    }
-
-    .panel.active {
-      display: block;
-    }
-
-    label {
+    .form-group label {
       display: block;
       font-size: 13px;
       color: var(--muted);
-      margin-bottom: 7px;
-    }
-
-    input[type="text"],
-    input[type="email"],
-    textarea,
-    select {
-      width: 100%;
-      background: rgba(7,12,26,.66);
-      color: var(--text);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 12px 13px;
-      outline: none;
-      transition: border-color .15s;
-    }
-
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    textarea:focus,
-    select:focus {
-      border-color: rgba(117,167,255,.5);
+      margin-bottom: 6px;
     }
 
     textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    #chatInput {
-      min-height: 44px;
-      max-height: 180px;
-      resize: none;
-      overflow-y: auto;
-      line-height: 1.5;
-    }
-
-    .form-grid {
-      display: grid;
-      gap: 14px;
-    }
-
-    .form-grid.two {
-      grid-template-columns: repeat(2, minmax(0,1fr));
-    }
-
-    .list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .item {
+      width: 100%;
+      background: rgba(7,12,26,.7);
       border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 14px;
-      background: rgba(255,255,255,.02);
-    }
-
-    .item-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: start;
-      margin-bottom: 8px;
-    }
-
-    .item-head strong {
-      font-size: 15px;
-    }
-
-    .item-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .mini {
-      border: 1px solid var(--line);
-      background: transparent;
-      color: var(--text);
-      padding: 7px 10px;
       border-radius: 10px;
-      cursor: pointer;
-      font-size: 12px;
-      transition: background .12s, border-color .12s;
-    }
-
-    .mini:hover {
-      background: rgba(117,167,255,.1);
-      border-color: rgba(117,167,255,.3);
-    }
-
-    .mini:active {
-      transform: scale(0.96);
-    }
-
-    .activity-log {
-      max-height: 360px;
-      overflow: auto;
-      display: grid;
-      gap: 10px;
-    }
-
-    .activity-entry {
       padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(255,255,255,.02);
-      font-size: 13px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 100px;
     }
 
-    .chat-log {
-      display: grid;
-      gap: 12px;
-      max-height: 520px;
-      overflow: auto;
-      padding-right: 4px;
-      margin-bottom: 14px;
+    textarea:focus {
+      outline: none;
+      border-color: rgba(117,167,255,.5);
     }
 
-    .chat-msg {
-      border-radius: 16px;
-      padding: 14px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      white-space: pre-wrap;
-      line-height: 1.5;
-    }
-
-    .chat-msg.user {
-      background: rgba(117,167,255,.08);
-      border-color: rgba(117,167,255,.24);
-    }
-
-    .chat-meta {
+    /* RIGHT SIDEBAR - CHAT */
+    .chat-sidebar {
+      background: rgba(10,16,34,.95);
+      border-left: 1px solid var(--line);
+      padding: 16px;
       display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 8px;
-      font-size: 12px;
-      color: var(--muted);
+      flex-direction: column;
+      height: 100vh;
     }
 
-    .chat-send-row {
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
+    .chat-header {
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 12px;
     }
 
-    .chat-send-row textarea {
-      flex: 1;
+    .chat-header h3 {
       margin: 0;
-    }
-
-    .btn.primary {
-      padding: 11px 18px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #5686ff 0%, #395ed4 100%);
-      border: none;
-      color: white;
-      cursor: pointer;
       font-size: 14px;
       font-weight: 600;
-      transition: background .15s, transform .1s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
     }
 
-    .btn.primary:hover:not(:disabled) {
-      background: linear-gradient(135deg, #6a96ff 0%, #4a6ee4 100%);
-    }
-
-    .btn.primary:active:not(:disabled) {
-      transform: scale(0.97);
-    }
-
-    .btn.primary:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-
-    .chat-hint {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    .field-error {
-      font-size: 12px;
-      color: #ef6f6f;
-      margin-top: 6px;
-      display: none;
-    }
-
-    .field-error.visible {
-      display: block;
-    }
-
-    .inline-actions {
-      display: flex;
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      display: grid;
       gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
+      margin-bottom: 12px;
+      padding-right: 4px;
     }
 
-    .empty {
-      color: var(--muted);
-      border: 1px dashed var(--line);
-      border-radius: 14px;
-      padding: 16px;
-      text-align: center;
+    .message {
+      background: rgba(117,167,255,.1);
+      border-left: 2px solid var(--accent);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      line-height: 1.4;
     }
 
-    .footer-note {
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: 12px;
+    .message.bot {
+      background: rgba(66,192,140,.1);
+      border-left-color: var(--ok);
+      color: #b9ffd9;
     }
 
-    .hidden {
-      display: none !important;
+    .chat-input-area {
+      display: flex;
+      gap: 8px;
+      flex-direction: column;
     }
 
-    @media (max-width: 1180px) {
-      .grid.stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
-      .layout-2 { grid-template-columns: 1fr; }
-      .form-grid.two { grid-template-columns: 1fr; }
+    .chat-input-row {
+      display: flex;
+      gap: 8px;
     }
 
-    @media (max-width: 920px) {
-      .app { grid-template-columns: 1fr; }
-      .sidebar {
-        position: static;
-        height: auto;
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
-      }
-      .main { padding: 18px; }
+    .chat-input {
+      flex: 1;
+      background: rgba(42,57,109,.4);
+      border: 1px solid var(--line);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      resize: none;
+      min-height: 40px;
+      max-height: 100px;
+      font-family: inherit;
     }
 
-    @media (max-width: 640px) {
-      .grid.stats { grid-template-columns: 1fr; }
-      .topbar-left h2 { font-size: 22px; }
+    .chat-input:focus {
+      outline: none;
+      border-color: rgba(117,167,255,.5);
     }
+
+    .btn {
+      background: var(--accent);
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all .15s;
+    }
+
+    .btn:hover {
+      background: #9cc2ff;
+    }
+
+    .btn.secondary {
+      background: rgba(117,167,255,.15);
+      color: var(--accent);
+      border: 1px solid rgba(117,167,255,.3);
+    }
+
+    .btn.secondary:hover {
+      background: rgba(117,167,255,.25);
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(117,167,255,.3);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(117,167,255,.5);
+    }
+
+    .hidden { display: none; }
   </style>
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
       <div class="brand">
-        <div class="brand-mark">L</div>
+        <div class="brand-mark">🎙️</div>
         <div class="brand-copy">
           <h1>Libby Live</h1>
-          <p>Case support portal</p>
+          <p>Case Advocacy</p>
+          <div class="version-badge">v2.04.0</div>
         </div>
       </div>
-
-      <div class="version-chip" id="versionChip">v2.03.0-claude-oauth</div>
 
       <div class="nav">
-        <button class="active" data-target="dashboardPanel">Dashboard</button>
-        <button data-target="casePanel">Case Profile</button>
-        <button data-target="evidencePanel">Evidence</button>
-        <button data-target="draftsPanel">Drafts</button>
-        <button data-target="drivePanel">Patient Zero</button>
-        <button data-target="chatPanel">Libby Chat</button>
-        <button data-target="settingsPanel">Settings</button>
-      </div>
+        <button data-section="overview" class="active">📊 Overview</button>
+        <button data-section="situation">📋 Situation</button>
+        <button data-section="evidence">🔍 Evidence</button>
+        <button data-section="contacts">👥 Contacts</button>
+      </nav>
 
-      <div class="sidebar-meta">
-        <div><strong>Build</strong><br /><span id="buildModeLabel">live</span></div>
-        <div><strong>Role</strong><br /><span id="roleLabel">—</span></div>
-        <div><strong>User ID</strong><br /><span id="userIdLabel">—</span></div>
-        <div><strong>Session</strong><br /><span id="sessionStatus">Guest mode</span></div>
-        <div><strong>Supabase</strong><br /><span id="supabaseStatus">Checking...</span></div>
-        <div><strong>Knowledge</strong><br /><span id="knowledgeStatus">Not loaded</span></div>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-section">User</div>
+      <div style="font-size:12px; color: var(--muted); padding: 8px; background: rgba(117,167,255,.05); border-radius: 8px;">
+        <strong id="activeUser">mattherbert01</strong><br/>
+        <span id="activeRole">Advocate</span>
       </div>
-    </aside>
+    </div>
 
+    <!-- MAIN -->
     <main class="main">
-      <div class="topbar">
-        <div class="topbar-left">
-          <h2>Libby Live</h2>
-          <p>Structured advocacy workspace with Drive integration, Supabase auth, and context-aware AI chat.</p>
-        </div>
-
-        <div class="toolbar">
-          <button class="btn" id="saveLocalBtn">Save local</button>
-          <button class="btn" id="exportBtn">Export JSON</button>
-          <label class="btn ghost" for="importJsonInput">Import JSON</label>
-          <input id="importJsonInput" class="hidden" type="file" accept=".json,application/json" />
-          <button class="btn primary" id="signinBtn">Sign in</button>
-          <button class="btn danger hidden" id="signoutBtn">Sign out</button>
-        </div>
+      <div class="header">
+        <h2 id="sectionTitle">Overview</h2>
+        <p id="sectionDesc">Case advocacy dashboard and intake system</p>
       </div>
 
-      <section class="panel active" id="dashboardPanel">
-        <div class="grid stats">
-          <div class="card">
-            <h3>Evidence items</h3>
-            <div class="stat-value" id="statEvidence">0</div>
-            <div class="muted small">Tracked sources and records</div>
-          </div>
-          <div class="card">
-            <h3>Drafts</h3>
-            <div class="stat-value" id="statDrafts">0</div>
-            <div class="muted small">Letters and outputs</div>
-          </div>
-          <div class="card">
-            <h3>Patient Zero</h3>
-            <div class="stat-value" id="statPatientZero">0</div>
-            <div class="muted small">Case context loaded</div>
-          </div>
-          <div class="card">
-            <h3>Chat turns</h3>
-            <div class="stat-value" id="statChat">0</div>
-            <div class="muted small">Messages in workspace</div>
-          </div>
-        </div>
-
-        <div class="layout-2">
-          <div class="stack">
-            <div class="card">
-              <h3>Case overview</h3>
-              <div class="form-grid">
-                <div>
-                  <label for="caseSituation">Current situation</label>
-                  <textarea id="caseSituation" placeholder="Summarize current status, urgent issues, and next steps."></textarea>
-                </div>
-                <div>
-                  <label for="caseDiagnoses">Confirmed diagnoses / conditions</label>
-                  <textarea id="caseDiagnoses" placeholder="One per line or comma-separated."></textarea>
-                </div>
-              </div>
-            </div>
-
-            <div class="card">
-              <h3>Connection status</h3>
-              <div class="status-row" style="margin-bottom: 10px;">
-                <span class="pill" id="authPill">Auth: checking</span>
-                <span class="pill" id="chatPill">Chat: wired</span>
-                <span class="pill" id="drivePill">Drive: initializing</span>
-              </div>
-              <div class="muted small">
-                Browser data persists locally. Chat routes to OpenRouter. Drive access via Google OAuth.
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <h3>Recent activity</h3>
-            <div class="activity-log" id="activityLog"></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel" id="casePanel">
-        <div class="layout-2">
-          <div class="card">
-            <h3>Patient realities</h3>
-            <label for="caseRealities">Day-to-day realities</label>
-            <textarea id="caseRealities" placeholder="Write plainly about functioning, barriers, practical realities."></textarea>
-          </div>
-
-          <div class="card">
-            <h3>Patient truths</h3>
-            <label for="caseTruths">Reusable truth statements</label>
-            <textarea id="caseTruths" placeholder="Short stable statements for letters and summaries."></textarea>
-          </div>
-        </div>
-
-        <div class="footer-note">
-          These auto-save and are included in chat context.
-        </div>
-      </section>
-
-      <section class="panel" id="evidencePanel">
-        <div class="card" style="margin-bottom: 16px;">
-          <h3>Add evidence</h3>
-          <div class="form-grid two">
-            <div>
-              <label for="evidenceTitle">Title</label>
-              <input type="text" id="evidenceTitle" placeholder="e.g. Audiology report" />
-            </div>
-            <div>
-              <label for="evidenceType">Type</label>
-              <input type="text" id="evidenceType" placeholder="PDF, email, screenshot..." />
-            </div>
-          </div>
-          <div class="form-grid" style="margin-top: 14px;">
-            <div>
-              <label for="evidenceSummary">Summary</label>
-              <textarea id="evidenceSummary" placeholder="What does this source establish?"></textarea>
-            </div>
-            <div class="inline-actions">
-              <button class="btn primary" id="addEvidenceBtn">Add evidence item</button>
-            </div>
-            <div class="field-error" id="evidenceError">Title and summary are required.</div>
-          </div>
-        </div>
-
+      <!-- OVERVIEW -->
+      <section id="overview" class="content-section">
         <div class="card">
-          <h3>Evidence library</h3>
-          <div class="list" id="evidenceList"></div>
-        </div>
-      </section>
-
-      <section class="panel" id="draftsPanel">
-        <div class="card" style="margin-bottom: 16px;">
-          <h3>Add draft</h3>
-          <div class="form-grid two">
-            <div>
-              <label for="draftTitle">Title</label>
-              <input type="text" id="draftTitle" placeholder="Draft title" />
-            </div>
-            <div>
-              <label for="draftAudience">Audience</label>
-              <input type="text" id="draftAudience" placeholder="Caseworker, clinician..." />
-            </div>
-          </div>
-          <div class="form-grid" style="margin-top: 14px;">
-            <div>
-              <label for="draftBody">Body</label>
-              <textarea id="draftBody" placeholder="Paste or write the current draft here."></textarea>
-            </div>
-            <div class="inline-actions">
-              <button class="btn primary" id="addDraftBtn">Add draft</button>
-            </div>
-            <div class="field-error" id="draftError">Title and body are required.</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>Draft register</h3>
-          <div class="list" id="draftList"></div>
-        </div>
-      </section>
-
-      <section class="panel" id="drivePanel">
-        <div class="card" style="margin-bottom: 16px;">
-          <h3>Patient Zero integration</h3>
-          <p class="muted small" style="margin: 0 0 12px;">
-            Connect your Google Drive to import case materials. Your chatbot will reference these files.
+          <h3>Quick Start</h3>
+          <p style="color: var(--muted); font-size: 14px; margin: 0;">
+            Use the sidebar to navigate case information. Chat with Libby on the right for real-time assistance.
           </p>
-          <div class="inline-actions">
-            <button class="btn primary" id="authDriveBtn">Authorize Google Drive</button>
-            <span class="muted small" id="driveAuthStatus">Not authorized</span>
-          </div>
         </div>
 
         <div class="card">
-          <h3>Patient Zero files</h3>
-          <div class="list" id="patientZeroList"></div>
-          <div class="empty" id="patientZeroEmpty">No Patient Zero context loaded yet. Authorize Drive access to begin.</div>
+          <h3>Recent Activity</h3>
+          <div id="activityLog" style="font-size: 13px; color: var(--muted);">
+            <div>—</div>
+          </div>
         </div>
       </section>
 
-      <section class="panel" id="chatPanel">
-        <div class="card" style="margin-bottom: 16px;">
-          <h3>Chat configuration</h3>
-          <div class="form-grid two">
-            <div>
-              <label for="chatModel">Model</label>
-              <input type="text" id="chatModel" value="openrouter/auto" placeholder="openrouter/auto" />
-            </div>
-            <div>
-              <label for="chatAudience">Audience</label>
-              <select id="chatAudience">
-                <option value="">General</option>
-                <option value="worker">Support Worker</option>
-                <option value="legal">Legal</option>
-                <option value="medical">Medical</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
+      <!-- SITUATION -->
+      <section id="situation" class="content-section hidden">
         <div class="card">
-          <h3>Chat with Libby</h3>
-          <div class="chat-log" id="chatLog"></div>
-          <div class="chat-send-row">
-            <textarea id="chatInput" placeholder="Ask Libby..."></textarea>
-            <button id="sendChatBtn" class="btn primary">Send</button>
+          <h3>Case Situation</h3>
+          <div class="form-group">
+            <label>Medical History & Current Status</label>
+            <textarea id="caseSituation" placeholder="Document the patient's medical situation, diagnoses, and current status..."></textarea>
           </div>
-          <div class="chat-hint" id="chatHint">Chat includes your case overview, evidence, and Patient Zero files as context.</div>
+          <div class="form-group">
+            <label>Current Goals & Advocacy Focus</label>
+            <textarea id="caseGoals" placeholder="What are we trying to achieve for this case?"></textarea>
+          </div>
         </div>
       </section>
 
-      <section class="panel" id="settingsPanel">
-        <div class="layout-2">
-          <div class="stack">
-            <div class="card">
-              <h3>Runtime settings</h3>
-              <div class="form-grid">
-                <div>
-                  <label>App version</label>
-                  <input type="text" value="v2.03.0-claude-oauth" disabled />
-                </div>
-                <div>
-                  <label>Supabase URL</label>
-                  <input type="text" value="https://mhgqfjcxpdtpzzrzadff.supabase.co" disabled />
-                </div>
-                <div>
-                  <label>Chat function</label>
-                  <input type="text" value="/.netlify/functions/chat" disabled />
-                </div>
-                <div>
-                  <label>Drive auth</label>
-                  <input type="text" id="settingsDriveStatus" value="Not authorized" disabled />
-                </div>
-              </div>
-            </div>
-
-            <div class="card">
-              <h3>Workspace data</h3>
-              <div class="inline-actions">
-                <button class="btn" id="downloadBackupBtn">Download backup</button>
-                <button class="btn danger" id="resetWorkspaceBtn">Reset workspace</button>
-              </div>
-              <div class="footer-note">
-                Reset clears browser data only. Does not touch Supabase or Drive authorization.
-              </div>
+      <!-- EVIDENCE -->
+      <section id="evidence" class="content-section hidden">
+        <div class="card">
+          <h3>Evidence & Documentation</h3>
+          <p style="color: var(--muted); font-size: 13px; margin: 0 0 16px;">
+            Key documents, records, and corroborating evidence for this case.
+          </p>
+          <div id="evidenceList" style="display: grid; gap: 10px;">
+            <div style="padding: 12px; background: rgba(255,255,255,.02); border: 1px solid var(--line); border-radius: 8px; font-size: 13px; color: var(--muted);">
+              No evidence items yet. Add via chat or sidebar.
             </div>
           </div>
+        </div>
+      </section>
 
-          <div class="card">
-            <h3>Implementation notes</h3>
-            <div class="list">
-              <div class="item">
-                <strong>Drive integration</strong>
-                <div class="muted small">Click "Authorize Google Drive" to grant OAuth access. Your case files are pulled into Patient Zero layer.</div>
-              </div>
-              <div class="item">
-                <strong>Chat</strong>
-                <div class="muted small">Posts to /.netlify/functions/chat. OpenRouter called server-side. Patient Zero files injected as context.</div>
-              </div>
-              <div class="item">
-                <strong>Auth</strong>
-                <div class="muted small">GitHub sign-in via Supabase OAuth. Google Drive via standard OAuth consent screen.</div>
-              </div>
+      <!-- CONTACTS -->
+      <section id="contacts" class="content-section hidden">
+        <div class="card">
+          <h3>Relevant Contacts & Organizations</h3>
+          <p style="color: var(--muted); font-size: 13px; margin: 0 0 16px;">
+            Healthcare providers, government agencies, legal contacts, and support services.
+          </p>
+          <div id="contactsList" style="display: grid; gap: 10px;">
+            <div style="padding: 12px; background: rgba(255,255,255,.02); border: 1px solid var(--line); border-radius: 8px; font-size: 13px; color: var(--muted);">
+              No contacts yet. Add via chat or sidebar.
             </div>
           </div>
         </div>
       </section>
     </main>
-  </div>
 
-  <!-- Role-aware login modal -->
-  <div id="loginModal" style="
-    display:none; position:fixed; inset:0; z-index:9999;
-    background:rgba(7,12,26,.88); backdrop-filter:blur(12px);
-    align-items:center; justify-content:center;
-  ">
-    <div style="
-      background:linear-gradient(180deg,#111831 0%,#0b1020 100%);
-      border:1px solid #2a396d; border-radius:20px;
-      padding:36px; width:100%; max-width:420px; box-shadow:0 24px 60px rgba(0,0,0,.5);
-    ">
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:28px;">
-        <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#7ba5ff,#446fe0);display:grid;place-items:center;font-weight:800;font-size:18px;">L</div>
-        <div>
-          <div style="font-size:18px;font-weight:700;">Libby Live</div>
-          <div style="font-size:12px;color:#a7b0d6;">NATICO Case Portal</div>
-        </div>
+    <!-- CHAT SIDEBAR -->
+    <div class="chat-sidebar">
+      <div class="chat-header">
+        <h3>🤖 Libby</h3>
       </div>
 
-      <div style="margin-bottom:20px;">
-        <label style="display:block;font-size:13px;color:#a7b0d6;margin-bottom:8px;">Sign in as</label>
-        <div style="display:grid;gap:10px;">
-          <button class="role-btn" data-role="admin" data-userid="libby" style="
-            border:1px solid #2a396d;background:rgba(117,167,255,.08);color:#eef2ff;
-            padding:14px 16px;border-radius:14px;cursor:pointer;text-align:left;
-            transition:border-color .15s,background .15s;
-          ">
-            <div style="font-weight:600;margin-bottom:3px;">Admin — Libby</div>
-            <div style="font-size:12px;color:#a7b0d6;">Full portal access, all cases</div>
-          </button>
-          <button class="role-btn" data-role="patient_zero" data-userid="mattherbert01" style="
-            border:1px solid #2a396d;background:rgba(117,167,255,.08);color:#eef2ff;
-            padding:14px 16px;border-radius:14px;cursor:pointer;text-align:left;
-            transition:border-color .15s,background .15s;
-          ">
-            <div style="font-weight:600;margin-bottom:3px;">Patient Zero — Matt Herbert</div>
-            <div style="font-size:12px;color:#a7b0d6;">user ID: mattherbert01 (001)</div>
-          </button>
-        </div>
-      </div>
+      <div class="chat-messages" id="chatMessages"></div>
 
-      <div style="border-top:1px solid #2a396d;padding-top:18px;margin-top:6px;">
-        <label style="display:block;font-size:13px;color:#a7b0d6;margin-bottom:8px;">Or sign in with GitHub via Supabase</label>
-        <button id="githubSigninBtn" style="
-          width:100%;border:1px solid #2a396d;background:rgba(255,255,255,.04);
-          color:#eef2ff;padding:12px;border-radius:12px;cursor:pointer;font-size:14px;
-        ">Continue with GitHub</button>
+      <div class="chat-input-area">
+        <textarea id="messageInput" class="chat-input" placeholder="Ask Libby..." maxlength="500"></textarea>
+        <div class="chat-input-row">
+          <button id="sendBtn" class="btn" style="flex: 1;">Send</button>
+        </div>
+        <div id="chatStatus" style="font-size: 11px; color: var(--muted); text-align: center;">Ready</div>
       </div>
     </div>
   </div>
 
   <script>
-    const APP_VERSION = "v2.03.0-claude-oauth";
-    const STORAGE_KEY = "libby_live_workspace_v2_03";
-    const SUPABASE_URL = "https://mhgqfjcxpdtpzzrzadff.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_q5t-hevjQqW2danKUR9h-w_5edrG3uJ";
-
-    const defaultState = () => ({
-      version: APP_VERSION,
-      buildMode: "live",
-      profile: {
-        situation: "",
-        diagnoses: "",
-        realities: "",
-        truths: ""
-      },
-      evidence: [],
-      drafts: [],
-      patientZero: [],
-      driveAuthToken: null,
-      driveFolderId: "1gcaYvxHoz_anlWEsq0KsLk_7IYYJCAcK",
-      activity: [{
-        id: crypto.randomUUID(),
-        text: "Workspace initialized - v2.03.0-claude-oauth",
-        ts: new Date().toISOString()
-      }],
-      chat: []
-    });
+    const APP_VERSION = "v2.04.0";
+    const STORAGE_KEY = "libby_live_v2_04";
 
     let state = loadState();
-    let supabase = null;
-    let sessionUser = null;
-    let activeUserId = state.activeUserId || null;
-    let activeRole = state.activeRole || null;
+    let currentSection = "overview";
 
-    const el = {
-      navButtons: [...document.querySelectorAll(".nav button")],
-      panels: [...document.querySelectorAll(".panel")],
-      versionChip: document.getElementById("versionChip"),
-      buildModeLabel: document.getElementById("buildModeLabel"),
-      sessionStatus: document.getElementById("sessionStatus"),
-      supabaseStatus: document.getElementById("supabaseStatus"),
-      roleLabel: document.getElementById("roleLabel"),
-      userIdLabel: document.getElementById("userIdLabel"),
-      knowledgeStatus: document.getElementById("knowledgeStatus"),
-      loginModal: document.getElementById("loginModal"),
-      saveLocalBtn: document.getElementById("saveLocalBtn"),
-      exportBtn: document.getElementById("exportBtn"),
-      importJsonInput: document.getElementById("importJsonInput"),
-      connectDriveBtn: document.getElementById("connectDriveBtn"),
-      signinBtn: document.getElementById("signinBtn"),
-      signoutBtn: document.getElementById("signoutBtn"),
-      statEvidence: document.getElementById("statEvidence"),
-      statDrafts: document.getElementById("statDrafts"),
-      statPatientZero: document.getElementById("statPatientZero"),
-      statChat: document.getElementById("statChat"),
-      caseSituation: document.getElementById("caseSituation"),
-      caseDiagnoses: document.getElementById("caseDiagnoses"),
-      caseRealities: document.getElementById("caseRealities"),
-      caseTruths: document.getElementById("caseTruths"),
-      activityLog: document.getElementById("activityLog"),
-      authPill: document.getElementById("authPill"),
-      chatPill: document.getElementById("chatPill"),
-      drivePill: document.getElementById("drivePill"),
-      evidenceTitle: document.getElementById("evidenceTitle"),
-      evidenceType: document.getElementById("evidenceType"),
-      evidenceSummary: document.getElementById("evidenceSummary"),
-      evidenceError: document.getElementById("evidenceError"),
-      addEvidenceBtn: document.getElementById("addEvidenceBtn"),
-      evidenceList: document.getElementById("evidenceList"),
-      draftTitle: document.getElementById("draftTitle"),
-      draftAudience: document.getElementById("draftAudience"),
-      draftBody: document.getElementById("draftBody"),
-      draftError: document.getElementById("draftError"),
-      addDraftBtn: document.getElementById("addDraftBtn"),
-      draftList: document.getElementById("draftList"),
-      authDriveBtn: document.getElementById("authDriveBtn"),
-      driveAuthStatus: document.getElementById("driveAuthStatus"),
-      patientZeroList: document.getElementById("patientZeroList"),
-      patientZeroEmpty: document.getElementById("patientZeroEmpty"),
-      chatModel: document.getElementById("chatModel"),
-      chatAudience: document.getElementById("chatAudience"),
-      chatLog: document.getElementById("chatLog"),
-      chatInput: document.getElementById("chatInput"),
-      sendChatBtn: document.getElementById("sendChatBtn"),
-      downloadBackupBtn: document.getElementById("downloadBackupBtn"),
-      resetWorkspaceBtn: document.getElementById("resetWorkspaceBtn"),
-      settingsDriveStatus: document.getElementById("settingsDriveStatus")
-    };
-
-    init();
-
-    function init() {
-      wireNavigation();
-      wireLoginModal();
-      hydrateFormFields();
-      wireInputs();
-      wireActions();
-      wireChatKeyboard();
-      initializeSupabase();
-      renderAll();
-    }
-
-    function wireLoginModal() {
-      el.signinBtn.addEventListener("click", () => {
-        el.loginModal.style.display = "flex";
-      });
-
-      document.querySelectorAll(".role-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const role = btn.dataset.role;
-          const userId = btn.dataset.userid;
-          activeRole = role;
-          activeUserId = userId;
-          state.activeRole = role;
-          state.activeUserId = userId;
-          saveState();
-          el.loginModal.style.display = "none";
-          stampActivity(`Signed in as ${userId} (${role})`);
-          renderAll();
-        });
-      });
-
-      document.getElementById("githubSigninBtn").addEventListener("click", signInWithGitHub);
-
-      el.loginModal.addEventListener("click", e => {
-        if (e.target === el.loginModal) el.loginModal.style.display = "none";
-      });
+    function defaultState() {
+      return {
+        version: APP_VERSION,
+        activeUser: "mattherbert01",
+        activeRole: "Advocate",
+        situation: "",
+        goals: "",
+        evidence: [],
+        contacts: [],
+        chatMessages: [],
+        activity: [{ ts: new Date().toISOString(), text: "Libby Live v2.04.0 initialized" }]
+      };
     }
 
     function loadState() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return defaultState();
-        const parsed = JSON.parse(raw);
-        return {
-          ...defaultState(),
-          ...parsed,
-          profile: { ...defaultState().profile, ...(parsed.profile || {}) },
-          evidence: Array.isArray(parsed.evidence) ? parsed.evidence : [],
-          drafts: Array.isArray(parsed.drafts) ? parsed.drafts : [],
-          patientZero: Array.isArray(parsed.patientZero) ? parsed.patientZero : [],
-          activity: Array.isArray(parsed.activity) && parsed.activity.length ? parsed.activity : defaultState().activity,
-          chat: Array.isArray(parsed.chat) ? parsed.chat : []
-        };
+        return raw ? JSON.parse(raw) : defaultState();
       } catch {
         return defaultState();
       }
     }
 
     function saveState() {
-      state.version = APP_VERSION;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      renderAll();
     }
 
-    function stampActivity(text) {
-      state.activity.unshift({
-        id: crypto.randomUUID(),
-        text,
-        ts: new Date().toISOString()
-      });
-      state.activity = state.activity.slice(0, 50);
-    }
-
-    function wireNavigation() {
-      el.navButtons.forEach(btn => {
-        btn.addEventListener("click", () => {
-          el.navButtons.forEach(x => x.classList.remove("active"));
-          btn.classList.add("active");
-          const target = btn.dataset.target;
-          el.panels.forEach(panel => panel.classList.toggle("active", panel.id === target));
-        });
-      });
-    }
-
-    function wireChatKeyboard() {
-      el.chatInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          sendChat();
-        }
+    function render() {
+      // Update visible content section
+      document.querySelectorAll(".content-section").forEach(el => {
+        el.classList.toggle("hidden", el.id !== currentSection);
       });
 
-      el.chatInput.addEventListener("input", () => {
-        el.chatInput.style.height = "auto";
-        el.chatInput.style.height = Math.min(el.chatInput.scrollHeight, 180) + "px";
-      });
-    }
+      // Update section title
+      const titles = { overview: "📊 Overview", situation: "📋 Situation", evidence: "🔍 Evidence", contacts: "👥 Contacts" };
+      const descs = {
+        overview: "Case advocacy dashboard and intake system",
+        situation: "Medical and advocacy information for this case",
+        evidence: "Documentation, records, and supporting evidence",
+        contacts: "Healthcare, government, and support contacts"
+      };
+      document.getElementById("sectionTitle").textContent = titles[currentSection];
+      document.getElementById("sectionDesc").textContent = descs[currentSection];
 
-    function wireInputs() {
-      [["caseSituation", "situation"], ["caseDiagnoses", "diagnoses"], ["caseRealities", "realities"], ["caseTruths", "truths"]].forEach(([key, field]) => {
-        el[key].addEventListener("input", () => {
-          state.profile[field] = el[key].value;
-          saveState();
-        });
-      });
-    }
-
-    function wireActions() {
-      el.saveLocalBtn.addEventListener("click", () => {
-        stampActivity("Local workspace saved");
-        saveState();
+      // Update nav buttons
+      document.querySelectorAll(".nav button").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.section === currentSection);
       });
 
-      el.exportBtn.addEventListener("click", downloadBackup);
-      el.downloadBackupBtn.addEventListener("click", downloadBackup);
-      el.importJsonInput.addEventListener("change", handleImportJson);
-      el.addEvidenceBtn.addEventListener("click", addEvidence);
-      el.addDraftBtn.addEventListener("click", addDraft);
-      el.authDriveBtn.addEventListener("click", authDrive);
-      el.sendChatBtn.addEventListener("click", sendChat);
-      el.resetWorkspaceBtn.addEventListener("click", () => {
-        if (!confirm("Reset this browser workspace?")) return;
-        state = defaultState();
-        hydrateFormFields();
-        stampActivity("Workspace reset");
-        saveState();
-      });
-
-      el.signinBtn.addEventListener("click", signInWithGitHub);
-      el.signoutBtn.addEventListener("click", signOut);
-      el.connectDriveBtn.addEventListener("click", authDrive);
-    }
-
-    function hydrateFormFields() {
-      el.versionChip.textContent = APP_VERSION;
-      el.buildModeLabel.textContent = state.buildMode || "live";
-      el.caseSituation.value = state.profile.situation || "";
-      el.caseDiagnoses.value = state.profile.diagnoses || "";
-      el.caseRealities.value = state.profile.realities || "";
-      el.caseTruths.value = state.profile.truths || "";
-      el.chatModel.value = state.chatModel || "openrouter/auto";
-    }
-
-    function renderAll() {
-      renderStats();
-      renderActivity();
-      renderEvidence();
-      renderDrafts();
-      renderPatientZero();
-      renderChat();
-      renderAuthState();
-      updateDriveStatus();
-    }
-
-    function renderStats() {
-      el.statEvidence.textContent = state.evidence.length;
-      el.statDrafts.textContent = state.drafts.length;
-      el.statPatientZero.textContent = state.patientZero.length;
-      el.statChat.textContent = state.chat.length;
-    }
-
-    function renderActivity() {
-      if (!state.activity.length) {
-        el.activityLog.innerHTML = '<div class="empty">No activity yet.</div>';
-        return;
-      }
-      el.activityLog.innerHTML = state.activity.map(entry => `
-        <div class="activity-entry">
-          <div>${escapeHtml(entry.text)}</div>
-          <div class="muted small" style="margin-top:6px;">${new Date(entry.ts).toLocaleString()}</div>
+      // Render chat
+      const chatEl = document.getElementById("chatMessages");
+      chatEl.innerHTML = state.chatMessages.map(msg => `
+        <div class="message ${msg.role === 'bot' ? 'bot' : ''}">
+          <strong>${msg.role === 'bot' ? 'Libby' : 'You'}:</strong><br/>
+          ${msg.text}
         </div>
       `).join("");
+      chatEl.scrollTop = chatEl.scrollHeight;
+
+      // Restore form values
+      const caseSituation = document.getElementById("caseSituation");
+      if (caseSituation) caseSituation.value = state.situation || "";
     }
 
-    function renderEvidence() {
-      if (!state.evidence.length) {
-        el.evidenceList.innerHTML = '<div class="empty">No evidence items yet.</div>';
-        return;
-      }
-
-      el.evidenceList.innerHTML = state.evidence.map(item => `
-        <div class="item">
-          <div class="item-head">
-            <div>
-              <strong>${escapeHtml(item.title)}</strong>
-              <div class="muted small">${escapeHtml(item.type || "Unspecified")}</div>
-            </div>
-            <div class="item-actions">
-              <button class="mini" onclick="removeEvidence('${item.id}')">Delete</button>
-            </div>
-          </div>
-          <div>${escapeHtml(item.summary)}</div>
-          <div class="muted small" style="margin-top:8px;">Added ${new Date(item.ts).toLocaleString()}</div>
-        </div>
-      `).join("");
-    }
-
-    function renderDrafts() {
-      if (!state.drafts.length) {
-        el.draftList.innerHTML = '<div class="empty">No drafts yet.</div>';
-        return;
-      }
-
-      el.draftList.innerHTML = state.drafts.map(item => `
-        <div class="item">
-          <div class="item-head">
-            <div>
-              <strong>${escapeHtml(item.title)}</strong>
-              <div class="muted small">${escapeHtml(item.audience || "General")}</div>
-            </div>
-            <div class="item-actions">
-              <button class="mini" onclick="copyDraft('${item.id}')">Copy</button>
-              <button class="mini" onclick="removeDraft('${item.id}')">Delete</button>
-            </div>
-          </div>
-          <div>${escapeHtml(truncate(item.body, 280))}</div>
-          <div class="muted small" style="margin-top:8px;">Saved ${new Date(item.ts).toLocaleString()}</div>
-        </div>
-      `).join("");
-    }
-
-    function renderPatientZero() {
-      if (!state.patientZero.length) {
-        el.patientZeroList.innerHTML = '';
-        el.patientZeroEmpty.style.display = 'block';
-        return;
-      }
-
-      el.patientZeroEmpty.style.display = 'none';
-      el.patientZeroList.innerHTML = state.patientZero.map(item => `
-        <div class="item">
-          <div class="item-head">
-            <div>
-              <strong>${escapeHtml(item.name)}</strong>
-              <div class="muted small">${escapeHtml(item.type || "File")}</div>
-            </div>
-          </div>
-          <div class="muted small">${escapeHtml(truncate(item.content || '', 200))}</div>
-        </div>
-      `).join("");
-    }
-
-    function renderChat() {
-      if (!state.chat.length) {
-        el.chatLog.innerHTML = '<div class="empty">No chat yet. Ask Libby to help organize your case.</div>';
-        return;
-      }
-
-      el.chatLog.innerHTML = state.chat.map(msg => `
-        <div class="chat-msg ${msg.role === "user" ? "user" : ""}">
-          <div class="chat-meta">
-            <span>${msg.role === "user" ? "You" : "Libby"}</span>
-            <span>${new Date(msg.ts).toLocaleString()}</span>
-          </div>
-          <div>${escapeHtml(msg.content)}</div>
-        </div>
-      `).join("");
-      el.chatLog.scrollTop = el.chatLog.scrollHeight;
-    }
-
-    function renderAuthState() {
-      const signedIn = !!sessionUser || !!activeUserId;
-      el.sessionStatus.textContent = sessionUser
-        ? (sessionUser.email || sessionUser.id)
-        : activeUserId
-        ? activeUserId
-        : "Guest mode";
-      el.authPill.className = signedIn ? "pill ok" : "pill warn";
-      el.authPill.textContent = signedIn ? "Auth: signed in" : "Auth: guest";
-      el.signinBtn.classList.toggle("hidden", signedIn);
-      el.signoutBtn.classList.toggle("hidden", !signedIn);
-      el.roleLabel.textContent = activeRole || (sessionUser ? "github" : "—");
-      el.userIdLabel.textContent = activeUserId || (sessionUser ? sessionUser.email : "—");
-    }
-
-    function updateDriveStatus() {
-      const hasToken = !!state.driveAuthToken;
-      el.drivePill.className = hasToken ? "pill ok" : "pill warn";
-      el.drivePill.textContent = hasToken ? "Drive: authorized" : "Drive: not authorized";
-      el.driveAuthStatus.textContent = hasToken ? "Authorized" : "Not authorized";
-      el.settingsDriveStatus.value = hasToken ? "Authorized" : "Not authorized";
-      el.driveSidebarStatus.textContent = hasToken ? "Authorized" : "Authorize in Drive tab";
-    }
-
-    function checkDriveAuth() {
-      if (state.driveAuthToken) {
-        stampActivity("Drive already authorized");
-      }
-    }
-
-    function authDrive() {
-      alert("Drive OAuth setup requires server-side configuration. Click 'Connect Drive' in toolbar to initiate authorization.");
-    }
-
-    function showFieldError(errorEl, show) {
-      if (show) {
-        errorEl.classList.add("visible");
-        setTimeout(() => errorEl.classList.remove("visible"), 4000);
-      } else {
-        errorEl.classList.remove("visible");
-      }
-    }
-
-    function addEvidence() {
-      const title = el.evidenceTitle.value.trim();
-      const type = el.evidenceType.value.trim();
-      const summary = el.evidenceSummary.value.trim();
-      if (!title || !summary) {
-        showFieldError(el.evidenceError, true);
-        return;
-      }
-
-      showFieldError(el.evidenceError, false);
-      state.evidence.unshift({
-        id: crypto.randomUUID(),
-        title,
-        type,
-        summary,
-        ts: new Date().toISOString()
-      });
-
-      el.evidenceTitle.value = "";
-      el.evidenceType.value = "";
-      el.evidenceSummary.value = "";
-      stampActivity(`Evidence added: ${title}`);
+    function addChatMessage(text, role = "user") {
+      state.chatMessages.push({ text, role, ts: new Date().toISOString() });
+      state.chatMessages = state.chatMessages.slice(-20);
       saveState();
+      render();
     }
 
-    function addDraft() {
-      const title = el.draftTitle.value.trim();
-      const audience = el.draftAudience.value.trim();
-      const body = el.draftBody.value.trim();
-      if (!title || !body) {
-        showFieldError(el.draftError, true);
-        return;
-      }
+    async function sendMessage() {
+      const input = document.getElementById("messageInput");
+      const text = input.value.trim();
+      if (!text) return;
 
-      showFieldError(el.draftError, false);
-      state.drafts.unshift({
-        id: crypto.randomUUID(),
-        title,
-        audience,
-        body,
-        ts: new Date().toISOString()
-      });
+      addChatMessage(text, "user");
+      input.value = "";
 
-      el.draftTitle.value = "";
-      el.draftAudience.value = "";
-      el.draftBody.value = "";
-      stampActivity(`Draft added: ${title}`);
-      saveState();
-    }
-
-    async function initializeSupabase() {
-      try {
-        if (!window.supabase || !window.supabase.createClient) {
-          el.supabaseStatus.textContent = "Library failed";
-          return;
-        }
-
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-          auth: {
-            persistSession: true,
-            autoRefreshToken: true,
-            detectSessionInUrl: true
-          }
-        });
-
-        el.supabaseStatus.textContent = "Connected";
-        const { data } = await supabase.auth.getSession();
-        sessionUser = data?.session?.user || null;
-        renderAuthState();
-
-        supabase.auth.onAuthStateChange((_event, session) => {
-          sessionUser = session?.user || null;
-          renderAuthState();
-        });
-      } catch (error) {
-        console.error(error);
-        el.supabaseStatus.textContent = "Failed";
-      }
-    }
-
-    async function signInWithGitHub() {
-      if (!supabase) {
-        alert("Supabase is not ready yet.");
-        return;
-      }
+      document.getElementById("chatStatus").textContent = "Thinking...";
 
       try {
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: "github",
-          options: {
-            redirectTo: window.location.href
-          }
-        });
-        if (error) throw error;
-      } catch (error) {
-        console.error(error);
-        alert(`Sign-in failed: ${error.message}`);
-      }
-    }
-
-    async function signOut() {
-      activeUserId = null;
-      activeRole = null;
-      state.activeUserId = null;
-      state.activeRole = null;
-      stampActivity("Signed out");
-
-      if (supabase) {
-        const { error } = await supabase.auth.signOut();
-        if (error) console.error("Supabase signout error:", error.message);
-      }
-
-      saveState();
-    }
-
-    async function sendChat() {
-      const content = el.chatInput.value.trim();
-      if (!content) return;
-
-      const model = el.chatModel.value.trim() || "openrouter/auto";
-      const audience = el.chatAudience.value;
-      const context = buildChatContext();
-
-      state.chat.push({
-        id: crypto.randomUUID(),
-        role: "user",
-        content,
-        ts: new Date().toISOString()
-      });
-      el.chatInput.value = "";
-      el.chatInput.style.height = "auto";
-      renderChat();
-
-      el.sendChatBtn.disabled = true;
-      el.chatPill.className = "pill warn";
-      el.chatPill.textContent = "Chat: sending...";
-
-      try {
-        const response = await fetch("/.netlify/functions/chat", {
+        const response = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            model,
-            audience,
-            userId: activeUserId || (sessionUser ? sessionUser.id : "patient_zero"),
-            context,
-            messages: [...state.chat.slice(-8).map(m => ({ role: m.role, content: m.content }))]
+            userId: state.activeUser,
+            messages: state.chatMessages.map(m => ({ role: m.role, content: m.text })),
+            context: { situation: state.situation }
           })
         });
 
-        const payload = await response.json().catch(() => ({}));
-
-        if (!response.ok) {
-          throw new Error(payload.error || "Chat request failed");
-        }
-
-        const reply = payload.reply || "No response returned.";
-        state.chat.push({
-          id: crypto.randomUUID(),
-          role: "assistant",
-          content: reply,
-          ts: new Date().toISOString()
-        });
-
-        stampActivity(`Chat response received`);
-        el.chatPill.className = "pill ok";
-        el.chatPill.textContent = "Chat: ready";
-        if (el.knowledgeStatus) {
-          el.knowledgeStatus.textContent = payload.knowledge_loaded ? "Loaded" : "Not found";
-        }
-        saveState();
-      } catch (error) {
-        console.error(error);
-        state.chat.push({
-          id: crypto.randomUUID(),
-          role: "assistant",
-          content: `Error: ${error.message}`,
-          ts: new Date().toISOString()
-        });
-        el.chatPill.className = "pill danger";
-        el.chatPill.textContent = "Chat: error";
-        saveState();
-      } finally {
-        el.sendChatBtn.disabled = false;
-        el.chatInput.focus();
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        addChatMessage(data.reply || "I'm unable to respond right now.", "bot");
+      } catch (err) {
+        addChatMessage(`Error: ${err.message}. (Check that libby-local-server is running.)`, "bot");
       }
+
+      document.getElementById("chatStatus").textContent = "Ready";
     }
 
-    function buildChatContext() {
-      return {
-        version: APP_VERSION,
-        user: sessionUser ? { id: sessionUser.id, email: sessionUser.email || null } : null,
-        profile: state.profile,
-        evidenceCount: state.evidence.length,
-        draftCount: state.drafts.length,
-        patientZeroCount: state.patientZero.length,
-        latestEvidence: state.evidence.slice(0, 5),
-        latestDrafts: state.drafts.slice(0, 3),
-        patientZeroContext: state.patientZero.slice(0, 10)
-      };
-    }
+    // Wire nav
+    document.querySelectorAll(".nav button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        currentSection = btn.dataset.section;
+        render();
+      });
+    });
 
-    function downloadBackup() {
-      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `libby_live_backup_${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
-      link.click();
-      URL.revokeObjectURL(url);
-      stampActivity("Workspace backup exported");
-      saveState();
-    }
-
-    async function handleImportJson(event) {
-      const file = event.target.files?.[0];
-      if (!file) return;
-
-      try {
-        const text = await file.text();
-        const parsed = JSON.parse(text);
-        state = {
-          ...defaultState(),
-          ...parsed,
-          profile: { ...defaultState().profile, ...(parsed.profile || {}) },
-          evidence: Array.isArray(parsed.evidence) ? parsed.evidence : [],
-          drafts: Array.isArray(parsed.drafts) ? parsed.drafts : [],
-          patientZero: Array.isArray(parsed.patientZero) ? parsed.patientZero : [],
-          activity: Array.isArray(parsed.activity) ? parsed.activity : []
-        };
-        stampActivity(`Workspace imported from ${file.name}`);
-        hydrateFormFields();
-        saveState();
-      } catch (error) {
-        alert(`Import failed: ${error.message}`);
-      } finally {
-        el.importJsonInput.value = "";
+    // Wire chat
+    document.getElementById("sendBtn").addEventListener("click", sendMessage);
+    document.getElementById("messageInput").addEventListener("keydown", e => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
       }
-    }
+    });
 
-    function truncate(text, max) {
-      return text && text.length > max ? `${text.slice(0, max - 1)}…` : text;
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;")
-        .replaceAll("\n", "<br />");
-    }
-
-    window.removeEvidence = function(id) {
-      state.evidence = state.evidence.filter(item => item.id !== id);
-      stampActivity("Evidence item removed");
+    // Wire form inputs
+    document.getElementById("caseSituation")?.addEventListener("input", e => {
+      state.situation = e.target.value;
       saveState();
-    };
+    });
 
-    window.removeDraft = function(id) {
-      state.drafts = state.drafts.filter(item => item.id !== id);
-      stampActivity("Draft removed");
-      saveState();
-    };
-
-    window.copyDraft = async function(id) {
-      const draft = state.drafts.find(item => item.id === id);
-      if (!draft) return;
-      await navigator.clipboard.writeText(draft.body);
-      stampActivity(`Draft copied: ${draft.title}`);
-      saveState();
-    };
+    // Initial render
+    render();
+    addChatMessage("Hi, I'm Libby. I can help you navigate this case. What do you need assistance with?", "bot");
   </script>
 </body>
 </html>
