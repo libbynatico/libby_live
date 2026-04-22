@@ -680,6 +680,7 @@
             <span>Meeting: April 22, 2026</span>
           </div>
         </div>
+        <button class="btn-small" id="sync-button" onclick="syncGmailDrive()" title="Auto-sync meetings, contacts, documents from Gmail & Drive">🔄 Sync</button>
       </div>
 
       <div class="tabs">
@@ -1727,6 +1728,71 @@
 
     // Load real case data
     loadCaseData();
+
+    // GMAIL/DRIVE AUTO-SYNC
+    window.syncGmailDrive = async function() {
+      const syncButton = document.getElementById('sync-button');
+      syncButton.disabled = true;
+      syncButton.textContent = '⏳ Syncing...';
+
+      try {
+        // First check if authenticated
+        const authRes = await fetch('/.netlify/functions/gmail-drive-sync?action=sync');
+        const authData = await authRes.json();
+
+        if (!authRes.ok) {
+          // Not authenticated - show auth link
+          const authUrlRes = await fetch('/.netlify/functions/gmail-drive-sync?action=auth');
+          const { authUrl } = await authUrlRes.json();
+
+          addMessage('System: Click to connect Gmail & Drive: ' + authUrl, 'system');
+          window.open(authUrl, '_blank');
+          syncButton.textContent = '🔄 Sync';
+          syncButton.disabled = false;
+          return;
+        }
+
+        // Authenticated - perform sync
+        const syncRes = await fetch('/.netlify/functions/gmail-drive-sync?action=sync');
+        const syncData = await syncRes.json();
+
+        if (syncRes.ok) {
+          // Update case data with synced results
+          const caseInfo = syncData.caseData;
+          updateUIWithCaseData(caseInfo);
+
+          // Rebuild meetings from synced data
+          upcomingMeetings = {};
+          caseInfo.upcomingMeetings.forEach(meeting => {
+            upcomingMeetings[meeting.id] = {
+              ...meeting,
+              briefingPoints: generateBriefingPoints(caseInfo, meeting.matter),
+              talkingPoints: generateTalkingPoints(caseInfo, meeting.matter),
+              templates: selectTemplatesForMeeting(meeting.matter)
+            };
+          });
+
+          addMessage(
+            `System: Synced from Gmail & Drive: ${syncData.synced.meetings} meetings, ${syncData.synced.contacts} contacts, ${syncData.synced.documents} documents`,
+            'system'
+          );
+
+          syncButton.textContent = '✓ Synced';
+          setTimeout(() => {
+            syncButton.textContent = '🔄 Sync';
+            syncButton.disabled = false;
+          }, 2000);
+        } else {
+          addMessage('System: Sync failed: ' + authData.error, 'system');
+          syncButton.textContent = '🔄 Sync';
+          syncButton.disabled = false;
+        }
+      } catch (error) {
+        addMessage('System: Sync error: ' + error.message, 'system');
+        syncButton.textContent = '🔄 Sync';
+        syncButton.disabled = false;
+      }
+    };
   </script>
 </body>
 </html>
