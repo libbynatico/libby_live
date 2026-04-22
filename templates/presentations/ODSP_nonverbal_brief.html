@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ODSP Case Brief — Matthew Herbert</title>
+<style>
+  @page {
+    size: letter;
+    margin: 0.45in;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Arial', sans-serif;
+    font-size: 10pt;
+    color: #1a1a1a;
+    background: #fff;
+  }
+
+  .page {
+    width: 100%;
+    padding: 0.3in;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Header */
+  .doc-header {
+    background: #1a2744;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .doc-header h1 {
+    font-size: 16pt;
+    font-weight: 700;
+  }
+
+  .doc-header .subtitle {
+    font-size: 9pt;
+    color: #a8c0f0;
+    margin-top: 2px;
+  }
+
+  .doc-header .status-badge {
+    background: #42c08c;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 10pt;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* Section title */
+  .section-title {
+    font-size: 8.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #4a6fa5;
+    border-bottom: 1.5px solid #dde3f0;
+    padding-bottom: 3px;
+    margin-bottom: 6px;
+  }
+
+  /* Key dates row */
+  .key-dates {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .date-box {
+    border: 1.5px solid #dde3f0;
+    border-radius: 4px;
+    padding: 7px 8px;
+    text-align: center;
+  }
+
+  .date-box .date-label {
+    font-size: 7.5pt;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .date-box .date-value {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #1a2744;
+    margin-top: 2px;
+    line-height: 1.2;
+  }
+
+  .date-box.highlight {
+    border-color: #42c08c;
+    background: #f0fbf6;
+  }
+
+  .date-box.urgent {
+    border-color: #f2bb5e;
+    background: #fffbf0;
+  }
+
+  /* Medical history table */
+  .history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+  }
+
+  .history-table th {
+    background: #f0f4ff;
+    color: #1a2744;
+    padding: 5px 8px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .history-table td {
+    padding: 5px 8px;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+    line-height: 1.4;
+  }
+
+  .history-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .conf-badge {
+    font-size: 7.5pt;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .conf-confirmed { background: #e8f5e9; color: #2a8a6a; }
+  .conf-inferred { background: #e8eeff; color: #4a6fa5; }
+  .conf-missing { background: #ffeaea; color: #cc3333; }
+
+  /* What I need section */
+  .need-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .need-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 4px;
+    border: 1.5px solid #dde3f0;
+    font-size: 9.5pt;
+    line-height: 1.4;
+  }
+
+  .need-item .need-icon {
+    font-size: 14pt;
+    line-height: 1;
+    min-width: 20px;
+  }
+
+  .need-item .need-text strong {
+    display: block;
+    color: #1a2744;
+    font-size: 9.5pt;
+    margin-bottom: 1px;
+  }
+
+  .need-item .need-text span {
+    font-size: 8.5pt;
+    color: #555;
+  }
+
+  .need-item.primary {
+    border-color: #4a6fa5;
+    background: #f5f7ff;
+  }
+
+  /* Active matters */
+  .matter-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .matter-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 9pt;
+  }
+
+  .matter-active { background: #ffeaea; }
+  .matter-pending { background: #fffbf0; }
+
+  .matter-dot {
+    width: 8px;
+    height: 8px;
+    min-width: 8px;
+    border-radius: 50%;
+  }
+
+  .dot-red { background: #ef6f6f; }
+  .dot-yellow { background: #f2bb5e; }
+  .dot-blue { background: #75a7ff; }
+
+  /* Communication note */
+  .comm-note {
+    background: #fff8e6;
+    border: 1.5px solid #f2bb5e;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 9pt;
+    line-height: 1.5;
+  }
+
+  .comm-note strong {
+    color: #b8860b;
+  }
+
+  /* Footer */
+  .doc-footer {
+    background: #f0f4ff;
+    padding: 7px 12px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 8pt;
+    border: 1px solid #dde3f0;
+  }
+
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  /* Screen view — larger for iPad */
+  @media screen {
+    body { max-width: 9in; margin: 0 auto; padding: 10px; background: #eee; }
+    .page { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 6px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <div>
+      <h1>ODSP Case Brief — Matthew Herbert</h1>
+      <div class="subtitle">Non-verbal briefing document &nbsp;|&nbsp; For caseworker / advocate / meeting use</div>
+    </div>
+    <div class="status-badge">ODSP APPROVED</div>
+  </div>
+
+  <!-- Key dates -->
+  <div>
+    <div class="section-title">Key Dates at a Glance</div>
+    <div class="key-dates">
+      <div class="date-box">
+        <div class="date-label">Disability Onset</div>
+        <div class="date-value">2001<br><span style="font-size:8pt;font-weight:400">TBI, age 12</span></div>
+      </div>
+      <div class="date-box">
+        <div class="date-label">Crisis Admission</div>
+        <div class="date-value">June 2025<br><span style="font-size:8pt;font-weight:400">Cambridge Memorial</span></div>
+      </div>
+      <div class="date-box highlight">
+        <div class="date-label">ODSP Approval</div>
+        <div class="date-value">Dec 3, 2025<br><span style="font-size:8pt;font-weight:400">Formal decision</span></div>
+      </div>
+      <div class="date-box urgent">
+        <div class="date-label">Backdate Sought</div>
+        <div class="date-value">July 2025<br><span style="font-size:8pt;font-weight:400">Effective eligibility</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Medical history -->
+  <div>
+    <div class="section-title">Medical History — Confirmed Timeline</div>
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>Event</th>
+          <th>Ongoing Impact</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>2001</strong></td>
+          <td>Traumatic Brain Injury (TBI) — age 12</td>
+          <td>Memory, processing, photophobia, executive dysfunction</td>
+          <td><span class="conf-badge conf-confirmed">Confirmed</span></td>
+        </tr>
+        <tr>
+          <td><strong>2002</strong></td>
+          <td>Crohn's Disease diagnosis — age 13</td>
+          <td>GI instability, fatigue, nutritional complexity</td>
+          <td><span class="conf-badge conf-confirmed">Confirmed</span></td>
+        </tr>
+        <tr>
+          <td><strong>2013</strong></td>
+          <td>Total proctocolectomy (major bowel surgery)</td>
+          <td>Ostomy supplies $800–$1,100/mo ongoing</td>
+          <td><span class="conf-badge conf-confirmed">Confirmed</span></td>
+        </tr>
+        <tr>
+          <td><strong>2015</strong></td>
+          <td>Permanent ileostomy established</td>
+          <td>Permanent; daily complex management</td>
+          <td><span class="conf-badge conf-confirmed">Confirmed</span></td>
+        </tr>
+        <tr>
+          <td><strong>Jun–Aug 2025</strong></td>
+          <td>43-day hospitalization — Cambridge Memorial Hospital</td>
+          <td>29% body weight loss; structural bowel failure missed</td>
+          <td><span class="conf-badge conf-confirmed">Confirmed</span></td>
+        </tr>
+        <tr>
+          <td><strong>Jan 2026</strong></td>
+          <td>Emergency bowel resection — Juravinski Hospital (Dr. Forbes)</td>
+          <td>Confirmed kinked bowel + hernia (CMH missed)</td>
+          <td><span class="conf-badge conf-confirmed">Confirmed</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- What I need today -->
+  <div>
+    <div class="section-title">What I Need From This Meeting</div>
+    <div class="need-grid">
+      <div class="need-item primary">
+        <div class="need-icon">📋</div>
+        <div class="need-text">
+          <strong>Retroactive Benefits — July 2025</strong>
+          <span>ODSP approved Dec 3, 2025. Seeking benefits backdated to July 2025 per ODSP Directive 2.1 — date of eligibility, not date of approval.</span>
+        </div>
+      </div>
+      <div class="need-item primary">
+        <div class="need-icon">📑</div>
+        <div class="need-text">
+          <strong>Notice of Decision Copy</strong>
+          <span>Need a copy of the formal ODSP Notice of Decision (December 3, 2025) and any documentation of the July 2025 effective date.</span>
+        </div>
+      </div>
+      <div class="need-item">
+        <div class="need-icon">💊</div>
+        <div class="need-text">
+          <strong>Medical Supply Coverage</strong>
+          <span>Ostomy supplies: $800–$1,100/month. Requesting confirmation that ODSP coverage applies and backpay of out-of-pocket costs (July–November 2025).</span>
+        </div>
+      </div>
+      <div class="need-item">
+        <div class="need-icon">📞</div>
+        <div class="need-text">
+          <strong>Written Communication Going Forward</strong>
+          <span>Due to TBI (AODA): all follow-up must be via email or written. Phone communication is unreliable and not accessible. See attached AODA accommodation card.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active matters -->
+  <div>
+    <div class="section-title">Active Advocacy Matters (Context Only — Not for Today's Meeting)</div>
+    <div class="matter-list">
+      <div class="matter-item matter-active">
+        <div class="matter-dot dot-red"></div>
+        <strong>CMH Medical Negligence:</strong>&nbsp; Statement of Claim filed Dec 5, 2025 against Cambridge Memorial Hospital re: 43-day 2025 admission
+      </div>
+      <div class="matter-item matter-pending">
+        <div class="matter-dot dot-yellow"></div>
+        <strong>DSO Eligibility Appeal:</strong>&nbsp; In progress — developmental period onset (TBI 2001, age 12; Crohn's 2002, age 13)
+      </div>
+      <div class="matter-item matter-pending">
+        <div class="matter-dot dot-yellow"></div>
+        <strong>Ontario Patient Ombudsman:</strong>&nbsp; Complaint re: CMH unsafe discharge and false "no fixed address" documentation
+      </div>
+    </div>
+  </div>
+
+  <!-- Communication note -->
+  <div class="comm-note">
+    <strong>IMPORTANT — Communication Accommodation:</strong> I communicate non-verbally in meetings due to cognitive and sensory barriers from Traumatic Brain Injury (2001). Please review information on this document. All responses and follow-up should be in writing. My support person may assist with communication. See attached AODA Accommodation Card for full details.
+  </div>
+
+  <!-- Footer -->
+  <div class="doc-footer">
+    <div><strong>Matthew Herbert</strong> &nbsp;|&nbsp; mattherbert01@gmail.com</div>
+    <div><strong>ODSP File:</strong> [File Number] &nbsp;|&nbsp; <strong>Caseworker:</strong> Sarah</div>
+    <div><strong>Prepared:</strong> April 2026 &nbsp;|&nbsp; <strong>Libby Live v2.04</strong></div>
+  </div>
+
+</div>
+</body>
+</html>

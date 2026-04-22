@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AODA Accommodation Request — Matthew Herbert</title>
+<style>
+  @page {
+    size: letter;
+    margin: 0.5in;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Arial', sans-serif;
+    font-size: 10pt;
+    color: #1a1a1a;
+    background: #fff;
+  }
+
+  /* Two pages: front and back */
+  .page {
+    width: 100%;
+    min-height: 9in;
+    padding: 0.35in;
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page:last-child {
+    page-break-after: avoid;
+  }
+
+  /* Header band */
+  .page-header {
+    background: #1a2744;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 4px 4px 0 0;
+    margin-bottom: 0;
+  }
+
+  .page-header h1 {
+    font-size: 14pt;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .page-header .sub {
+    font-size: 9pt;
+    color: #a8c0f0;
+    margin-top: 2px;
+  }
+
+  /* Legal notice band */
+  .legal-band {
+    background: #e8f0fe;
+    border-left: 4px solid #1a2744;
+    padding: 7px 12px;
+    font-size: 8.5pt;
+    color: #333;
+    margin-bottom: 10px;
+  }
+
+  .legal-band strong {
+    color: #1a2744;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 10px;
+  }
+
+  .section-title {
+    font-size: 9pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #1a2744;
+    border-bottom: 1.5px solid #1a2744;
+    padding-bottom: 2px;
+    margin-bottom: 6px;
+  }
+
+  /* Condition pills */
+  .conditions {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .condition-item {
+    background: #f5f7ff;
+    border-left: 3px solid #4a6fa5;
+    padding: 5px 10px;
+    border-radius: 0 3px 3px 0;
+  }
+
+  .condition-name {
+    font-weight: 700;
+    font-size: 10pt;
+    color: #1a2744;
+  }
+
+  .condition-detail {
+    font-size: 8.5pt;
+    color: #555;
+    margin-top: 1px;
+  }
+
+  /* Checkbox list */
+  .check-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+
+  .check-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 9.5pt;
+    padding: 4px 8px;
+    background: #f8f9ff;
+    border-radius: 3px;
+  }
+
+  .check-box {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    border: 1.5px solid #4a6fa5;
+    border-radius: 2px;
+    display: inline-block;
+    margin-top: 1px;
+  }
+
+  /* Status badge */
+  .status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+  }
+
+  .status-item {
+    text-align: center;
+    padding: 6px 4px;
+    border-radius: 4px;
+    border: 1.5px solid #dde3f0;
+  }
+
+  .status-item .label {
+    font-size: 7.5pt;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .status-item .value {
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: #1a2744;
+    margin-top: 2px;
+  }
+
+  .status-item.highlight {
+    background: #e8f5e9;
+    border-color: #42c08c;
+  }
+
+  /* Contact footer */
+  .contact-bar {
+    background: #f0f4ff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 8.5pt;
+    border: 1px solid #dde3f0;
+  }
+
+  .contact-bar strong {
+    color: #1a2744;
+  }
+
+  /* Back page styles */
+  .do-dont {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .do-box {
+    border: 1.5px solid #42c08c;
+    border-radius: 4px;
+    padding: 8px 10px;
+  }
+
+  .dont-box {
+    border: 1.5px solid #ef6f6f;
+    border-radius: 4px;
+    padding: 8px 10px;
+  }
+
+  .do-box .box-title {
+    color: #2a8a6a;
+    font-weight: 700;
+    font-size: 9pt;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .dont-box .box-title {
+    color: #cc3333;
+    font-weight: 700;
+    font-size: 9pt;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .do-dont ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .do-dont li {
+    font-size: 9pt;
+    padding: 2px 0;
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.4;
+  }
+
+  .do-box li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #2a8a6a;
+    font-weight: 700;
+  }
+
+  .dont-box li::before {
+    content: "✗";
+    position: absolute;
+    left: 0;
+    color: #cc3333;
+    font-weight: 700;
+  }
+
+  /* Impact section */
+  .impact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .impact-item {
+    background: #f8f9ff;
+    border-left: 3px solid #75a7ff;
+    padding: 6px 10px;
+    border-radius: 0 3px 3px 0;
+  }
+
+  .impact-item .impact-label {
+    font-size: 8pt;
+    font-weight: 700;
+    color: #4a6fa5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .impact-item .impact-text {
+    font-size: 9pt;
+    color: #333;
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  /* Rights banner */
+  .rights-banner {
+    background: #1a2744;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 8.5pt;
+    text-align: center;
+    margin-top: auto;
+  }
+
+  .rights-banner a {
+    color: #a8c0f0;
+  }
+
+  /* Print */
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page { min-height: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- SIDE A — FRONT: Accommodation Request -->
+<!-- ============================================================ -->
+
+<div class="page">
+
+  <div class="page-header">
+    <h1>ACCOMMODATION REQUEST — AODA</h1>
+    <div class="sub">Accessibility for Ontarians with Disabilities Act, 2005 &nbsp;|&nbsp; Ontario Human Rights Code</div>
+  </div>
+
+  <div class="legal-band">
+    <strong>This is a legal accommodation request.</strong> Under the AODA (2005) and Ontario Human Rights Code, you are required to provide reasonable accommodation to the point of undue hardship. This document outlines the specific accommodations needed.
+  </div>
+
+  <!-- Identity & Status -->
+  <div class="section">
+    <div class="section-title">Patient / Client Information</div>
+    <div class="status-grid">
+      <div class="status-item">
+        <div class="label">Name</div>
+        <div class="value">Matthew Herbert</div>
+      </div>
+      <div class="status-item">
+        <div class="label">Contact</div>
+        <div class="value">mattherbert01@gmail.com</div>
+      </div>
+      <div class="status-item highlight">
+        <div class="label">ODSP Status</div>
+        <div class="value">Approved — Dec 2025</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conditions -->
+  <div class="section">
+    <div class="section-title">Documented Disabilities</div>
+    <div class="conditions">
+      <div class="condition-item">
+        <div class="condition-name">Traumatic Brain Injury (TBI) — onset 2001, age 12</div>
+        <div class="condition-detail">Post-concussive: persistent memory disruption, auditory processing deficits, photophobia (light sensitivity), cognitive fatigue, executive dysfunction. Affects scheduling, multi-step tasks, verbal information retention.</div>
+      </div>
+      <div class="condition-item">
+        <div class="condition-name">Crohn's Disease — diagnosed 2002 &nbsp;|&nbsp; Permanent Ileostomy — since 2015</div>
+        <div class="condition-detail">Complex GI disease with 25+ year history; permanent ileostomy requiring daily management; fatigue cycles; unpredictable medical needs may affect appointments and availability.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accommodation checklist -->
+  <div class="section">
+    <div class="section-title">Accommodations Required Today</div>
+    <ul class="check-list">
+      <li><span class="check-box"></span>Written copy of everything discussed — no verbal-only</li>
+      <li><span class="check-box"></span>Speak slowly, one point at a time (no multi-step)</li>
+      <li><span class="check-box"></span>Allow processing time — do not rush responses</li>
+      <li><span class="check-box"></span>Written confirmation / follow-up after this meeting</li>
+      <li><span class="check-box"></span>Email preferred over phone for all follow-up</li>
+      <li><span class="check-box"></span>Support person may be present and assist</li>
+      <li><span class="check-box"></span>Quiet environment when possible (sound sensitivity)</li>
+      <li><span class="check-box"></span>Reduced lighting if available (photophobia)</li>
+    </ul>
+  </div>
+
+  <!-- Footer contact -->
+  <div class="contact-bar">
+    <div><strong>Email (preferred):</strong> mattherbert01@gmail.com</div>
+    <div><strong>Ontario Human Rights Commission:</strong> 1-800-387-9080</div>
+    <div><strong>AODA Compliance:</strong> aodainfo@ontario.ca</div>
+  </div>
+
+</div>
+
+
+<!-- ============================================================ -->
+<!-- SIDE B — BACK: Communication Guide + Why -->
+<!-- ============================================================ -->
+
+<div class="page">
+
+  <div class="page-header">
+    <h1>COMMUNICATION GUIDE — How to Work With Me</h1>
+    <div class="sub">Matthew Herbert &nbsp;|&nbsp; mattherbert01@gmail.com &nbsp;|&nbsp; ODSP Recipient — Dec 2025</div>
+  </div>
+
+  <!-- Why these accommodations exist -->
+  <div class="section">
+    <div class="section-title">Why These Accommodations Exist — TBI Impact Since Age 12</div>
+    <div class="impact-grid">
+      <div class="impact-item">
+        <div class="impact-label">Memory</div>
+        <div class="impact-text">Verbal information is not reliably retained. Written backup is not a preference — it is how information is processed.</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-label">Processing Speed</div>
+        <div class="impact-text">Multi-step or dense information causes cognitive overload. One topic at a time allows accurate comprehension.</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-label">Sensory Sensitivity</div>
+        <div class="impact-text">Photophobia and auditory sensitivity are present daily. Bright environments and loud spaces reduce functional capacity.</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-label">Fatigue</div>
+        <div class="impact-text">Cognitive fatigue may limit appointment availability. Appointments after 2pm or during medical recovery periods may need to be rescheduled.</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-label">Phone Communication</div>
+        <div class="impact-text">Phone conversations are unreliable — both due to hardware instability and TBI processing barriers. Email or written communication is preferred and more accurate.</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-label">Complex Systems</div>
+        <div class="impact-text">Navigating multi-step government or administrative processes independently is not possible without written step-by-step guidance and third-party support.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Do / Don't -->
+  <div class="section">
+    <div class="section-title">Communication Protocol</div>
+    <div class="do-dont">
+      <div class="do-box">
+        <div class="box-title">Please Do</div>
+        <ul>
+          <li>Provide written summaries after all meetings</li>
+          <li>Use plain language — avoid jargon and acronyms</li>
+          <li>State one topic or instruction at a time</li>
+          <li>Confirm understanding before moving on</li>
+          <li>Allow written responses instead of phone calls</li>
+          <li>Give 48-hour written appointment confirmation</li>
+          <li>Allow a support person to be present</li>
+          <li>Use email as primary communication channel</li>
+        </ul>
+      </div>
+      <div class="dont-box">
+        <div class="box-title">Please Do Not</div>
+        <ul>
+          <li>Require phone-only communication</li>
+          <li>Present multiple topics in a single conversation</li>
+          <li>Assume comprehension from a nod or "yes"</li>
+          <li>Require same-day decisions on complex matters</li>
+          <li>Interpret rescheduling as non-compliance</li>
+          <li>Use jargon without plain-language explanation</li>
+          <li>Conduct meetings in loud or bright environments</li>
+          <li>Deny support person access during appointments</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appointment notes -->
+  <div class="section">
+    <div class="section-title">Appointment Planning</div>
+    <div class="conditions">
+      <div class="condition-item">
+        <div class="condition-name">For All Appointments</div>
+        <div class="condition-detail">Allow extra time. Provide all appointment details in writing. Confirm 48 hours before via email or text. I may need to reschedule due to fatigue or medical condition — this is not non-compliance, it is the disability.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rights banner -->
+  <div class="rights-banner">
+    Accommodation under AODA (2005) and Ontario Human Rights Code is a legal right, not a request for special treatment.
+    &nbsp;|&nbsp; Ontario Human Rights Commission: <strong>1-800-387-9080</strong>
+    &nbsp;|&nbsp; If you believe you cannot accommodate, contact your organization's AODA coordinator before denying service.
+  </div>
+
+</div>
+
+</body>
+</html>
