@@ -1,0 +1,4 @@
+date,document_type,title,source,confidence_level,agent_domain,summary,action_required
+YYYY-MM-DD,medical_record,Example Medical Record,Provider Name,confirmed,Agent Domain,Brief summary of record contents,Any follow-up needed
+YYYY-MM-DD,legal_document,Example Legal Doc,Authority,confirmed,Agent Domain,Brief summary,Any action required
+YYYY-MM-DD,correspondence,Example Letter,Organization,confirmed,Agent Domain,Brief summary,Any action required
