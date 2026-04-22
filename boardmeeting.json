@@ -1,0 +1,149 @@
+{
+  "project": "Libby Live",
+  "status": "Phase 2 Active Development — Evidence Onboarding Complete",
+  "lastUpdated": "2026-04-22T22:30Z",
+  "heartbeat_id": "HB-2026-04-22-02",
+  "oneLineSummary": "Meeting-first case advocacy app (iOS/iPad/Web PWA) with evidence briefing and real-time notes. State-first, zero hallucinations, encrypted local data. Active: CMH litigation, DSO appeal, ODSP backdate, Ombudsman.",
+
+  "currentActiveMatter": {
+    "primary": "CMH Medical Negligence Litigation (Statement of Claim Dec 5, 2025)",
+    "secondary": "ODSP Make Whole Appeal (Backdate July 2025)",
+    "tertiary": "DSO Eligibility Appeal",
+    "quaternary": "Ontario Patient Ombudsman Complaint"
+  },
+
+  "urgentItems": [
+    "Send ODSP clarification letter v3 (to Sarah + Sheri Roberts/ILWR)",
+    "File formal Patient Ombudsman complaint re: CMH unsafe discharge and false 'no fixed address'",
+    "Prepare support needs list for Stephanie Banks (Employment Ontario)",
+    "Submit FOI to CMH for complete 2025 inpatient records (weight charts, MAR, incident reports)",
+    "Request Juravinski operative note (Jan 20, 2026) — confirms kinked bowel/hernia CMH missed",
+    "Obtain Cora witness statement (Aug 2, 2025 medication error)"
+  ],
+
+  "pendingItems": [
+    "DSO appeal reactivation",
+    "OH@H PT and SLP intake requests via Evelyn Woof",
+    "CRA DTC (Disability Tax Credit) records request",
+    "CRA RDSP (Registered Disability Savings Plan) records request",
+    "Request Gaylord Albrecht ODSP refusal letter from ODSP office",
+    "FOI: Hotel Dieu / McMaster Children's / Guelph General for 2001 TBI records",
+    "Deep-scan Drive sub-folders for Report_cards_v1.x.pdf and DSO_BINDER_SUPPORTING_DOCS.pdf",
+    "Scan physical TBI 2001 records (physical copies exist — location: possibly Hotel Dieu or home)"
+  ],
+
+  "blockers": [
+    "mattherbert01@gmail.com not yet connected to Claude (unlocks Gmail evidence stream)",
+    "GitHub/Obsidian mirroring not yet configured (raw_dump exists locally)",
+    "CMH inpatient records not yet obtained (FOI required)",
+    "Juravinski operative note not yet obtained (request pending)"
+  ],
+
+  "keyFindings": {
+    "smokingGun": "CMH clinical note July 22, 2025: 'Symptoms likely functional/psychosomatic' — directly contradicted by Juravinski operative note Jan 20, 2026: 'Confirmed structural kinked bowel and internal hernia'",
+    "damagesRange": "$285,000–$995,000 (Damages Consultation, March 18, 2026, Thin Skull Doctrine)",
+    "weightLoss": "29% body weight loss (164 lbs → 117 lbs) under hospital supervision June 26–Aug 8, 2025",
+    "consentBreach": "Codeine administered July 9 despite formal written refusal July 5 and surgeon agreement July 6",
+    "aodaNonCompliance": "CMH failed to provide written/segmented communication for TBI patient during discharge",
+    "postDischargePattern": "Multiple ER returns Sept 2025–Jan 2026 for acute abdominal pain — confirms unsafe August discharge"
+  },
+
+  "driveFilesFound": [
+    "Agent_workflows (timeline chronology)",
+    "MISC_DSO_Developmental_Services (DSO binder — master index, 54+26 records)",
+    "Herbert_Appeal_Letter_v2 (32 call attempts, 2013 proctocolectomy reference)",
+    "CMH MED RECORD.pdf (1,293 pages — core litigation document)",
+    "2026-03-19_MED-CMH_RECD_MASTER EVIDENCE INDEX Herbert v CMH.pdf",
+    "0000-00-00_UNC_2026-03-18_CMH_PERSONAL_INJURY_DAMAGES_CONSULTATION.pdf",
+    "0000-00-00_UNC_Medical_Negligence_Master_Introduction_Letter.pdf",
+    "0000-00-00_UNC_DocC_LawyerIntake_Herbert.pdf",
+    "Bbb complaint CMH.pdf",
+    "MISC_Re- Follow up patient care & concerns.pdf",
+    "CLINICAL CONTEXT AND CARE PLANNING PACKET-11_20260331051627.pdf",
+    "M. Herbert-Beamish.records_20260331051627",
+    "Report_cards_v1.0.pdf, v1.1.pdf, v1.2.pdf (sub-folder — confirm)",
+    "CT Enterography report Oct 23, 2024 (sub-folder — confirm)"
+  ],
+
+  "evidenceCardsCreated": [
+    "EV_001 — CMH Malnutrition (29% weight loss)",
+    "EV_002 — Informed Consent Breach (unauthorized codeine July 9)",
+    "EV_003 — Discriminatory Discharge (false 'no fixed address')",
+    "EV_004 — Diagnostic Gap (psychosomatic vs. kinked bowel — SMOKING GUN)",
+    "EV_005 — Cora Witness Statement (Aug 2 medication error)",
+    "EV_006 — AODA Accommodation 2026",
+    "EV_007 — TBI Developmental Onset 2001",
+    "EV_008 — ODSP Make Whole Justification"
+  ],
+
+  "deliverables": {
+    "website": {
+      "url": "https://libbynatico.github.io/libby_live/",
+      "version": "2.04.0",
+      "status": "Live & Functional",
+      "features": ["Briefing console (6 tabs)", "Dark/light themes ready", "Ollama chat (free, local)", "iOS/iPad install-as-app"]
+    },
+    "backend": {
+      "chat": "Ollama (free, localhost) + OpenRouter fallback (cheap cloud)",
+      "offline": "Service worker + localStorage",
+      "architecture": "State-first (Evidence → Claims → Confidence → Human approval → Display)"
+    },
+    "data": {
+      "timeline": "2001-present (expanded v2.0 — CMH 2025 stay fully documented)",
+      "truths": "14+ working patient statements",
+      "system_narrative": "Attrition-before-recognition pattern",
+      "ledgers": "Correspondence, contacts, appointments, evidence",
+      "evidenceCards": "8 atomic evidence cards (raw_dump/evidence_cards/)",
+      "legalFiles": "4 legal files (cmh_litigation, dso_appeal, odsp_backdate, ombudsman)",
+      "sourceIndex": "22 sources tracked (7 found, 15+ missing with FOI targets)"
+    }
+  },
+
+  "currentPhase": {
+    "name": "Phase 2: Evidence Onboarding + UI Development",
+    "duration": "In progress",
+    "parallelTracks": [
+      "libbyclaudecode: Build UI (schemas → confidence → iPad interface)",
+      "Gemini: Find and extract sources (Drive search + evidence card creation)",
+      "Claude: Coordinate + evidence onboarding + guardrails"
+    ]
+  },
+
+  "keyArchitecturePoints": {
+    "runtime": "8-12 core capabilities (NOT 150 agents)",
+    "data": "12 entities with schemas (SourceDocument, EvidenceCard, Claim, Matter, etc)",
+    "confidence": "Hard enum (Confirmed/Draft/Inferred/Missing/Needs Review)",
+    "interface": "iPad briefing console (Summary | Timeline | Evidence | Notes | Responses | Tasks)",
+    "hallucination": "Zero: templates only, all backed by sources, every statement tagged with confidence"
+  },
+
+  "nextActions": [
+    { "owner": "Matthew", "task": "Send ODSP clarification letter v3 to Sarah and Sheri Roberts (ILWR)" },
+    { "owner": "Matthew", "task": "Submit FOI request to CMH Medical Records (use template in raw_dump/foi_requests/)" },
+    { "owner": "Matthew", "task": "Request Juravinski operative note from HHS Medical Records" },
+    { "owner": "Matthew", "task": "Obtain Cora witness statement (formal)" },
+    { "owner": "Claude", "task": "Create FOI request letter templates in raw_dump/foi_requests/" },
+    { "owner": "Claude", "task": "Complete Phase 2 UI schemas and briefing console" },
+    { "owner": "Gemini", "task": "Deep-scan Drive sub-folders for Report_cards and DSO_BINDER_SUPPORTING_DOCS.pdf" },
+    { "owner": "Gemini", "task": "Extract page-specific citations from CMH_MED_RECORD.pdf" }
+  ],
+
+  "resources": {
+    "architecture": "/ARCHITECTURE_UNIFIED.md",
+    "pwa_setup": "/PWA_NATIVE_APP_GUIDE.md",
+    "gemini_task": "/GEMINI_PROMPT_READY_TO_SEND.txt",
+    "coordination": "/conversation.json",
+    "boardmeeting": "/boardmeeting.json",
+    "evidence_cards": "/raw_dump/evidence_cards/",
+    "raw_dump": "/raw_dump/",
+    "legal_files": "/data/mattherbert01/legal/",
+    "patient_zero_docs": "/docs/patient_zero/",
+    "source_index": "/docs/patient_zero/source_index.md"
+  },
+
+  "installationForUsers": {
+    "iOS": "Safari → Share → Add to Home Screen",
+    "iPad": "Same (auto-detects landscape/portrait)",
+    "Web": "Direct browser or Chrome install prompt"
+  }
+}
