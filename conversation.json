@@ -1,0 +1,159 @@
+{
+  "project": "Libby Live - Case Advocacy Dashboard",
+  "version": "2.04.0",
+  "lastUpdated": "2026-04-22T19:45:00Z",
+  "activeAgent": "claude",
+  "agents": {
+    "claude": {
+      "role": "Primary builder, UX/feature implementation",
+      "lastActive": "2026-04-22T19:45:00Z",
+      "sessionsCompleted": 1,
+      "tasksCompleted": [
+        "Rebuilt index.html v2.04.0 with working UI",
+        "Implemented Ollama + OpenRouter fallback in chat.js",
+        "Created LLM setup documentation",
+        "Designed comprehensive feature specification"
+      ],
+      "rating": null,
+      "notes": "Ready to hand off to libbyclaudecode for Phase 2 implementation"
+    },
+    "libbyclaudecode": {
+      "role": "Design implementation, feature completion",
+      "lastActive": null,
+      "sessionsCompleted": 0,
+      "tasksCompleted": [],
+      "rating": null,
+      "notes": "Awaiting initial briefing"
+    }
+  },
+  "currentPhase": {
+    "number": 2,
+    "name": "Design Polish + Feature Implementation",
+    "status": "ready_to_start",
+    "priority": [
+      "Implement dark/light theme toggle",
+      "Build settings panel (appearance, account, integrations, notifications)",
+      "Add email compose + templates",
+      "Create connector status dashboard (Google Calendar, Gmail, Drive, Ollama, OpenRouter)",
+      "Mobile responsive design"
+    ],
+    "estimatedTokens": "~40-50% of budget",
+    "owner": "libbyclaudecode"
+  },
+  "blockers": [],
+  "nextMilestone": {
+    "name": "v2.05.0 - Design & Settings Complete",
+    "target": "Next session",
+    "criteria": [
+      "✅ Dark/light theme working",
+      "✅ Settings panel functional",
+      "✅ Email compose wired",
+      "✅ Connectors show status",
+      "✅ Mobile responsive",
+      "✅ No external dependencies"
+    ]
+  },
+  "handoff": {
+    "from": "claude",
+    "to": "libbyclaudecode",
+    "timestamp": "2026-04-22T19:45:00Z",
+    "context": {
+      "website_live": "https://libbynatico.github.io/libby_live/",
+      "local_server_ready": "node libby-local-server.js",
+      "documentation": [
+        "NEXT_STEPS.md - Critical action plan",
+        "OLLAMA_QUICKSTART.md - Setup guide",
+        "docs/LLM_SETUP_GUIDE.md - Cost analysis",
+        "docs/HANDOFF_TO_LIBBYCLAUDECODE.md - Full roadmap",
+        "design_spec.md - Complete UI/UX spec (above)"
+      ],
+      "codebase_status": "All committed to main, deployed to GitHub Pages",
+      "critical_files": [
+        "index.html (v2.04.0 - working, needs polish)",
+        "netlify/functions/chat.js (Ollama + fallback ready)",
+        "floating-widget.html (local server ready)",
+        "libby-local-server.js (running locally)"
+      ]
+    },
+    "message": "Website is fully functional. Focus on making it beautiful and feature-complete. Follow the design spec above. Update conversation.json after each major task."
+  },
+  "ratingSystem": {
+    "scale": "1-5 stars",
+    "dimensions": [
+      {
+        "name": "Code Quality",
+        "description": "Clean, maintainable, no dependencies, follows patterns"
+      },
+      {
+        "name": "Feature Completeness",
+        "description": "Does what was asked, no gaps, edge cases handled"
+      },
+      {
+        "name": "UX/Polish",
+        "description": "Professional appearance, smooth interactions, accessible"
+      },
+      {
+        "name": "Documentation",
+        "description": "Clear explanations, handoff notes, future-proof"
+      },
+      {
+        "name": "Communication",
+        "description": "Clear status updates, asks questions when stuck, proactive"
+      }
+    ],
+    "example": {
+      "agent": "claude",
+      "session": 1,
+      "ratings": {
+        "Code Quality": 4,
+        "Feature Completeness": 5,
+        "UX/Polish": 3,
+        "Documentation": 5,
+        "Communication": 5
+      },
+      "average": 4.4,
+      "feedback": "Strong foundation work. Website works end-to-end. Needs visual polish in Phase 2."
+    }
+  },
+  "sessionHistory": [
+    {
+      "session": 1,
+      "agent": "claude",
+      "date": "2026-04-22",
+      "goals": [
+        "Get website working end-to-end",
+        "Remove broken auth blocker",
+        "Wire Ollama + OpenRouter",
+        "Document LLM setup"
+      ],
+      "accomplished": [
+        "✅ Rebuilt index.html (no auth, working chat UI)",
+        "✅ Implemented Ollama with OpenRouter fallback",
+        "✅ Created comprehensive docs (NEXT_STEPS, QUICKSTART, LLM_SETUP)",
+        "✅ Deployed to GitHub Pages"
+      ],
+      "issues": [
+        "Git merge conflicts (resolved with rebase)"
+      ],
+      "tokenUsageStart": "unknown",
+      "tokenUsageEnd": "35%",
+      "notes": "Delivered working product. Ready for Phase 2 polish."
+    }
+  ],
+  "collaboration": {
+    "protocol": "Update conversation.json after each major task",
+    "heartbeat": "Add entry to sessionHistory every time you complete a milestone",
+    "handshake": "Read conversation.json before starting, update it after finishing",
+    "format": {
+      "task_complete": {
+        "timestamp": "ISO 8601",
+        "agent": "your name",
+        "task": "what you did",
+        "files_changed": ["file1.html", "file2.js"],
+        "status": "success | blocked",
+        "notes": "any important context"
+      }
+    },
+    "rating_feedback": "After each session, rate the other agent on the 5 dimensions. Be honest and constructive."
+  }
+}
