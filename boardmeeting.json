@@ -1,0 +1,84 @@
+{
+  "project": "Libby Live",
+  "status": "Phase 2 Active Development",
+  "lastUpdated": "2026-04-22T21:30Z",
+  "oneLineSummary": "Meeting-first case advocacy app (iOS/iPad/Web PWA) with evidence briefing and real-time notes. State-first, zero hallucinations, encrypted local data.",
+
+  "deliverables": {
+    "website": {
+      "url": "https://libbynatico.github.io/libby_live/",
+      "version": "2.04.0",
+      "status": "Live & Functional",
+      "features": ["Briefing console (6 tabs)", "Dark/light themes ready", "Ollama chat (free, local)", "iOS/iPad install-as-app"]
+    },
+    "backend": {
+      "chat": "Ollama (free, localhost) + OpenRouter fallback (cheap cloud)",
+      "offline": "Service worker + localStorage",
+      "architecture": "State-first (Evidence → Claims → Confidence → Human approval → Display)"
+    },
+    "data": {
+      "timeline": "2001-present (expanded, status-labeled)",
+      "truths": "14 working patient statements",
+      "system_narrative": "Attrition-before-recognition pattern",
+      "ledgers": "Correspondence, contacts, appointments, evidence"
+    }
+  },
+
+  "currentPhase": {
+    "name": "Phase 2: Design Polish + Data Integration",
+    "duration": "In progress",
+    "parallelTracks": [
+      "libbyclaudecode: Build UI (schemas → confidence → iPad interface)",
+      "Gemini: Find sources (Drive search)",
+      "Claude: Coordinate + synthesize"
+    ]
+  },
+
+  "keyArchitecturePoints": {
+    "runtime": "8-12 core capabilities (NOT 150 agents)",
+    "data": "12 entities with schemas (SourceDocument, EvidenceCard, Claim, Matter, etc)",
+    "confidence": "Hard enum (Confirmed/Draft/Inferred/Missing/Needs Review)",
+    "interface": "iPad briefing console (Summary | Timeline | Evidence | Notes | Responses | Tasks)",
+    "hallucination": "Zero: templates only, all backed by sources, every statement tagged with confidence"
+  },
+
+  "nextPriorities": [
+    "Schemas: Define all 12 entities in code",
+    "UI: Build 6-tab briefing console",
+    "Sources: Run Gemini source discovery",
+    "Meeting mode: Live unfolding with confidence badges",
+    "Templates: Medical chronology + accommodation statement + ODSP brief"
+  ],
+
+  "resources": {
+    "architecture": "/ARCHITECTURE_UNIFIED.md",
+    "pwa_setup": "/PWA_NATIVE_APP_GUIDE.md",
+    "gemini_task": "/GEMINI_SOURCE_FINDING_PROMPT.md",
+    "coordination": "/conversation.json",
+    "instructor_role": "/INSTRUCTOR_ROLE.md"
+  },
+
+  "tokenUsage": {
+    "claude": "~35%",
+    "libbyclaudecode": "27%",
+    "gemini": "Available",
+    "remaining": "~38-40% for Phase 2"
+  },
+
+  "installationForUsers": {
+    "iOS": "Safari → Share → Add to Home Screen",
+    "iPad": "Same (auto-detects landscape/portrait)",
+    "Web": "Direct browser or Chrome install prompt"
+  },
+
+  "successCriteria": [
+    "All 12 schemas functional",
+    "Confidence model enforced (UI + storage)",
+    "iPad interface with all 6 tabs working",
+    "Meeting mode captures questions/answers/follow-ups",
+    "Post-meeting recap auto-generates",
+    "Handshake/heartbeat logging operational",
+    "Zero hallucinations (templates only)",
+    "Sources visible for all claims"
+  ]
+}
