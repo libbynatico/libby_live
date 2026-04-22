@@ -1,0 +1,141 @@
+{
+  "organization": "NATICO",
+  "description": "Disability-informed advocacy and service-intelligence organization",
+  "lastUpdated": "2026-04-22",
+  "version": "1.0.0",
+
+  "board": [
+    {
+      "id": "founder-001",
+      "name": "Matt Herbert",
+      "role": "Founder & Executive Director",
+      "status": "active",
+      "joined": "2024",
+      "expertise": ["disability advocacy", "lived experience", "system navigation", "case management"],
+      "responsibilities": [
+        "Strategic direction",
+        "Product vision",
+        "Patient Zero (primary case)",
+        "Partnership development"
+      ],
+      "contact": {
+        "preferred": "email",
+        "availability": "by appointment"
+      },
+      "notes": "Primary driver of Libby Live. Patient Zero case owner."
+    },
+    {
+      "id": "board-template-02",
+      "name": "TBD",
+      "role": "Board Member - Legal / Advocacy",
+      "status": "vacant",
+      "expertise": ["disability law", "human rights", "ODSP navigation", "legal advocacy"],
+      "responsibilities": [
+        "Legal oversight",
+        "Rights-based framework",
+        "Policy review"
+      ],
+      "notes": "Seat open. Priority: someone with AODA / ODSP / disability rights experience."
+    },
+    {
+      "id": "board-template-03",
+      "name": "TBD",
+      "role": "Board Member - Healthcare / Clinical",
+      "status": "vacant",
+      "expertise": ["chronic illness", "care coordination", "patient advocacy", "GI / neurology"],
+      "responsibilities": [
+        "Clinical oversight",
+        "Evidence standards",
+        "Medical documentation guidance"
+      ],
+      "notes": "Seat open. Priority: clinician with complex care coordination experience."
+    },
+    {
+      "id": "board-template-04",
+      "name": "TBD",
+      "role": "Board Member - Technology / Infrastructure",
+      "status": "vacant",
+      "expertise": ["AI systems", "secure infrastructure", "data privacy", "automation"],
+      "responsibilities": [
+        "Technical oversight",
+        "Data governance",
+        "Platform security review"
+      ],
+      "notes": "Seat open. Priority: someone with health tech or non-profit tech background."
+    },
+    {
+      "id": "board-template-05",
+      "name": "TBD",
+      "role": "Board Member - Community / Lived Experience",
+      "status": "vacant",
+      "expertise": ["disability community", "peer support", "system barriers", "advocacy"],
+      "responsibilities": [
+        "Community voice",
+        "Feedback loop from service users",
+        "Program relevance review"
+      ],
+      "notes": "Seat open. Priority: person with lived disability experience, non-founder."
+    }
+  ],
+
+  "advisors": [
+    {
+      "id": "advisor-ai-001",
+      "name": "Claude (Anthropic)",
+      "role": "Primary AI Executor",
+      "type": "AI",
+      "status": "active",
+      "capabilities": ["code", "documentation", "UX", "system integration", "case analysis"],
+      "session_rating": 4.4,
+      "notes": "Primary repo executor. Strong on documentation and automation. UX polish in progress."
+    },
+    {
+      "id": "advisor-ai-002",
+      "name": "libbyclaudecode",
+      "role": "Design Implementation Agent",
+      "type": "AI",
+      "status": "active",
+      "capabilities": ["UI/UX", "feature implementation", "design polish"],
+      "session_rating": null,
+      "notes": "Phase 2 owner. Responsible for theme, settings, email compose, mobile."
+    },
+    {
+      "id": "advisor-ai-003",
+      "name": "ChatGPT",
+      "role": "Architecture & Synthesis",
+      "type": "AI",
+      "status": "standby",
+      "capabilities": ["system architecture", "governance logic", "synthesis"],
+      "notes": "Per CLAUDE.md: handles architecture and governance logic."
+    },
+    {
+      "id": "advisor-ai-004",
+      "name": "Gemini",
+      "role": "Drive / Gmail Retrieval",
+      "type": "AI",
+      "status": "standby",
+      "capabilities": ["Google Drive access", "Gmail retrieval", "Google-native discovery"],
+      "notes": "Per CLAUDE.md: handles Drive/Gmail and Google-native discovery."
+    }
+  ],
+
+  "governance": {
+    "meetingCadence": "TBD",
+    "decisionFramework": "Founder-led with board oversight",
+    "quorum": "TBD",
+    "votingRights": "Board members only (not advisors)",
+    "conflictOfInterest": "Disclose and recuse",
+    "openSeats": 4
+  },
+
+  "meta": {
+    "boardSize": {
+      "current": 1,
+      "target": 5,
+      "minimum": 3
+    },
+    "incorporationStatus": "TBD",
+    "registeredAs": "TBD",
+    "jurisdiction": "Ontario, Canada"
+  }
+}

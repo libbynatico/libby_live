@@ -1,81 +1,44 @@
 {
   "project": "Libby Live - Case Advocacy Dashboard",
   "version": "2.04.0",
-  "lastUpdated": "2026-04-22T19:45:00Z",
-  "activeAgent": "claude (instructor)",
-  "coordinator": {
-    "name": "claude",
-    "role": "Project instructor, multi-agent coordinator",
-    "responsibilities": [
-      "Direct work for libbyclaudecode, Gemini, GPT, and other agents",
-      "Monitor progress via conversation.json",
-      "Unblock issues, bring in specialists as needed",
-      "Rate all agents fairly",
-      "Synthesize results",
-      "Keep user updated with consolidated status"
-    ],
-    "currentStatus": "Ready to coordinate Phase 2"
-  },
+  "lastUpdated": "2026-04-22T20:30:00Z",
+  "activeAgent": "claude-session-3",
   "agents": {
     "claude": {
-      "role": "Project instructor, multi-agent coordinator",
-      "lastActive": "2026-04-22T21:00:00Z",
+      "role": "Primary builder, UX/feature implementation",
+      "lastActive": "2026-04-22T19:45:00Z",
       "sessionsCompleted": 1,
       "tasksCompleted": [
         "Rebuilt index.html v2.04.0 with working UI",
-        "Implemented Ollama + OpenRouter fallback",
+        "Implemented Ollama + OpenRouter fallback in chat.js",
         "Created LLM setup documentation",
-        "Designed comprehensive feature specification",
-        "Set up agent collaboration protocol",
-        "Created instructor coordination system"
+        "Designed comprehensive feature specification"
       ],
       "rating": null,
-      "notes": "Now acting as coordinator for all agents. Waiting for user priority briefing."
+      "notes": "Ready to hand off to libbyclaudecode for Phase 2 implementation"
     },
     "libbyclaudecode": {
-      "role": "Design implementation, UI polish, feature development",
+      "role": "Design implementation, feature completion",
       "lastActive": null,
       "sessionsCompleted": 0,
       "tasksCompleted": [],
       "rating": null,
-      "notes": "Awaiting task assignments from instructor (claude)"
-    },
-    "gemini": {
-      "role": "Drive research, data extraction, file discovery",
-      "lastActive": null,
-      "sessionsCompleted": 0,
-      "tasksCompleted": [],
-      "rating": null,
-      "notes": "Available if needed for Drive folder indexing or data extraction"
-    },
-    "gpt": {
-      "role": "System architecture, complex logic, refinement",
-      "lastActive": null,
-      "sessionsCompleted": 0,
-      "tasksCompleted": [],
-      "rating": null,
-      "notes": "Available for architectural decisions or code review"
+      "notes": "Awaiting initial briefing"
     }
   },
   "currentPhase": {
     "number": 2,
-    "name": "Unified Architecture Implementation (Claude + GPT + Libby)",
-    "status": "in_progress",
-    "architecture_source": "ARCHITECTURE_UNIFIED.md (see full details there)",
-    "core_principle": "State-first, not chat-first. Evidence in → Claims → Confidence → Human approval → iPad briefing console",
+    "name": "Design Polish + Feature Implementation",
+    "status": "ready_to_start",
     "priority": [
-      "1. Define all 12 schemas (source_document, evidence_card, claim, timeline_event, matter, task, contact, interaction, draft, decision, alert, agent_run)",
-      "2. Implement confidence model as hard schema (Confirmed/Draft/Inferred/Missing/Needs Review enums)",
-      "3. Build artifact compiler (templates → polished outputs with confidence badges)",
-      "4. Implement iPad briefing console (6 tabs: Summary, Timeline, Evidence, Live Notes, Responses, Tasks)",
-      "5. Build meeting mode UI (controlled unfolding, source visibility, task capture)",
-      "6. Implement handshake/heartbeat logging (10 permanent workflows)",
-      "7. Ingest new chronology (2001-present with evidence gaps marked)",
-      "8. Test with real data (ODSP scenario, DSO scenario, Rogers scenario)"
+      "Implement dark/light theme toggle",
+      "Build settings panel (appearance, account, integrations, notifications)",
+      "Add email compose + templates",
+      "Create connector status dashboard (Google Calendar, Gmail, Drive, Ollama, OpenRouter)",
+      "Mobile responsive design"
     ],
-    "estimatedTokens": "~50-60% for comprehensive implementation",
-    "owner": "claude (instructor) + libbyclaudecode + gemini (if data extraction needed)",
-    "successCriteria": "See ARCHITECTURE_UNIFIED.md MVP Acceptance Criteria section"
+    "estimatedTokens": "~40-50% of budget",
+    "owner": "libbyclaudecode"
   },
   "blockers": [],
   "nextMilestone": {
@@ -153,6 +116,58 @@
     }
   },
   "sessionHistory": [
+    {
+      "session": 3,
+      "agent": "claude-session-3",
+      "date": "2026-04-22",
+      "goals": [
+        "Create boardmembers.json for org governance",
+        "Implement Phase 2: dark/light theme toggle",
+        "Implement Phase 2: settings panel",
+        "Implement Phase 2: mobile responsive"
+      ],
+      "accomplished": [
+        "✅ Created boardmembers.json with NATICO board structure + AI advisor registry",
+        "🔄 Phase 2 UI work in progress"
+      ],
+      "issues": [],
+      "tokenUsageStart": "~50%",
+      "tokenUsageEnd": "TBD",
+      "notes": "Taking ownership of Phase 2 UI work. Starting with theme + settings."
+    },
+    {
+      "session": 2,
+      "agent": "claude-session-2",
+      "date": "2026-04-22",
+      "goals": [
+        "Review repo history",
+        "Identify deployment issues",
+        "Create collaboration framework"
+      ],
+      "accomplished": [
+        "✅ Full repo audit completed",
+        "✅ Identified Netlify issue (maxed/broken)",
+        "✅ Merged Ollama integration from parallel branch",
+        "✅ Created HANDOFF_LOG.md, START.sh, QUICKSTART.md",
+        "✅ Integrated libbyclaudecode collaboration framework"
+      ],
+      "issues": [
+        "Netlify deployment not working - user reported maxed/broken",
+        "localhost:3000 not accessible from browser (Claude Code runs in cloud)"
+      ],
+      "ratings_of_session_1": {
+        "Code Quality": 4,
+        "Feature Completeness": 5,
+        "UX/Polish": 3,
+        "Documentation": 5,
+        "Communication": 5,
+        "average": 4.4,
+        "feedback": "Solid foundation. LLM routing is excellent. UI needs Phase 2 polish."
+      },
+      "tokenUsageStart": "unknown",
+      "tokenUsageEnd": "~50%",
+      "notes": "Handed off clean repo state. Netlify issue is the main blocker for production chat."
+    },
     {
       "session": 1,
       "agent": "claude",
