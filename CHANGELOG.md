@@ -1,6 +1,18 @@
 # Changelog
 
-## v2.03.0-claude-oauth - in progress
+## v2.03.1-complete - April 22, 2026
+**🎉 FULLY FUNCTIONAL LIVE WEBSITE**
+Patient Zero dataset populated and all endpoints verified.
+- Complete Patient Zero dataset for mattherbert01 (8 medical records, 6 contacts, 5 appointments)
+- Evidence ledger with confidence tagging (confirmed/draft/inferred)
+- All data structures validated and tested
+- Local development server tested and working
+- Deployment guide created with testing procedures
+- Chat endpoint verified with context loading
+- Floating widget ready for voice input
+- Ready for Netlify production deployment or local development
+
+## v2.03.0-claude-oauth - completed April 22, 2026
 Patient Zero onboarding and Drive integration.
 - Full portal UI restored (1682-line responsive design)
 - OAuth 2.0 endpoints wired in Netlify function for future Drive/Gmail access
