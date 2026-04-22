@@ -1,2 +1,7 @@
 .env
 .env.local
+
+# Private knowledge directory — never commit raw case files
+data/
+libby_casevault/
+sentinel_private/

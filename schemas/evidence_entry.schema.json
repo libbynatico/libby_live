@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EvidenceEntry",
+  "description": "One row from evidence_ledger.csv",
+  "type": "object",
+  "required": ["date", "title", "establishes"],
+  "properties": {
+    "date": { "type": "string", "format": "date" },
+    "document_type": {
+      "type": "string",
+      "description": "Medical Report, Email, Legal Document, Recording, Note, etc."
+    },
+    "title": { "type": "string" },
+    "establishes": {
+      "type": "string",
+      "description": "What confirmed fact or claim this document supports"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["Confirmed", "High", "Medium", "Low", "Pending", "Refuted"]
+    },
+    "location": {
+      "type": "string",
+      "description": "Drive path, Gmail label, or local path"
+    },
+    "notes": { "type": "string" },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
