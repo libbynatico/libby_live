@@ -283,7 +283,7 @@
         if (widget.transcript.trim()) {
           // Save transcript in real-time
           try {
-            const ingestResponse = await fetch('/api/ingest-transcript', {
+            const ingestResponse = await fetch('/.netlify/functions/ingest-transcript', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -347,7 +347,7 @@
       widget.chatInput.value = '';
 
       try {
-        const response = await fetch('/api/chat', {
+        const response = await fetch('/.netlify/functions/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
