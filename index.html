@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-  <title>Libby Live - v2.05.0 Briefing Console</title>
+  <title>Libby Live - v2.06.0 Briefing Console</title>
   <meta name="description" content="Evidence-driven briefing console for field case work. Confidence-tagged evidence, source-backed facts, meeting-focused interface." />
   <meta name="theme-color" content="#75a7ff">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -633,7 +633,7 @@
         <div class="brand-copy">
           <h1>Libby Live</h1>
           <p>Case Advocacy</p>
-          <div class="version-badge">v2.05.0</div>
+          <div class="version-badge">v2.06.0</div>
         </div>
       </div>
 
@@ -819,15 +819,6 @@
           <div style="display: flex; gap: 8px;">
             <div class="badge badge-confirmed">Confirmed</div>
             <span style="font-size: 12px; color: var(--muted);">Neurology consult</span>
-          </div>
-        </div>
-
-        <div class="timeline-event">
-          <div class="timeline-date">December 2018</div>
-          <div class="timeline-text">ODSP application approved following review</div>
-          <div style="display: flex; gap: 8px;">
-            <div class="badge badge-confirmed">Confirmed</div>
-            <span style="font-size: 12px; color: var(--muted);">Ministry Notice of Decision</span>
           </div>
         </div>
 
@@ -1048,7 +1039,7 @@
         </div>
 
         <div class="task-item soon">
-          <div class="task-title">Request current pain management notes from Dr. Chen</div>
+          <div class="task-title">Request current pain management notes from treating neurologist</div>
           <div class="task-meta">
             Owner: Case Worker | Due: April 26, 2026 | Matter: Medical Review
           </div>
@@ -1145,6 +1136,7 @@
     const chatInput = document.querySelector('.chat-input');
     const chatSend = document.querySelector('.chat-send');
     const chatMessages = document.querySelector('.chat-messages');
+    const chatHistory = [];
 
     function addMessage(text, sender = 'user') {
       const message = document.createElement('div');
@@ -1152,19 +1144,38 @@
       message.textContent = text;
       chatMessages.appendChild(message);
       chatMessages.scrollTop = chatMessages.scrollHeight;
+      return message;
+    }
+
+    async function sendChat(text) {
+      chatHistory.push({ role: 'user', content: text });
+      const thinking = addMessage('…', 'system');
+
+      try {
+        const resp = await fetch('/.netlify/functions/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: chatHistory.slice(-12),
+            userId: 'mattherbert01',
+            audience: 'caseworker',
+          }),
+        });
+        const data = await resp.json();
+        const reply = data.reply || data.error || 'No response.';
+        thinking.textContent = reply;
+        chatHistory.push({ role: 'assistant', content: reply });
+      } catch (err) {
+        thinking.textContent = `Chat error: ${err.message}`;
+      }
     }
 
     chatSend.addEventListener('click', () => {
       const text = chatInput.value.trim();
-      if (text) {
-        addMessage(text, 'user');
-        chatInput.value = '';
-
-        // Simulate response
-        setTimeout(() => {
-          addMessage('System: Query processed. See tabs for details.', 'system');
-        }, 500);
-      }
+      if (!text) return;
+      addMessage(text, 'user');
+      chatInput.value = '';
+      sendChat(text);
     });
 
     chatInput.addEventListener('keypress', (e) => {
@@ -1716,7 +1727,7 @@
     }
 
     // INITIALIZATION
-    console.log('[Libby Live v2.05.0] Briefing console initialized');
+    console.log('[Libby Live v2.06.0] Briefing console initialized');
     console.log('[Evidence-Driven Architecture] All evidence requires source reference and confidence level');
     console.log('[Multi-Patient Ready] All data isolated by userID');
     console.log('[Phase 3 - Document Templating] Template engine initialized with 3 core templates');
@@ -1730,50 +1741,57 @@
     loadCaseData();
 
     // GMAIL/DRIVE AUTO-SYNC
+    // Tokens returned by the OAuth callback are stored in localStorage so they
+    // survive page reloads. The Netlify function is stateless — it never stores
+    // tokens server-side. The client passes the access_token on every sync call.
     window.syncGmailDrive = async function() {
       const syncButton = document.getElementById('sync-button');
       syncButton.disabled = true;
       syncButton.textContent = '⏳ Syncing...';
 
       try {
-        // First check if authenticated
-        const authRes = await fetch('/.netlify/functions/gmail-drive-sync?action=sync');
-        const authData = await authRes.json();
+        const accessToken = localStorage.getItem('libby_google_access_token') || '';
+        const refreshToken = localStorage.getItem('libby_google_refresh_token') || '';
 
-        if (!authRes.ok) {
-          // Not authenticated - show auth link
+        if (!accessToken && !refreshToken) {
+          // Not authenticated — get auth URL and open consent screen
           const authUrlRes = await fetch('/.netlify/functions/gmail-drive-sync?action=auth');
-          const { authUrl } = await authUrlRes.json();
-
-          addMessage('System: Click to connect Gmail & Drive: ' + authUrl, 'system');
-          window.open(authUrl, '_blank');
+          const authData = await authUrlRes.json();
+          if (authData.error) {
+            addMessage(`System: ${authData.error} ${authData.help || ''}`, 'system');
+          } else {
+            addMessage('System: Opening Google sign-in. After authorising, click Sync again.', 'system');
+            window.open(authData.authUrl, '_blank', 'width=600,height=700');
+          }
           syncButton.textContent = '🔄 Sync';
           syncButton.disabled = false;
           return;
         }
 
-        // Authenticated - perform sync
-        const syncRes = await fetch('/.netlify/functions/gmail-drive-sync?action=sync');
+        // Authenticated — perform sync, passing token in POST body
+        const syncRes = await fetch('/.netlify/functions/gmail-drive-sync?action=sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ access_token: accessToken, refresh_token: refreshToken }),
+        });
         const syncData = await syncRes.json();
 
         if (syncRes.ok) {
-          // Update case data with synced results
           const caseInfo = syncData.caseData;
           updateUIWithCaseData(caseInfo);
 
-          // Rebuild meetings from synced data
           upcomingMeetings = {};
           caseInfo.upcomingMeetings.forEach(meeting => {
             upcomingMeetings[meeting.id] = {
               ...meeting,
               briefingPoints: generateBriefingPoints(caseInfo, meeting.matter),
               talkingPoints: generateTalkingPoints(caseInfo, meeting.matter),
-              templates: selectTemplatesForMeeting(meeting.matter)
+              templates: selectTemplatesForMeeting(meeting.matter),
             };
           });
 
           addMessage(
-            `System: Synced from Gmail & Drive: ${syncData.synced.meetings} meetings, ${syncData.synced.contacts} contacts, ${syncData.synced.documents} documents`,
+            `System: Synced from Gmail & Drive — ${syncData.synced.meetings} meetings, ${syncData.synced.contacts} contacts, ${syncData.synced.documents} documents`,
             'system'
           );
 
@@ -1783,7 +1801,13 @@
             syncButton.disabled = false;
           }, 2000);
         } else {
-          addMessage('System: Sync failed: ' + authData.error, 'system');
+          // Token may be expired — clear and prompt re-auth on next click
+          if (syncRes.status === 401) {
+            localStorage.removeItem('libby_google_access_token');
+            addMessage('System: Google session expired. Click Sync to reconnect.', 'system');
+          } else {
+            addMessage(`System: Sync failed: ${syncData.error}`, 'system');
+          }
           syncButton.textContent = '🔄 Sync';
           syncButton.disabled = false;
         }

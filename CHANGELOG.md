@@ -1,5 +1,40 @@
 # Changelog
 
+## v2.06.0 - April 22, 2026
+**6-Tab Briefing Console — Phase 3 Features**
+
+UI:
+- 6-tab briefing console: Summary, Calendar, Timeline, Evidence, Live Notes, Responses, Tasks
+- Calendar tab: Upcoming meetings with urgency coloring (today / this week / later)
+- Meeting pre-briefing modal: briefing points, talking points, supporting documents, print button
+- Confidence badge system enforced throughout: Confirmed / Draft / Inferred / Missing / Needs Review
+- Removed all fabricated contacts (Dr. Sarah Chen never existed in source documents)
+
+Document templating engine (Phase 3 Task 2):
+- Medical Chronology, Accommodation Statement, ODSP Review Summary templates
+- Draft/Approve workflow; Download as Markdown
+
+Data:
+- `data/cases.json` — canonical sample data structure; all values marked Draft/Inferred pending source verification
+- 12-entity schema definitions in `schemas/schema_definitions.json`
+- Schema validation layer: `validateEvidenceCard()`, CONFIDENCE enum enforced
+
+Backend:
+- `netlify/functions/gmail-drive-sync.js` — OAuth sync using raw fetch (no npm googleapis dependency)
+- Token flow: client stores access_token in localStorage; passed via POST body on sync
+- `netlify/functions/ingest-transcript.js` — POST endpoint for transcript ingestion
+- Chat wired to `/.netlify/functions/chat` (was previously a fake timeout placeholder)
+
+Fixes:
+- Removed contradictory 2018 ODSP timeline entry (approval was December 2025)
+- Removed lingering "Dr. Chen" reference from Tasks tab
+- Version normalized to v2.06.0 across all files
+
+Blockers (unresolved, documented in boardmeeting.json):
+- Gmail/Drive sync requires Google OAuth credentials (GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET in Netlify env)
+- All case data is sample/demo until real source documents are loaded
+- Ollama unreachable from Netlify cloud (use local server for free LLM)
+
 ## v2.03.1-complete - April 22, 2026
 **🎉 FULLY FUNCTIONAL LIVE WEBSITE**
 Patient Zero dataset populated and all endpoints verified.
