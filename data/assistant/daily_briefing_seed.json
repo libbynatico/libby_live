@@ -1,0 +1,148 @@
+{
+  "schema_version": "0.1.0",
+  "generated_at": "2026-04-28T08:05:00-04:00",
+  "purpose": "Seed data for proactive personal-assistant daily briefings. Public-safe only; real state belongs in secure memory bank.",
+  "assistant_standard": "Every user opens Libby to a proactive daily briefing: what changed, what is ready, what needs approval, what is blocked, and what to do next.",
+  "briefings": [
+    {
+      "user_id": "001",
+      "preferred_name": "Matthew",
+      "assistant_mode": "local_prototype",
+      "greeting": "Good morning, Matthew. I checked your local dashboard.",
+      "calendar_summary": [
+        {
+          "label": "Calendar sync pending",
+          "status": "blocked",
+          "detail": "Google Calendar is not connected yet. Local calendar anchors are available but not authoritative."
+        }
+      ],
+      "urgent_tasks": [
+        "Draft and send the urgent letter today.",
+        "Confirm exact recipient and any dates before sending.",
+        "Keep private evidence out of public GitHub."
+      ],
+      "prepared_outputs": [
+        "Letter builder is available.",
+        "Worker card editor is available.",
+        "Secure memory-bank architecture is documented.",
+        "Auth-gate requirement is documented."
+      ],
+      "needs_approval": [
+        "Any outgoing letter must be reviewed by Matthew before sending.",
+        "Any private evidence upload needs secure-memory-bank approval."
+      ],
+      "blocked_items": [
+        "Real Apple/Google/passkey auth is not connected.",
+        "Secure backend memory bank is not connected.",
+        "Gmail/Drive/Calendar live sync is not connected.",
+        "Root index promotion is still pending if workflow has not run."
+      ],
+      "recommended_next_action": {
+        "label": "Draft urgent letter first",
+        "detail": "Use Letter Mode, generate the message, copy it, and verify exact facts before sending."
+      },
+      "action_buttons": ["Draft urgent letter", "Open calendar", "Review tasks", "Open worker editor", "Export local memory"]
+    },
+    {
+      "user_id": "002",
+      "preferred_name": "Kellsie",
+      "assistant_mode": "local_prototype",
+      "greeting": "Good morning, Kellsie. This is your private Libby workspace.",
+      "calendar_summary": [
+        {
+          "label": "Workspace setup pending",
+          "status": "onboarding",
+          "detail": "No private calendar is connected yet."
+        }
+      ],
+      "urgent_tasks": [
+        "Complete account/profile setup when ready.",
+        "Choose what Libby should help organize first."
+      ],
+      "prepared_outputs": [
+        "Private workspace shell is planned.",
+        "Shared household case can be added only with explicit permission."
+      ],
+      "needs_approval": [
+        "No shared household data should appear unless Kellsie and Matthew both allow it."
+      ],
+      "blocked_items": [
+        "Real authentication is not connected.",
+        "Private memory bank is not connected."
+      ],
+      "recommended_next_action": {
+        "label": "Start onboarding",
+        "detail": "Set communication preferences and choose the first thing Libby should help with."
+      },
+      "action_buttons": ["Start onboarding", "Set communication preferences", "Add first task"]
+    },
+    {
+      "user_id": "003",
+      "preferred_name": "Nikki",
+      "assistant_mode": "local_prototype",
+      "greeting": "Good morning, Nikki. Welcome to your Libby workspace. This is separate from Matthew’s workspace.",
+      "calendar_summary": [
+        {
+          "label": "Onboarding calendar not connected",
+          "status": "onboarding",
+          "detail": "Tell Libby about any important dates, appointments, deadlines, or reminders."
+        }
+      ],
+      "urgent_tasks": [
+        "Create local onboarding packet.",
+        "Choose the first thing you want help organizing.",
+        "Choose consent/privacy settings before private storage or sharing."
+      ],
+      "prepared_outputs": [
+        "Onboarding form is available.",
+        "Local workspace can open after onboarding.",
+        "Libby can help draft the first task, letter, reminder, or support note."
+      ],
+      "needs_approval": [
+        "Libby should not store or share private information until consent choices are selected.",
+        "Letters should be reviewed by Nikki before sending."
+      ],
+      "blocked_items": [
+        "Secure backend memory is not connected yet.",
+        "Real Apple/Google/passkey login is not connected yet.",
+        "Background monitoring is not available until backend workers exist."
+      ],
+      "recommended_next_action": {
+        "label": "Tell Libby the first thing to organize",
+        "detail": "Pick paperwork, appointments, benefits, housing, family communication, letters, or reminders."
+      },
+      "action_buttons": ["Start onboarding", "Tell Libby first problem", "Draft first letter", "Add first reminder", "Export onboarding packet"]
+    },
+    {
+      "user_id": "demo_001",
+      "preferred_name": "Guest",
+      "assistant_mode": "demo_redacted",
+      "greeting": "Welcome to the Libby demo. No private user data is loaded.",
+      "calendar_summary": [
+        {
+          "label": "Demo calendar",
+          "status": "demo",
+          "detail": "Shows how Libby would prepare briefings before meetings."
+        }
+      ],
+      "urgent_tasks": [
+        "Explore the dashboard.",
+        "Review worker-card system.",
+        "Read the device/support ask."
+      ],
+      "prepared_outputs": [
+        "Investor/supporter story is available.",
+        "Demo workflow is redacted and safe."
+      ],
+      "needs_approval": [],
+      "blocked_items": [
+        "Private memory is intentionally unavailable in demo mode."
+      ],
+      "recommended_next_action": {
+        "label": "Open demo dashboard",
+        "detail": "See how Libby turns scattered life information into briefings, tasks, letters, and handshakes."
+      },
+      "action_buttons": ["Open demo", "View worker cards", "View pitch brief"]
+    }
+  ]
+}
