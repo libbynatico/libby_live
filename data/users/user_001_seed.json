@@ -1,0 +1,189 @@
+{
+  "user_id": "001",
+  "profile_status": "redacted_public_seed",
+  "created_at": "2026-04-28T06:20:00-04:00",
+  "timezone": "America/Toronto",
+  "display_name": "Patient Zero / Founding Case",
+  "public_safety_note": "This file is safe demo seed data. It intentionally avoids publishing raw private medical, benefits, family, financial, or provider evidence in the public repository.",
+  "case_modes": [
+    "live_meeting_support",
+    "evidence_librarian",
+    "nonverbal_presentation",
+    "advocacy_binder_generation",
+    "investor_pitch_demo",
+    "personal_operations_dashboard"
+  ],
+  "patient_tags": [
+    {
+      "tag": "communication_accommodation",
+      "confidence": "user_reported",
+      "public_label": "Prefers written, typed, and iPad-readable communication support"
+    },
+    {
+      "tag": "complex_medical_history",
+      "confidence": "user_reported",
+      "public_label": "Longitudinal medical timeline required; source confirmation pending in private vault"
+    },
+    {
+      "tag": "mobility_functional_support",
+      "confidence": "user_reported",
+      "public_label": "Functional limitation and assistive device documentation needed"
+    },
+    {
+      "tag": "benefits_administration",
+      "confidence": "user_reported",
+      "public_label": "ODSP/OW/MCCSS style case administration and document tracking"
+    },
+    {
+      "tag": "housing_home_operations",
+      "confidence": "user_reported",
+      "public_label": "Home setup, support planning, and physical binder organization"
+    },
+    {
+      "tag": "family_support_planning",
+      "confidence": "user_reported",
+      "public_label": "Family-facing explanation and support requests need neutral framing"
+    },
+    {
+      "tag": "consumer_dispute_tracking",
+      "confidence": "user_reported",
+      "public_label": "Telecom/device/billing dispute timeline and evidence package"
+    },
+    {
+      "tag": "pregnancy_household_preparation",
+      "confidence": "user_reported",
+      "public_label": "Household planning around incoming twins; private specifics omitted"
+    },
+    {
+      "tag": "libby_product_development",
+      "confidence": "confirmed_repo",
+      "public_label": "Founding user is also product builder and field tester"
+    }
+  ],
+  "google_calendar_seed": {
+    "calendar_timezone": "America/Toronto",
+    "event_model": {
+      "event_id": "cal_001_YYYYMMDD_slug",
+      "source": "google_calendar | manual | gmail | transcript | inferred_placeholder",
+      "title": "event title",
+      "start_at": "ISO-8601 timestamp",
+      "end_at": "ISO-8601 timestamp",
+      "confidence": "confirmed_source | user_reported | inferred_placeholder",
+      "linked_outputs": [],
+      "pre_brief_required": true,
+      "post_brief_required": true
+    },
+    "seed_events": [
+      {
+        "event_id": "cal_001_20260422_odsp_meeting",
+        "source": "user_reported_prior_context",
+        "title": "ODSP meeting / review preparation",
+        "start_at": "2026-04-22T00:00:00-04:00",
+        "end_at": null,
+        "confidence": "user_reported",
+        "pre_brief_required": true,
+        "post_brief_required": true,
+        "notes": "Exact time/location must be confirmed from private calendar/email before use in a final human-facing document."
+      },
+      {
+        "event_id": "cal_001_20260703_twins_expected_window",
+        "source": "user_reported_prior_context",
+        "title": "Expected twins due-date window / household readiness planning",
+        "start_at": "2026-07-03T00:00:00-04:00",
+        "end_at": null,
+        "confidence": "user_reported",
+        "pre_brief_required": true,
+        "post_brief_required": false,
+        "notes": "Use as planning anchor only; confirm with private medical/calendar source before external presentation."
+      }
+    ]
+  },
+  "memory_seed": [
+    {
+      "memory_id": "mem_001_preference_written_first",
+      "category": "communication",
+      "statement": "User benefits from written-first outputs that can be read on an iPad or spoken through text-to-speech.",
+      "confidence": "user_reported",
+      "public_safe": true,
+      "use_in_outputs": true
+    },
+    {
+      "memory_id": "mem_001_copy_paste_ready",
+      "category": "workflow",
+      "statement": "User often needs complete copy/paste-ready files, code blocks, or GitHub-ready structures rather than vague instructions.",
+      "confidence": "confirmed_interaction_pattern",
+      "public_safe": true,
+      "use_in_outputs": true
+    },
+    {
+      "memory_id": "mem_001_source_backed_outputs",
+      "category": "quality_rule",
+      "statement": "Final human-facing outputs should distinguish confirmed facts, user-reported facts, inferred patterns, missing evidence, and next actions.",
+      "confidence": "confirmed_product_requirement",
+      "public_safe": true,
+      "use_in_outputs": true
+    },
+    {
+      "memory_id": "mem_001_private_evidence_boundary",
+      "category": "privacy_rule",
+      "statement": "Raw medical, benefits, family, financial, and provider evidence must stay out of the public repository unless explicitly redacted and approved.",
+      "confidence": "system_design_rule",
+      "public_safe": true,
+      "use_in_outputs": true
+    }
+  ],
+  "skills_seed": [
+    {
+      "skill_id": "skill_generate_handshake",
+      "name": "Generate audience-specific handshake",
+      "status": "draft",
+      "input_types": ["chat_context", "source_index", "calendar_event"],
+      "output_types": ["markdown_brief", "copy_paste_summary"],
+      "requires_sources": false,
+      "privacy_level": "public_safe_if_redacted",
+      "runtime": "manual_browser_now",
+      "next_build_step": "Add UI button that creates a handshake from selected event + selected evidence."
+    },
+    {
+      "skill_id": "skill_create_heartbeat",
+      "name": "Create system heartbeat",
+      "status": "planned",
+      "input_types": ["queue_status", "recent_commits", "calendar", "open_tasks"],
+      "output_types": ["json", "dashboard_card"],
+      "requires_sources": false,
+      "privacy_level": "public_safe_summary",
+      "runtime": "github_action_or_apps_script",
+      "next_build_step": "Create scheduled job that writes heartbeat JSON into private Drive and public redacted summary into repo."
+    },
+    {
+      "skill_id": "skill_detect_blinks",
+      "name": "Detect urgent blinks",
+      "status": "planned",
+      "input_types": ["gmail_queue", "drive_queue", "calendar", "failed_jobs"],
+      "output_types": ["blink_json", "dashboard_alert"],
+      "requires_sources": true,
+      "privacy_level": "private_case",
+      "runtime": "apps_script_then_local_worker",
+      "next_build_step": "Add Sheet formulas or Apps Script rules for deadline, source gap, failed job, and unprocessed attachment alerts."
+    },
+    {
+      "skill_id": "skill_prepare_pitch_demo",
+      "name": "Prepare investor/live demo brief",
+      "status": "draft",
+      "input_types": ["repo_state", "system_gaps", "demo_seed_user"],
+      "output_types": ["pitch_script", "demo_walkthrough", "ask_list"],
+      "requires_sources": false,
+      "privacy_level": "public_safe",
+      "runtime": "manual_browser_now",
+      "next_build_step": "Create one-page investor story and demo route inside the app."
+    }
+  ],
+  "active_outputs_needed": [
+    "live_demo_walkthrough",
+    "private_case_vault_plan",
+    "calendar_prebrief_protocol",
+    "gmail_drive_intake_test",
+    "device_support_ask_list",
+    "investor_pitch_ready_story"
+  ]
+}
