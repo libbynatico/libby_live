@@ -1,0 +1,36 @@
+name: Promote Auth Gate to Stable Root
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - auth_gate.html
+      - .github/workflows/promote-auth-gate.yml
+      - .github/trigger-promote-auth-gate.txt
+
+permissions:
+  contents: write
+
+jobs:
+  promote-auth-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Promote auth_gate.html to index.html
+        run: |
+          cp auth_gate.html index.html
+          echo "Auth gate promoted to root index.html"
+
+      - name: Commit root auth gate
+        run: |
+          git config user.name "libby-live-bot"
+          git config user.email "libby-live-bot@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No root index changes to commit"
+          else
+            git commit -m "Promote auth gate to stable root"
+            git push
+          fi
