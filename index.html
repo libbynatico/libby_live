@@ -3,96 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Libby</title>
-<meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b1020" media="(prefers-color-scheme: dark)">
-<meta name="description" content="Sign in to Libby, your private life dashboard.">
+<title>Opening Libby Live</title>
+<meta name="description" content="Libby Live app entrypoint.">
+<meta name="theme-color" content="#070b16">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Libby">
-<meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="/libby_live/manifest.json">
-<style>
-:root{color-scheme:light dark;--bg:#f7f8fb;--surface:#fff;--surface2:#f3f6fb;--text:#1f2937;--muted:#64748b;--line:#d8dee8;--primary:#2563eb;--primary2:#1d4ed8;--accent:#0f766e;--shadow:0 22px 70px rgba(15,23,42,.12);--radius:26px;--touch:46px;--focus:0 0 0 4px rgba(37,99,235,.14)}
-@media(prefers-color-scheme:dark){:root{--bg:#0b1020;--surface:#111a2f;--surface2:#0f172a;--text:#eef2ff;--muted:#a7b0c9;--line:#26365e;--primary:#8ab4f8;--primary2:#aecbfa;--accent:#5eead4;--shadow:0 26px 90px rgba(0,0,0,.45);--focus:0 0 0 4px rgba(138,180,248,.18)}}
-body[data-skin="midnight"]{--bg:#060b17;--surface:#0e1629;--surface2:#111c33;--text:#eef2ff;--muted:#a7b0d6;--line:#26365e;--primary:#8ab4f8;--primary2:#aecbfa;--accent:#5eead4;--shadow:0 26px 90px rgba(0,0,0,.48)}
-body[data-skin="soft"]{--bg:#f7f3ee;--surface:#fffaf4;--surface2:#f1e7da;--text:#2d241f;--muted:#6f625a;--line:#e0d4c8;--primary:#6d5dfc;--primary2:#5648da;--accent:#2f7d5a;--shadow:0 18px 60px rgba(70,50,20,.12)}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{width:100%;min-height:100%;margin:0}body{background:radial-gradient(circle at top left,color-mix(in srgb,var(--primary) 16%,transparent),transparent 28rem),var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif}.page{width:100%;min-height:100dvh;display:grid;grid-template-rows:minmax(0,1fr) auto;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}.main{display:grid;place-items:center;padding:18px}.portal{width:min(430px,100%);display:grid;gap:12px}.identity{text-align:center}.logo{width:64px;height:64px;border-radius:21px;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;display:grid;place-items:center;font-size:34px;font-weight:850;margin:0 auto 12px;box-shadow:0 16px 40px color-mix(in srgb,var(--primary) 22%,transparent)}.identity h1{margin:0;font-size:30px;line-height:1.05;font-weight:700;letter-spacing:-.045em}.identity p{margin:7px auto 0;max-width:330px;color:var(--muted);font-size:14px;line-height:1.35}.signin-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}.card-title{margin:0 0 14px;font-size:18px;font-weight:700}.field{position:relative;margin:0 0 10px}.field input{width:100%;min-height:54px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--text);font-size:16px;padding:17px 14px 7px;outline:0}.field label{position:absolute;left:12px;top:7px;color:var(--muted);font-size:12px;transition:.15s ease}.field input:focus{border-color:var(--primary);box-shadow:var(--focus)}.field input:focus+label,.field input:not(:placeholder-shown)+label{color:var(--primary)}.hint{margin:0 0 12px;color:var(--muted);font-size:12.5px;line-height:1.35}.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.primary,.secondary,.skin-btn,.option{min-height:var(--touch);border-radius:999px;font-size:14px;font-weight:750;cursor:pointer}.primary{border:0;background:var(--primary);color:#fff}.primary:hover{filter:brightness(.96)}.secondary{border:1px solid var(--line);background:var(--surface);color:var(--text)}.secondary:hover,.option:hover{background:var(--surface2)}.more{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}.more summary{list-style:none;cursor:pointer;color:var(--primary);font-size:14px;font-weight:750;min-height:34px;display:flex;align-items:center;justify-content:center}.more summary::-webkit-details-marker{display:none}.auth-options{display:grid;gap:8px;margin-top:8px}.option{border:1px solid var(--line);background:var(--surface);color:var(--text);display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none}.g-dot{width:18px;height:18px;border-radius:50%;background:conic-gradient(#4285f4 0 25%,#34a853 0 50%,#fbbc04 0 75%,#ea4335 0)}.apple-dot{width:18px;height:18px;border-radius:5px;background:currentColor}.passkey-dot{width:18px;height:18px;border-radius:50%;border:3px solid var(--primary)}.secondary-line{display:flex;justify-content:center;gap:14px;align-items:center;margin-top:10px}.secondary-line a,.secondary-line button{border:0;background:transparent;color:var(--primary);text-decoration:none;font-size:13px;font-weight:700;padding:8px 0;cursor:pointer}.skin-row{display:flex;justify-content:center;align-items:center;gap:7px}.skin-label{color:var(--muted);font-size:12px;font-weight:700}.skin-btn{min-height:32px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:12px;padding:0 10px}.skin-btn.active{border-color:var(--primary);color:var(--primary);background:color-mix(in srgb,var(--primary) 10%,var(--surface))}.below-card{text-align:center;color:var(--muted);font-size:11.5px;line-height:1.3}.footer{display:flex;justify-content:center;gap:18px;padding:6px 18px calc(8px + env(safe-area-inset-bottom));font-size:12px;color:var(--muted)}.footer a{color:var(--muted);text-decoration:none}.modal{position:fixed;inset:0;z-index:30;background:rgba(15,23,42,.52);display:grid;place-items:center;padding:18px}.modal.hide{display:none}.modal-card{width:min(430px,100%);background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:var(--shadow)}.modal-card h2{margin:0 0 8px;font-size:22px;font-weight:700}.modal-card p{color:var(--muted);line-height:1.44}.modal-actions{display:grid;gap:9px;margin-top:15px}.modal-actions a,.modal-actions button{min-height:46px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);text-decoration:none;display:flex;align-items:center;justify-content:center;font-weight:750;cursor:pointer}.modal-actions .primary-link{background:var(--primary);border-color:var(--primary);color:#fff}
-@media(orientation:portrait){.main{align-items:center}.portal{margin-top:-1vh}.signin-card{width:100%}}
-@media(orientation:landscape){.page{grid-template-rows:minmax(0,1fr)}.main{padding:8px 18px}.portal{width:min(780px,100%);grid-template-columns:minmax(250px,.9fr) minmax(340px,1fr);align-items:center;gap:20px}.identity{text-align:left}.logo{margin:0 0 12px}.identity h1{font-size:32px}.identity p{max-width:270px;margin-left:0}.signin-card{padding:18px}.skin-row,.below-card{grid-column:1/3}.footer{display:none}}
-@media(max-height:620px){.main{padding-top:6px;padding-bottom:6px}.logo{width:48px;height:48px;border-radius:15px;font-size:27px}.identity h1{font-size:24px}.identity p{font-size:12.5px}.signin-card{padding:14px}.card-title{margin-bottom:9px}.field input{min-height:50px}.hint{display:none}.option{min-height:42px}.more:not([open]){padding-top:7px}.below-card{display:none}.footer{display:none}}
-@media(max-width:520px){.main{padding:12px 20px 8px}.portal{width:100%;max-width:390px}.signin-card{box-shadow:none}.actions{grid-template-columns:1fr}.secondary-line{margin-top:8px}.skin-row{flex-wrap:wrap}.footer{padding-top:4px}}
-</style>
+<meta http-equiv="refresh" content="0; url=app.html">
+<style>html,body{margin:0;min-height:100%;background:#070b16;color:#f5f7ff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}.page{min-height:100dvh;display:grid;place-items:center;padding:20px}.card{border:1px solid rgba(146,166,220,.22);border-radius:26px;background:rgba(255,255,255,.06);padding:24px;max-width:520px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.38)}a{color:#8ab4ff}</style>
 </head>
-<body>
-<div class="page">
-  <main class="main">
-    <div class="portal">
-      <section class="identity" aria-labelledby="app-title">
-        <div class="logo" aria-hidden="true">L</div>
-        <h1 id="app-title">Libby</h1>
-        <p>Your private dashboard for notes, documents, tasks, letters, and support planning.</p>
-      </section>
-      <section class="signin-card" aria-labelledby="signin-title">
-        <h2 class="card-title" id="signin-title">Sign in</h2>
-        <div class="field">
-          <input id="identifier" name="identifier" autocomplete="username" inputmode="email" placeholder=" " />
-          <label for="identifier">Email or phone</label>
-        </div>
-        <p class="hint">Testing mode: account packets are local until email/SMS login is connected.</p>
-        <div class="actions">
-          <button class="primary" onclick="continueEmail()">Continue</button>
-          <button class="secondary" onclick="location.href='onboarding.html'">Create account</button>
-        </div>
-        <details class="more">
-          <summary>More sign-in options</summary>
-          <div class="auth-options" aria-label="Sign-in options">
-            <button class="option" onclick="chooseAuth('google')"><span class="g-dot" aria-hidden="true"></span>Google</button>
-            <button class="option" onclick="chooseAuth('apple')"><span class="apple-dot" aria-hidden="true"></span>Apple</button>
-            <button class="option" onclick="chooseAuth('passkey')"><span class="passkey-dot" aria-hidden="true"></span>Passkey / Face ID</button>
-          </div>
-        </details>
-        <div class="secondary-line">
-          <a href="libby_librarian.html?mode=demo&user=demo_001">Guest demo</a>
-          <button onclick="showDev()">Developer</button>
-        </div>
-      </section>
-      <section aria-label="Appearance options">
-        <div class="skin-row">
-          <span class="skin-label">Skin</span>
-          <button class="skin-btn active" data-skin="system" onclick="setSkin('system')">System</button>
-          <button class="skin-btn" data-skin="midnight" onclick="setSkin('midnight')">Dark</button>
-          <button class="skin-btn" data-skin="soft" onclick="setSkin('soft')">Soft</button>
-        </div>
-      </section>
-      <div class="below-card">ID verification appears after account creation as a pending task. It will not block first entry.</div>
-    </div>
-  </main>
-  <footer class="footer">
-    <a href="libby_librarian.html?mode=demo&user=demo_001">Demo</a>
-    <a href="#" onclick="showDev();return false">Dev</a>
-  </footer>
-</div>
-<div id="modal" class="modal hide" role="dialog" aria-modal="true">
-  <section class="modal-card">
-    <h2 id="modalTitle">Continue to Libby</h2>
-    <p id="modalText"></p>
-    <div class="modal-actions" id="modalActions">
-      <a class="primary-link" href="onboarding.html">Create local account packet</a>
-      <button onclick="closeModal()">Back</button>
-    </div>
-  </section>
-</div>
-<script>
-const modal=document.getElementById('modal');
-function closeModal(){modal.classList.add('hide')}
-function openModal(title,text,primaryHref,dev){document.getElementById('modalTitle').textContent=title;document.getElementById('modalText').textContent=text;const actions=document.getElementById('modalActions');actions.innerHTML=dev?'<a class="primary-link" href="enter.html?user=001">Open Matthew dashboard</a><a href="libby_librarian.html?mode=demo&user=demo_001">Open guest demo</a><button onclick="closeModal()">Back</button>':'<a class="primary-link" href="'+primaryHref+'">Create local account packet</a><button onclick="closeModal()">Back</button>';modal.classList.remove('hide')}
-function chooseAuth(kind){const copy={google:['Continue with Google','Google sign-in will connect Gmail, Drive, Calendar, and the Libby user profile after backend auth is wired.'],apple:['Continue with Apple','Apple sign-in will support the iPhone/iPad Face ID account path after backend auth is wired.'],passkey:['Use passkey or Face ID','Passkey login will unlock Libby without passwords after backend auth is wired.']}[kind];openModal(copy[0],copy[1],'onboarding.html',false)}
-function continueEmail(){const id=document.getElementById('identifier').value.trim();if(!id){document.getElementById('identifier').focus();return}openModal('Account lookup','Real email/SMS lookup is not connected yet. For tonight, create a local account packet or use developer access for the existing dashboard.','onboarding.html?contact='+encodeURIComponent(id),false)}
-function showDev(){openModal('Developer access','Temporary testing route for showing the existing Matthew dashboard before Kellsie creates her own account.',null,true)}
-function setSkin(skin){localStorage.setItem('libby_skin',skin);document.body.removeAttribute('data-skin');if(skin!=='system')document.body.setAttribute('data-skin',skin);document.querySelectorAll('.skin-btn').forEach(b=>b.classList.toggle('active',b.dataset.skin===skin))}
-setSkin(localStorage.getItem('libby_skin')||'system');
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
-</script>
-</body>
+<body><main class="page"><section class="card"><h1>Opening Libby Live…</h1><p>The app should open automatically.</p><p><a href="app.html">Open Libby app</a></p><p><a href="legacy-login.html">Legacy login</a></p></section></main><script>location.replace('app.html'+location.search+location.hash)</script></body>
 </html>
