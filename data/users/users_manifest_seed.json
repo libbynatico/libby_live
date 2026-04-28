@@ -1,0 +1,123 @@
+{
+  "schema_version": "0.1.0",
+  "generated_at": "2026-04-28T06:55:00-04:00",
+  "timezone": "America/Toronto",
+  "portal_rule": "One portal. Guest mode shows demo. Authenticated mode shows private live workspace for the signed-in user.",
+  "public_safety_note": "Public-safe seed manifest only. Do not place private medical, benefits, family, financial, or provider evidence in this file.",
+  "users": [
+    {
+      "user_id": "001",
+      "display_name": "Founding User / Patient Zero",
+      "profile_type": "real_user_redacted_public_seed",
+      "status": "active_seed",
+      "primary_case_id": "case_001_life_librarian",
+      "auth_targets": ["google_oauth", "apple_sign_in", "passkey_faceid_unlock"],
+      "roles": ["case_owner", "product_builder", "demo_narrator"],
+      "default_portal_mode": "live_authenticated",
+      "guest_visible_counterpart": "demo_001",
+      "allowed_modes": ["live", "meeting", "intake", "admin", "pitch", "demo_redacted", "always_on_dashboard"],
+      "privacy_default": "private",
+      "demo_allowed": true,
+      "demo_notes": "Can explain a mild/redacted version of the workflow to investors/supporters while keeping raw evidence private."
+    },
+    {
+      "user_id": "002",
+      "display_name": "Kellsie",
+      "profile_type": "real_user_placeholder_public_seed",
+      "status": "invited_placeholder",
+      "primary_case_id": "case_002_kellsie_private",
+      "shared_case_ids": ["case_household_001"],
+      "auth_targets": ["google_oauth", "apple_sign_in", "passkey_faceid_unlock"],
+      "roles": ["case_owner", "household_member"],
+      "default_portal_mode": "live_authenticated",
+      "allowed_modes": ["live", "meeting", "intake", "shared_household", "always_on_dashboard"],
+      "privacy_default": "private",
+      "demo_allowed": false,
+      "demo_notes": "Do not use private details in demo unless separately consented and redacted."
+    },
+    {
+      "user_id": "003",
+      "display_name": "Newfie Nikki",
+      "profile_type": "real_user_placeholder_public_seed",
+      "status": "invited_placeholder",
+      "primary_case_id": "case_003_newfie_nikki_private",
+      "shared_case_ids": [],
+      "auth_targets": ["google_oauth", "apple_sign_in", "passkey_faceid_unlock"],
+      "roles": ["case_owner", "second_user_validation"],
+      "default_portal_mode": "live_authenticated",
+      "allowed_modes": ["live", "intake", "meeting", "always_on_dashboard"],
+      "privacy_default": "private",
+      "demo_allowed": false,
+      "demo_notes": "Use as second-user validation only after consent and separate onboarding."
+    },
+    {
+      "user_id": "demo_001",
+      "display_name": "Libby Demo Guest",
+      "profile_type": "synthetic_or_redacted_demo",
+      "status": "active_demo",
+      "primary_case_id": "case_demo_001",
+      "auth_targets": ["guest_mode", "optional_demo_pin"],
+      "roles": ["demo_viewer"],
+      "default_portal_mode": "guest_demo",
+      "allowed_modes": ["demo", "pitch", "always_on_dashboard_demo"],
+      "privacy_default": "demo_redacted",
+      "demo_allowed": true,
+      "demo_notes": "Safe mild walkthrough for investors/supporters. No raw private evidence."
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "case_001_life_librarian",
+      "primary_user_id": "001",
+      "case_label": "Founding Life Librarian Case",
+      "privacy_level": "private",
+      "public_demo_counterpart": "case_demo_001",
+      "allowed_user_ids": ["001"],
+      "status": "active_seed"
+    },
+    {
+      "case_id": "case_002_kellsie_private",
+      "primary_user_id": "002",
+      "case_label": "Kellsie Private Case",
+      "privacy_level": "private",
+      "allowed_user_ids": ["002"],
+      "status": "placeholder_pending_onboarding"
+    },
+    {
+      "case_id": "case_003_newfie_nikki_private",
+      "primary_user_id": "003",
+      "case_label": "Newfie Nikki Private Case",
+      "privacy_level": "private",
+      "allowed_user_ids": ["003"],
+      "status": "placeholder_pending_onboarding"
+    },
+    {
+      "case_id": "case_household_001",
+      "primary_user_id": "001",
+      "case_label": "Shared Household / Family Operations",
+      "privacy_level": "shared_family_explicit",
+      "allowed_user_ids": ["001", "002"],
+      "status": "planned",
+      "rule": "Shared household case does not automatically reveal either person’s private case vault."
+    },
+    {
+      "case_id": "case_demo_001",
+      "primary_user_id": "demo_001",
+      "case_label": "Libby Mild Demo Case",
+      "privacy_level": "demo_redacted",
+      "allowed_user_ids": ["demo_001"],
+      "status": "active_demo_seed",
+      "rule": "Only synthetic, redacted, or mild workflows. No raw private evidence."
+    }
+  ],
+  "access_rules": [
+    "Single portal entry: guest mode renders demo_001; authenticated mode resolves to the signed-in user_id.",
+    "A real user can sign into libby_live with Google OAuth, Sign in with Apple, or passkey-supported device authentication.",
+    "Face ID is treated as a device/passkey unlock layer, not a standalone server identity.",
+    "Each user has a private case by default.",
+    "Shared household cases require explicit membership and do not merge private vaults.",
+    "Guest/demo mode must never read from private user cases.",
+    "Investor/supporter viewers should see demo_001, not userid=001 private data.",
+    "All private evidence requires source-level permissions and audit logging."
+  ]
+}
