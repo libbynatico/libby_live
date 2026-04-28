@@ -1,0 +1,11 @@
+{
+  "archived_at_utc": "20260428T175117Z",
+  "source_branch": "main",
+  "source_sha": "8758f73c97476e16b773ea1ce3e007379f904525",
+  "source_repository": "libbynatico/libby_live",
+  "files": [
+    "index.html",
+    "netlify/functions/chat.js",
+    ".github/workflows/version-archive.yml"
+  ]
+}
