@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Libby Chat</title>
+  <style>
+    :root { --bg:#0b1020; --panel:#101832; --panel2:#182244; --text:#eef2ff; --muted:#a7b0d6; --line:#2a396d; --accent:#75a7ff; --good:#42c08c; --warn:#f2bb5e; --bad:#ef6f6f; }
+    * { box-sizing:border-box; }
+    html,body { margin:0; height:100%; background:linear-gradient(180deg,#08101f,#0d1530); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+    .app { height:100dvh; display:grid; grid-template-rows:auto 1fr auto; max-width:980px; margin:0 auto; border-left:1px solid var(--line); border-right:1px solid var(--line); background:rgba(10,16,34,.7); }
+    header { padding:14px 16px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:12px; background:rgba(10,16,34,.95); }
+    .brand { display:flex; align-items:center; gap:10px; }
+    .mark { width:34px; height:34px; border-radius:9px; display:grid; place-items:center; background:linear-gradient(135deg,#75a7ff,#446fe0); font-weight:800; }
+    h1 { font-size:16px; margin:0; }
+    .status { color:var(--muted); font-size:12px; }
+    .top-actions button { font-size:12px; }
+    main { overflow:auto; padding:18px 14px 24px; }
+    .msg { max-width:88%; margin:0 0 16px; padding:12px 14px; border:1px solid var(--line); border-radius:14px; white-space:pre-wrap; line-height:1.45; font-size:14px; }
+    .user { margin-left:auto; background:rgba(117,167,255,.13); border-color:rgba(117,167,255,.35); }
+    .libby { margin-right:auto; background:rgba(24,34,68,.95); }
+    .libby h2 { font-size:14px; margin:12px 0 6px; color:#cfe0ff; }
+    .libby h2:first-child { margin-top:0; }
+    .libby ul { margin:6px 0 10px 18px; padding:0; }
+    .source { margin-top:8px; padding:8px; border-left:3px solid var(--accent); background:rgba(117,167,255,.08); border-radius:6px; font-size:12px; color:var(--muted); }
+    footer { padding:10px; border-top:1px solid var(--line); background:rgba(10,16,34,.97); }
+    .composer { display:grid; grid-template-columns:auto 1fr auto; gap:8px; align-items:end; }
+    textarea { width:100%; resize:none; min-height:44px; max-height:140px; border:1px solid var(--line); border-radius:12px; background:#101832; color:var(--text); padding:11px 12px; font:inherit; outline:none; }
+    button { border:1px solid rgba(117,167,255,.42); background:rgba(117,167,255,.16); color:var(--text); border-radius:10px; padding:10px 12px; font-weight:700; cursor:pointer; }
+    button:hover { background:rgba(117,167,255,.26); }
+    .send { background:rgba(66,192,140,.18); border-color:rgba(66,192,140,.46); }
+    .hidden { display:none; }
+    .hint { font-size:11px; color:var(--muted); margin-top:6px; }
+    .pill { display:inline-block; border:1px solid var(--line); color:var(--muted); padding:3px 7px; border-radius:999px; margin:2px; font-size:11px; }
+    dialog { max-width:720px; width:calc(100% - 32px); border:1px solid var(--line); border-radius:14px; background:#101832; color:var(--text); padding:0; }
+    dialog::backdrop { background:rgba(0,0,0,.55); }
+    .modal { padding:16px; }
+    input,select { width:100%; border:1px solid var(--line); background:#0f1730; color:var(--text); border-radius:8px; padding:10px; margin:6px 0 10px; }
+    @media(max-width:700px){ .app{border:0;} .msg{max-width:96%;} header{padding:12px;} main{padding:14px 10px 20px;} }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand"><div class="mark">L</div><div><h1>Libby</h1><div class="status">Drive-backed librarian shell · no Netlify required</div></div></div>
+    <div class="top-actions"><button onclick="openSources()">Sources</button><button onclick="exportChat()">Export</button></div>
+  </header>
+  <main id="chat"></main>
+  <footer>
+    <div class="composer">
+      <button onclick="document.getElementById('file').click()">＋</button>
+      <textarea id="input" placeholder="Message Libby or describe what you uploaded…" onkeydown="handleKey(event)"></textarea>
+      <button class="send" onclick="sendMessage()">Send</button>
+    </div>
+    <input class="hidden" id="file" type="file" multiple accept="audio/*,image/*,.pdf,.txt,.md,.csv,.json" onchange="handleFiles(event)">
+    <div class="hint">Use + to attach audio/photos/docs. Current static mode stores source text locally and produces clean, shareable responses with citations when sources are indexed.</div>
+  </footer>
+</div>
+
+<dialog id="sourcesModal">
+  <div class="modal">
+    <h2>Sources / Connectors</h2>
+    <p class="status">Manual index today. Designed for Drive, Gmail, Discord, GitHub, and future userID connectors.</p>
+    <label>Connector</label>
+    <select id="sourceConnector"><option>Google Drive</option><option>Gmail</option><option>Discord</option><option>GitHub</option><option>Manual</option></select>
+    <label>File / thread / message name</label>
+    <input id="sourceName" placeholder="Example: ODSP Call Apr 17 transcript">
+    <label>URL or ID</label>
+    <input id="sourceUrl" placeholder="Drive URL, Gmail thread ID, Discord link, GitHub path…">
+    <label>Paste source text / transcript / excerpt</label>
+    <textarea id="sourceText" style="min-height:180px" placeholder="Paste source material here"></textarea>
+    <button class="send" onclick="addSource()">Add source</button>
+    <button onclick="importSources()">Import JSON</button>
+    <button onclick="downloadSources()">Download sources</button>
+    <button onclick="document.getElementById('sourcesModal').close()">Close</button>
+    <div id="sourceList" style="margin-top:14px"></div>
+  </div>
+</dialog>
+
+<script>
+const CHAT_KEY='libby_chat_v1';
+const SRC_KEY='libby_sources_v1';
+let messages=JSON.parse(localStorage.getItem(CHAT_KEY)||'[]');
+let sources=JSON.parse(localStorage.getItem(SRC_KEY)||'[]');
+let pendingFiles=[];
+
+function save(){ localStorage.setItem(CHAT_KEY,JSON.stringify(messages)); localStorage.setItem(SRC_KEY,JSON.stringify(sources)); }
+function esc(s){ return String(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function tokenize(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(w=>w.length>2); }
+function inferTags(text){ const l=String(text||'').toLowerCase(); const tags=[]; if(/itch|rash|scratch/.test(l))tags.push('symptom_tracking','itching'); if(/blood pressure|\bbp\b|systolic|diastolic/.test(l))tags.push('blood_pressure'); if(/wake|alarm|sleep/.test(l))tags.push('wake_system'); if(/odsp|ontario works|benefit|worker/.test(l))tags.push('odsp_ow'); if(/baby|twins|pregnan/.test(l))tags.push('pregnancy_twins'); if(/drive|gmail|discord|github|libby|app|netlify/.test(l))tags.push('libby_product'); return [...new Set(tags)]; }
+function render(){ const chat=document.getElementById('chat'); chat.innerHTML=''; if(!messages.length){ addWelcome(); return; } messages.forEach(m=>{ const div=document.createElement('div'); div.className='msg '+(m.role==='user'?'user':'libby'); div.innerHTML=m.html||esc(m.text); chat.appendChild(div); }); chat.scrollTop=chat.scrollHeight; }
+function addWelcome(){ const chat=document.getElementById('chat'); chat.innerHTML=`<div class="msg libby"><h2>Libby is ready.</h2>This is the ChatGPT-style shell: type, attach, ask, and get clean usable outputs. Add Drive/Gmail/Discord source text through <b>Sources</b> for citation-backed answers.<h2>Good first tests</h2><ul><li>“What does this connect to?”</li><li>“Clean this into a family update.”</li><li>“What should I ask next?”</li></ul></div>`; }
+function handleKey(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); } }
+function handleFiles(e){ pendingFiles=[...e.target.files]; const names=pendingFiles.map(f=>f.name).join(', '); const box=document.getElementById('input'); box.value=(box.value?box.value+'\n':'')+`Attached: ${names}\nWhat should Libby do with this?`; }
+function searchSources(q){ const terms=tokenize(q); return sources.map(s=>{ const hay=[s.name,s.connector,s.url,(s.tags||[]).join(' '),s.text].join(' ').toLowerCase(); let score=0; for(const t of terms){ if(hay.includes(t))score++; if((s.tags||[]).join(' ').toLowerCase().includes(t))score+=2; if(String(s.name).toLowerCase().includes(t))score+=2; } return {s,score}; }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,5); }
+function snippet(text,terms){ const clean=String(text||'').replace(/\s+/g,' ').trim(); let pos=-1; const low=clean.toLowerCase(); for(const t of terms){ const p=low.indexOf(t); if(p>=0&&(pos<0||p<pos))pos=p; } if(pos<0)return clean.slice(0,260)+(clean.length>260?'…':''); const start=Math.max(0,pos-100), end=Math.min(clean.length,pos+240); return (start?'…':'')+clean.slice(start,end)+(end<clean.length?'…':''); }
+function makeCleanResponse(q,hits,files){ const terms=tokenize(q); const tags=[...new Set(hits.flatMap(h=>h.s.tags||[]))]; const wantsClean=/clean|share|send|family|update|summary|format|usable|polish/i.test(q); const wantsQuestions=/question|ask|clarify|follow/i.test(q); let html='';
+  html+='<h2>Clean usable output</h2>';
+  if(hits.length){ html+='Based on the indexed source material, the core point is:\n\n'; html+=esc(snippet(hits[0].s.text,terms)); }
+  else if(files.length){ html+='I see attached file(s), but this static no-backend version cannot yet transcribe or OCR them directly. Add/paste the transcript or source text in Sources, then I can clean and cite it.'; }
+  else { html+='I can help, but I need source material or more context to avoid guessing.'; }
+  html+='<h2>What connects</h2>';
+  html+='<ul>'+(tags.length?tags.map(t=>`<li>${esc(t.replaceAll('_',' '))}</li>`).join(''):'<li>No source-backed category yet. Add source text or ask me to classify from your message only.</li>')+'</ul>';
+  html+='<h2>Actionable next step</h2><ul>';
+  if(!hits.length && !files.length) html+='<li>Add the Drive/Gmail/Discord source in Sources so I can cite it.</li>';
+  if(files.length) html+='<li>For audio/photo/PDF: paste transcript/OCR text for now, or wire the connector/worker next.</li>';
+  if(hits.length) html+='<li>Turn this into a shareable note, clinical summary, family update, or task list.</li>';
+  html+='</ul>';
+  html+='<h2>Follow-up</h2><ul><li>Do you want this cleaned for Kellsie/family, a clinician, or your own system log?</li><li>Should I treat this as an event update, evidence item, or project requirement?</li></ul>';
+  if(hits.length){ html+='<h2>Sources</h2>'; hits.forEach((h,i)=>{ const s=h.s; html+=`<div class="source"><b>[${i+1}] ${esc(s.name)}</b><br>${esc(s.connector)} ${s.url?` · <a href="${esc(s.url)}" target="_blank">open source</a>`:''}<br>${esc(snippet(s.text,terms))}<br>Confidence: ${esc(s.confidence||'manual')}</div>`; }); }
+  return html; }
+function sendMessage(){ const input=document.getElementById('input'); const text=input.value.trim(); if(!text&&!pendingFiles.length)return; const fileMeta=pendingFiles.map(f=>({name:f.name,type:f.type,size:f.size})); messages.push({role:'user',text:text+(fileMeta.length?'\nFiles: '+fileMeta.map(f=>f.name).join(', '):'')}); const hits=searchSources(text+' '+fileMeta.map(f=>f.name).join(' ')); const html=makeCleanResponse(text,hits,fileMeta); messages.push({role:'libby',html}); pendingFiles=[]; input.value=''; document.getElementById('file').value=''; save(); render(); }
+function openSources(){ document.getElementById('sourcesModal').showModal(); renderSources(); }
+function addSource(){ const connector=document.getElementById('sourceConnector').value; const name=document.getElementById('sourceName').value.trim()||'Untitled source'; const url=document.getElementById('sourceUrl').value.trim(); const text=document.getElementById('sourceText').value.trim(); if(!text){alert('Paste source text first.');return;} sources.unshift({id:'src_'+Date.now(),connector,name,url,text,tags:inferTags(text+' '+name),confidence:'manual_paste',created_at:new Date().toISOString()}); document.getElementById('sourceName').value=''; document.getElementById('sourceUrl').value=''; document.getElementById('sourceText').value=''; save(); renderSources(); }
+function renderSources(){ const el=document.getElementById('sourceList'); if(!sources.length){el.innerHTML='<p class="status">No indexed sources yet.</p>';return;} el.innerHTML=sources.map(s=>`<div class="source"><b>${esc(s.name)}</b><br>${esc(s.connector)}${s.url?' · '+esc(s.url):''}<br>${(s.tags||[]).map(t=>`<span class="pill">${esc(t)}</span>`).join('')}<br>${esc(String(s.text).slice(0,220))}${String(s.text).length>220?'…':''}</div>`).join(''); }
+function downloadSources(){ const blob=new Blob([JSON.stringify(sources,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='libby_sources.json'; a.click(); }
+function importSources(){ const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json'; inp.onchange=()=>{ const file=inp.files[0]; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); if(Array.isArray(data)){ sources=data.concat(sources); save(); renderSources(); } }catch(e){ alert(e.message); } }; reader.readAsText(file); }; inp.click(); }
+function exportChat(){ const blob=new Blob([messages.map(m=>`${m.role.toUpperCase()}:\n${m.text||m.html?.replace(/<[^>]+>/g,'')||''}`).join('\n\n---\n\n')],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='libby_chat_export.txt'; a.click(); }
+render();
+</script>
+</body>
+</html>
