@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Libby Live</title>
+<meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1020" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Sign in to Libby Live, the mobile-first advocacy and case-support assistant.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Libby">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/libby_live/manifest.json">
+<style>
+:root{color-scheme:light dark;--bg:#f8fafc;--surface:#fff;--surface2:#f1f5f9;--text:#202124;--muted:#5f6368;--line:#dadce0;--blue:#1a73e8;--blue2:#1558b0;--good:#137333;--warn:#b06000;--shadow:0 18px 60px rgba(60,64,67,.12);--radius:24px;--touch:46px;--focus:0 0 0 4px rgba(26,115,232,.14)}
+@media(prefers-color-scheme:dark){:root{--bg:#0b1020;--surface:#121a2f;--surface2:#0f172a;--text:#eef2ff;--muted:#a7b0d6;--line:#2a396d;--blue:#8ab4f8;--blue2:#aecbfa;--good:#81c995;--warn:#fdd663;--shadow:0 22px 80px rgba(0,0,0,.42);--focus:0 0 0 4px rgba(138,180,248,.18)}}
+body[data-skin="midnight"]{--bg:#060b17;--surface:#0e1629;--surface2:#111c33;--text:#eef2ff;--muted:#a7b0d6;--line:#26365e;--blue:#8ab4f8;--good:#5eead4;--warn:#fdd663;--shadow:0 26px 90px rgba(0,0,0,.48)}
+body[data-skin="soft"]{--bg:#f7f3ee;--surface:#fffaf4;--surface2:#f1e7da;--text:#2d241f;--muted:#6f625a;--line:#e0d4c8;--blue:#6d5dfc;--good:#2f7d5a;--warn:#a15c00;--shadow:0 18px 60px rgba(70,50,20,.12)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{width:100%;min-height:100%;margin:0}body{background:var(--bg);color:var(--text);font-family:Roboto,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}.page{width:100%;min-height:100dvh;display:grid;grid-template-rows:minmax(0,1fr) auto;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}.main{display:grid;place-items:center;padding:12px 18px 10px}.portal{width:min(420px,100%);display:grid;gap:12px}.identity{text-align:center}.logo{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,var(--blue),var(--good));color:#fff;display:grid;place-items:center;font-size:31px;font-weight:850;margin:0 auto 10px}.identity h1{margin:0;font-size:26px;line-height:1.1;font-weight:620;letter-spacing:-.02em}.identity p{margin:6px auto 0;max-width:320px;color:var(--muted);font-size:14px;line-height:1.35}.signin-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}.card-title{margin:0 0 14px;font-size:18px;font-weight:650}.field{position:relative;margin:0 0 10px}.field input{width:100%;min-height:54px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--text);font-size:16px;padding:17px 14px 7px;outline:0}.field label{position:absolute;left:12px;top:7px;color:var(--muted);font-size:12px;transition:.15s ease}.field input:focus{border-color:var(--blue);box-shadow:var(--focus)}.field input:focus+label,.field input:not(:placeholder-shown)+label{color:var(--blue)}.hint{margin:0 0 12px;color:var(--muted);font-size:12.5px;line-height:1.35}.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.primary,.secondary,.ghost,.skin-btn,.option{min-height:var(--touch);border-radius:999px;font-size:14px;font-weight:700;cursor:pointer}.primary{border:0;background:var(--blue);color:#fff}.primary:hover{filter:brightness(.96)}.secondary{border:1px solid var(--line);background:var(--surface);color:var(--text)}.secondary:hover,.option:hover{background:var(--surface2)}.ghost{border:0;background:transparent;color:var(--blue)}.more{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}.more summary{list-style:none;cursor:pointer;color:var(--blue);font-size:14px;font-weight:700;min-height:34px;display:flex;align-items:center;justify-content:center}.more summary::-webkit-details-marker{display:none}.auth-options{display:grid;gap:8px;margin-top:8px}.option{border:1px solid var(--line);background:var(--surface);color:var(--text);display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none}.g-dot{width:18px;height:18px;border-radius:50%;background:conic-gradient(#4285f4 0 25%,#34a853 0 50%,#fbbc04 0 75%,#ea4335 0)}.apple-dot{width:18px;height:18px;border-radius:5px;background:currentColor}.passkey-dot{width:18px;height:18px;border-radius:50%;border:3px solid var(--blue)}.secondary-line{display:flex;justify-content:center;gap:14px;align-items:center;margin-top:10px}.secondary-line a,.secondary-line button{border:0;background:transparent;color:var(--blue);text-decoration:none;font-size:13px;font-weight:650;padding:8px 0;cursor:pointer}.skin-card{background:transparent;border:0;box-shadow:none;padding:0}.skin-row{display:flex;justify-content:center;align-items:center;gap:7px}.skin-label{color:var(--muted);font-size:12px;font-weight:650}.skin-btn{min-height:32px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:12px;padding:0 10px}.skin-btn.active{border-color:var(--blue);color:var(--blue);background:color-mix(in srgb,var(--blue) 10%,var(--surface))}.below-card{text-align:center;color:var(--muted);font-size:11.5px;line-height:1.3}.footer{display:flex;justify-content:center;gap:18px;padding:6px 18px calc(8px + env(safe-area-inset-bottom));font-size:12px;color:var(--muted)}.footer a{color:var(--muted);text-decoration:none}.modal{position:fixed;inset:0;z-index:30;background:rgba(32,33,36,.45);display:grid;place-items:center;padding:18px}.modal.hide{display:none}.modal-card{width:min(420px,100%);background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:var(--shadow)}.modal-card h2{margin:0 0 8px;font-size:22px;font-weight:620}.modal-card p{color:var(--muted);line-height:1.44}.modal-actions{display:grid;gap:9px;margin-top:15px}.modal-actions a,.modal-actions button{min-height:46px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);text-decoration:none;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer}.modal-actions .primary-link{background:var(--blue);border-color:var(--blue);color:#fff}
+@media(orientation:portrait){.main{align-items:center}.portal{margin-top:-1vh}.signin-card{width:100%}.identity p{display:block}}
+@media(orientation:landscape){.page{grid-template-rows:minmax(0,1fr)}.main{padding:8px 18px}.portal{width:min(760px,100%);grid-template-columns:minmax(235px,.9fr) minmax(330px,1fr);align-items:center;gap:18px}.identity{text-align:left}.logo{margin:0 0 12px}.identity h1{font-size:28px}.identity p{max-width:260px;margin-left:0}.signin-card{padding:16px}.card-title{font-size:17px;margin-bottom:11px}.hint{font-size:12px}.more{margin-top:10px;padding-top:8px}.auth-options{grid-template-columns:1fr}.skin-card,.below-card{grid-column:1/3}.skin-row{justify-content:center}.footer{display:none}}
+@media(max-height:620px){.main{padding-top:6px;padding-bottom:6px}.logo{width:48px;height:48px;border-radius:15px;font-size:27px}.identity h1{font-size:23px}.identity p{font-size:12.5px}.signin-card{padding:14px}.card-title{margin-bottom:9px}.field input{min-height:50px}.hint{display:none}.option{min-height:42px}.more:not([open]){padding-top:7px}.below-card{display:none}.footer{display:none}}
+@media(max-width:520px){.main{padding:10px 20px 8px}.portal{width:100%;max-width:390px}.signin-card{box-shadow:none}.actions{grid-template-columns:1fr}.secondary-line{margin-top:8px}.skin-row{flex-wrap:wrap}.footer{padding-top:4px}}
+</style>
+</head>
+<body>
+<div class="page">
+  <main class="main">
+    <div class="portal">
+      <section class="identity" aria-labelledby="app-title">
+        <div class="logo" aria-hidden="true">L</div>
+        <h1 id="app-title">Libby Live</h1>
+        <p>Private advocacy dashboard, documents, tasks, letters, and case memory.</p>
+      </section>
+      <section class="signin-card" aria-labelledby="signin-title">
+        <h2 class="card-title" id="signin-title">Sign in</h2>
+        <div class="field">
+          <input id="identifier" name="identifier" autocomplete="username" inputmode="email" placeholder=" " />
+          <label for="identifier">Email or phone</label>
+        </div>
+        <p class="hint">Email confirmation and SMS codes are not live yet. This test build creates a local account packet before entering Libby.</p>
+        <div class="actions">
+          <button class="primary" onclick="continueEmail()">Continue</button>
+          <button class="secondary" onclick="location.href='onboarding.html'">Create account</button>
+        </div>
+        <details class="more">
+          <summary>More sign-in options</summary>
+          <div class="auth-options" aria-label="Sign-in options">
+            <button class="option" onclick="chooseAuth('google')"><span class="g-dot" aria-hidden="true"></span>Google</button>
+            <button class="option" onclick="chooseAuth('apple')"><span class="apple-dot" aria-hidden="true"></span>Apple</button>
+            <button class="option" onclick="chooseAuth('passkey')"><span class="passkey-dot" aria-hidden="true"></span>Passkey / Face ID</button>
+          </div>
+        </details>
+        <div class="secondary-line">
+          <a href="libby_librarian.html?mode=demo&user=demo_001">Guest demo</a>
+          <button onclick="showDev()">Developer</button>
+        </div>
+      </section>
+      <section class="skin-card" aria-label="Appearance options">
+        <div class="skin-row">
+          <span class="skin-label">Skin</span>
+          <button class="skin-btn active" data-skin="system" onclick="setSkin('system')">System</button>
+          <button class="skin-btn" data-skin="midnight" onclick="setSkin('midnight')">Dark</button>
+          <button class="skin-btn" data-skin="soft" onclick="setSkin('soft')">Soft</button>
+        </div>
+      </section>
+      <div class="below-card">ID verification appears after account creation as a pending task. It should not block first entry.</div>
+    </div>
+  </main>
+  <footer class="footer">
+    <a href="libby_librarian.html?mode=demo&user=demo_001">Demo</a>
+    <a href="#" onclick="showDev();return false">Dev</a>
+  </footer>
+</div>
+<div id="modal" class="modal hide" role="dialog" aria-modal="true">
+  <section class="modal-card">
+    <h2 id="modalTitle">Continue to Libby</h2>
+    <p id="modalText"></p>
+    <div class="modal-actions" id="modalActions">
+      <a class="primary-link" href="onboarding.html">Create local account packet</a>
+      <button onclick="closeModal()">Back</button>
+    </div>
+  </section>
+</div>
+<script>
+const modal=document.getElementById('modal');
+function closeModal(){modal.classList.add('hide')}
+function openModal(title,text,primaryHref,dev){document.getElementById('modalTitle').textContent=title;document.getElementById('modalText').textContent=text;const actions=document.getElementById('modalActions');actions.innerHTML=dev?'<a class="primary-link" href="libby_librarian.html?mode=local-dev&user=001">Open Matthew dashboard</a><a href="libby_librarian.html?mode=demo&user=demo_001">Open guest demo</a><button onclick="closeModal()">Back</button>':'<a class="primary-link" href="'+primaryHref+'">Create local account packet</a><button onclick="closeModal()">Back</button>';modal.classList.remove('hide')}
+function chooseAuth(kind){const copy={google:['Continue with Google','Google sign-in will eventually connect Gmail, Drive, Calendar, and the Libby user profile. For this test build, continue by creating a local account packet.'],apple:['Continue with Apple','Apple sign-in will eventually support the iPhone/iPad Face ID account path. For this test build, continue by creating a local account packet.'],passkey:['Use passkey or Face ID','Passkey login will eventually unlock Libby without passwords. For this test build, continue by creating a local account packet.']}[kind];openModal(copy[0],copy[1],'onboarding.html',false)}
+function continueEmail(){const id=document.getElementById('identifier').value.trim();if(!id){document.getElementById('identifier').focus();return}openModal('Account lookup','Real email or SMS lookup is not wired yet. This test build will create a local account packet and then open Libby.','onboarding.html?contact='+encodeURIComponent(id),false)}
+function showDev(){openModal('Developer access','Temporary testing route. This should not be the normal public path once real Supabase/Firebase authentication is wired.',null,true)}
+function setSkin(skin){localStorage.setItem('libby_skin',skin);document.body.removeAttribute('data-skin');if(skin!=='system')document.body.setAttribute('data-skin',skin);document.querySelectorAll('.skin-btn').forEach(b=>b.classList.toggle('active',b.dataset.skin===skin))}
+setSkin(localStorage.getItem('libby_skin')||'system');
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+</script>
+</body>
+</html>
