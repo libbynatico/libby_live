@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Libby Intake</title>
+  <style>
+    body { font-family: sans-serif; background:#0b1020; color:#fff; padding:20px }
+    textarea, select, input { width:100%; margin-bottom:12px; padding:10px }
+    button { padding:12px; background:#75a7ff; border:none; color:#000; font-weight:bold }
+    pre { background:#111; padding:12px; overflow:auto }
+  </style>
+</head>
+<body>
+
+<h2>Libby Intake</h2>
+
+<label>Trigger</label>
+<select id="trigger">
+  <option>/event_update</option>
+  <option>/event_details</option>
+  <option>/call_record</option>
+  <option>/symptom_log</option>
+  <option>/bp_log</option>
+</select>
+
+<label>Source Type</label>
+<select id="source">
+  <option>manual_text</option>
+  <option>call_recording</option>
+  <option>voice_memo</option>
+  <option>notes_audio</option>
+  <option>photo</option>
+  <option>document</option>
+</select>
+
+<label>Raw Input</label>
+<textarea id="input" rows="8"></textarea>
+
+<button onclick="submitIntake()">Submit</button>
+
+<h3>Response</h3>
+<pre id="output"></pre>
+
+<script>
+async function submitIntake() {
+  const trigger = document.getElementById('trigger').value;
+  const source = document.getElementById('source').value;
+  const input = document.getElementById('input').value;
+
+  const res = await fetch('/.netlify/functions/upload-intake', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      triggerLine: trigger,
+      rawInput: input,
+      sourceType: source
+    })
+  });
+
+  const data = await res.json();
+  document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+}
+</script>
+
+</body>
+</html>
