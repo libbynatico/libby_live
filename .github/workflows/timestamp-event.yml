@@ -1,0 +1,13 @@
+name: Timestamp Event Trigger
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/30 * * * *"
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log heartbeat
+        run: echo "Libby timestamp system active at $(date -u)"
