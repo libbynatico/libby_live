@@ -1,48 +1,48 @@
 {
-  "name": "Libby the Librarian",
+  "name": "Libby Live",
   "short_name": "Libby",
-  "description": "Life librarian dashboard with memory, calendar, to-dos, chatbot, and letter drafting",
-  "start_url": "/libby_live/libby_librarian.html",
+  "description": "Mobile-first life librarian dashboard with onboarding, chat, memory, tasks, calendar, evidence, and letter drafting.",
+  "start_url": "/libby_live/",
   "scope": "/libby_live/",
-  "display": "fullscreen",
-  "orientation": "any",
+  "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#08101f",
   "theme_color": "#08101f",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%2375a7ff' width='192' height='192' rx='38'/><text x='50%' y='50%' font-size='105' font-weight='bold' fill='%23fff' text-anchor='middle' dominant-baseline='central'>L</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%2308101f' width='192' height='192' rx='42'/><circle cx='96' cy='96' r='66' fill='%2375a7ff' opacity='.32'/><text x='50%' y='55%' font-size='104' font-weight='bold' fill='%23eef2ff' text-anchor='middle' dominant-baseline='central'>L</text></svg>",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%2375a7ff' width='180' height='180' rx='40'/><text x='50%' y='50%' font-size='94' font-weight='bold' fill='%23fff' text-anchor='middle' dominant-baseline='central'>L</text></svg>",
-      "sizes": "180x180",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%2308101f' width='512' height='512' rx='112'/><circle cx='256' cy='256' r='176' fill='%2375a7ff' opacity='.32'/><text x='50%' y='55%' font-size='278' font-weight='bold' fill='%23eef2ff' text-anchor='middle' dominant-baseline='central'>L</text></svg>",
+      "sizes": "512x512",
       "type": "image/svg+xml",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ],
   "categories": ["productivity", "utilities", "medical"],
   "shortcuts": [
     {
+      "name": "Open Libby",
+      "short_name": "Home",
+      "description": "Open the Libby Live app shell",
+      "url": "/libby_live/",
+      "icons": []
+    },
+    {
       "name": "Dashboard",
       "short_name": "Dashboard",
-      "description": "Open the Libby librarian dashboard",
-      "url": "/libby_live/libby_librarian.html",
+      "description": "Open the working Libby librarian dashboard",
+      "url": "/libby_live/libby_librarian.html?mode=local-dev&user=001",
       "icons": []
     },
     {
-      "name": "Letters",
-      "short_name": "Letters",
-      "description": "Open letter drafting workflow",
-      "url": "/libby_live/libby_librarian.html?tab=letters",
-      "icons": []
-    },
-    {
-      "name": "Memory Bank",
-      "short_name": "Memory",
-      "description": "Open memory bank tools",
-      "url": "/libby_live/libby_librarian.html?tab=bank",
+      "name": "Guest Demo",
+      "short_name": "Demo",
+      "description": "Open the redacted guest demo",
+      "url": "/libby_live/libby_librarian.html?mode=demo&user=demo_001",
       "icons": []
     }
   ]
