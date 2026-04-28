@@ -1,4 +1,5 @@
 const { classifyIntake } = require('./_shared/agent-router');
+const { generateOutputs } = require('./_shared/output-generator');
 
 exports.handler = async (event) => {
   try {
@@ -36,6 +37,13 @@ exports.handler = async (event) => {
       created_at: new Date().toISOString()
     };
 
+    const outputs = generateOutputs(eventRecord);
+
+    const fullRecord = {
+      ...eventRecord,
+      outputs
+    };
+
     if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
       await fetch(`${process.env.SUPABASE_URL}/rest/v1/${process.env.LIBBY_EVENTS_TABLE || 'libby_events'}`, {
         method: 'POST',
@@ -44,13 +52,13 @@ exports.handler = async (event) => {
           'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
           'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
         },
-        body: JSON.stringify(eventRecord)
+        body: JSON.stringify(fullRecord)
       });
     }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true, event: eventRecord })
+      body: JSON.stringify({ success: true, event: fullRecord })
     };
 
   } catch (err) {
